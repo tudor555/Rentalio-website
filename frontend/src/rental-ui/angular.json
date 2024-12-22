@@ -32,8 +32,14 @@
               }
             ],
             "styles": [
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
               "src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src"
+              ]
+            },
             "scripts": [],
             "server": "src/main.server.ts",
             "outputMode": "server",
