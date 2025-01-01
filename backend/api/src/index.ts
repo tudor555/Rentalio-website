@@ -7,7 +7,8 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
-import { error } from "console";
+
+import router from "./routes";
 
 const envPath = path.resolve(
   __dirname,
@@ -40,3 +41,5 @@ const MONGO_URL = process.env.MONGO_URL || "";
 mongoose.Promise = Promise;
 mongoose.connect(MONGO_URL);
 mongoose.connection.on("error", (error: Error) => console.log(error));
+
+app.use("/", router());
