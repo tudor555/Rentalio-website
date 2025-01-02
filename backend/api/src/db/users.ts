@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 
+// TODO: Update schema
+// update schema to be like schema from migration script
+// need to update code that use this schema to prevent possible mismatches, errors
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true },
   email: { type: String, required: true },
