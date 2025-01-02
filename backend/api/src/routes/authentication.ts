@@ -10,6 +10,7 @@ export default (router: express.Router) => {
       next(error); // Pass the error to Express's error handler
     }
   });
+
   router.post("/auth/login", async (req, res, next) => {
     try {
       await login(req, res);
