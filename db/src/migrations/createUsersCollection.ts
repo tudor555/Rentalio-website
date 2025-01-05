@@ -12,13 +12,38 @@ const targetCollection = "users";
 const initialCollection = "initial_data";
 const SECRET = process.env.SECRET || "default_secret";
 
-// Authentication and random salt generation
+// Random salt generation and password hashing
 const random = () => crypto.randomBytes(128).toString("base64");
 const authentication = (salt: string, password: string) => {
   return crypto
     .createHmac("sha256", [salt, password].join("/"))
     .update(SECRET)
     .digest("hex");
+};
+
+// Phone number encryption
+const encryptPhoneNumber = (phone: string) => {
+  const cipher = crypto.createCipheriv(
+    "aes-256-cbc",
+    crypto.scryptSync(SECRET, "salt", 32),
+    Buffer.alloc(16, 0)
+  );
+  let encrypted = cipher.update(phone, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return encrypted;
+};
+
+// Phone number decryption maybe need on api at a moment
+const decryptPhoneNumber = (encrypted: string) => {
+  const decipher = crypto.createDecipheriv(
+    "aes-256-cbc",
+    crypto.scryptSync(SECRET, "salt", 32),
+    Buffer.alloc(16, 0) // Initialization Vector (IV) must match the one used during encryption
+  );
+
+  let decrypted = decipher.update(encrypted, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+  return decrypted;
 };
 
 const manageUsersCollection = async () => {
@@ -49,28 +74,33 @@ const manageUsersCollection = async () => {
       // Create the users collection
       console.log(`Creating "${targetCollection}" collection...`);
       await db.createCollection(targetCollection);
+      console.log(`"${targetCollection}" collection created.`);
 
-      // Create initial admin user with consistent hashing logic
+      // Create initial user
       const initialUsername = process.env.INITIAL_USER || "user";
       const password = process.env.INITIAL_PASSWORD || "123";
+      const phone = process.env.INITIAL_PHONE || "+1234567890";
       const salt = random();
       const hashedPassword = authentication(salt, password);
+      const encryptedPhone = encryptPhoneNumber(phone);
 
-      // Insert initial admin user
+      // Insert inital user
       await db.collection(targetCollection).insertOne({
         username: initialUsername,
         email: "admin@example.com",
         role: "admin",
-        createdAt: new Date(),
+        phone: encryptedPhone,
         authentication: {
           password: hashedPassword,
           salt: salt,
           sessionToken: null,
         },
+        profilePicture: null,
+        createdAt: new Date(),
       });
 
       console.log(
-        `"${targetCollection}" collection created and "${initialUsername}" user initialized.`
+        `Initial user "${initialUsername}" initialized in "${targetCollection}" collection.`
       );
     }
   } catch (error) {

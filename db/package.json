@@ -5,6 +5,12 @@
   "scripts": {
     "migrate": "ts-node src/migrations/createDatabase.ts",
     "migrate:users": "ts-node src/migrations/createUsersCollection.ts",
+    "migrate:listings": "ts-node src/migrations/createListingsCollection.ts",
+    "migrate:reservations": "ts-node src/migrations/createReservationsCollection.ts",
+    "migrate:flights": "ts-node src/migrations/createFlightsCollection.ts",
+    "migrate:reviews": "ts-node src/migrations/createReviewsCollection.ts",
+    "migrate:payments": "ts-node src/migrations/createPaymentsCollection.ts",
+    "migrate:all": "npm run migrate && npm run migrate:users && npm run migrate:listings && npm run migrate:reservations && npm run migrate:flights && npm run migrate:reviews && npm run migrate:payments",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
