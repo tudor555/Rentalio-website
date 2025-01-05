@@ -65,7 +65,7 @@ npm install
 
 3. Configure your environment:
 
-Create a db.env file under env/db_env/. \
+Create a `db.env` file under `env/db_env/`. \
 Following the `db.env.example` for create the environment variables. \
 Also you can remove the `.example` of `db.env.example` and update the values of variables.
 
@@ -116,4 +116,4 @@ If you encounter issues during running this project, here are some common soluti
 
 ## Notes
 
-The project enforces schema validation at the API level using tools like Mongoose (not directly in the migration scripts).
+The project enforces schema validation at the **API** level using tools like **Mongoose** (not directly in the migration scripts).
