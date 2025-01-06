@@ -2,7 +2,6 @@ import express from "express";
 import { get, identity, merge } from "lodash";
 
 import { getUserBySessionToken } from "../models/users";
-import { nextTick } from "process";
 
 export const isOwner = async (
   req: express.Request,

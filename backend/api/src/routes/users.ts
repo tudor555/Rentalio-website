@@ -4,6 +4,7 @@ import { getAllUsers, deleteUser, updateUser } from "../controllers/users";
 import { isAuthenticated, isOwner } from "../middlewares";
 
 export default (router: express.Router) => {
+  // Read all user from DB
   router.get("/users", async (req, res, next) => {
     try {
       await isAuthenticated(req, res, next);
@@ -13,6 +14,7 @@ export default (router: express.Router) => {
     }
   });
 
+  // Delete user by id
   router.delete("/users/:id", async (req, res, next) => {
     try {
       await isAuthenticated(req, res, next);
@@ -23,6 +25,7 @@ export default (router: express.Router) => {
     }
   });
 
+  // Update user by id
   router.patch("/users/:id", async (req, res, next) => {
     try {
       await isAuthenticated(req, res, next);
