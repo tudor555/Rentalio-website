@@ -9,7 +9,8 @@ export const getAllUsers = async (
   try {
     const users = await getUsers();
 
-    return res.sendStatus(200).json(users);
+    console.log(`Succesfully get all users.`);
+    return res.status(200).json(users);
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
@@ -49,7 +50,7 @@ export const updateUser = async (
     user.username = username;
     await user.save();
 
-    return res.status(200).json(user).end();
+    return res.status(200).json(user);
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);

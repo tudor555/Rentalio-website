@@ -3,6 +3,8 @@ import { get, identity, merge } from "lodash";
 
 import { getUserBySessionToken } from "../models/users";
 
+// TODO: Verify this methods now have some error
+
 export const isOwner = async (
   req: express.Request,
   res: express.Response,
