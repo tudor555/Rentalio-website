@@ -3,7 +3,12 @@ import { get, identity, merge } from "lodash";
 
 import { getUserBySessionToken } from "../models/users";
 
-// TODO: Verify this methods now have some error
+// TODO: Implement isAdmin method will be use on routes for access
+export const isAdmin = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {};
 
 export const isOwner = async (
   req: express.Request,
@@ -35,7 +40,7 @@ export const isAuthenticated = async (
   next: express.NextFunction
 ) => {
   try {
-    const sessionToken = req.cookies["USER_AUTH"];
+    const sessionToken = req.cookies["USER-AUTH"];
 
     if (!sessionToken) {
       return res.sendStatus(403);

@@ -17,6 +17,20 @@ export const getAllUsers = async (
   }
 };
 
+export const getUser = async (req: express.Request, res: express.Response) => {
+  try {
+    const { id } = req.params;
+
+    const users = await getUserById(id);
+
+    console.log(`Succesfully get user.`);
+    return res.status(200).json(users);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
+
 export const deleteUser = async (
   req: express.Request,
   res: express.Response
