@@ -3,12 +3,24 @@ import { get, identity, merge } from "lodash";
 
 import { getUserBySessionToken } from "../models/users";
 
-// TODO: Implement isAdmin method will be use on routes for access
 export const isAdmin = async (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
-) => {};
+) => {
+  try {
+    const currentUserRole = get(req, "identity.role") as string;
+
+    if (currentUserRole.toString() !== "admin") {
+      return res.sendStatus(403);
+    }
+
+    next();
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
 
 export const isOwner = async (
   req: express.Request,

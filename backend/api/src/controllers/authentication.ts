@@ -44,6 +44,8 @@ export const login = async (req: express.Request, res: express.Response) => {
   }
 };
 
+// TODO: Check and update this
+// Maybe need to add suplimentary checks to insert only available data
 export const register = async (req: express.Request, res: express.Response) => {
   try {
     const { username, email, role, phone, password, profilePicture } = req.body;

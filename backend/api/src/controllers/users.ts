@@ -21,10 +21,10 @@ export const getUser = async (req: express.Request, res: express.Response) => {
   try {
     const { id } = req.params;
 
-    const users = await getUserById(id);
+    const user = await getUserById(id);
 
     console.log(`Succesfully get user.`);
-    return res.status(200).json(users);
+    return res.status(200).json(user);
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
@@ -40,6 +40,7 @@ export const deleteUser = async (
 
     const deletedUser = await deleteUserById(id);
 
+    console.log("Succesfully delete user by id.");
     return res.json(deletedUser);
   } catch (error) {
     console.log(error);
@@ -64,6 +65,7 @@ export const updateUser = async (
     user.username = username;
     await user.save();
 
+    console.log(`Succesfully update user by id.`);
     return res.status(200).json(user);
   } catch (error) {
     console.log(error);
