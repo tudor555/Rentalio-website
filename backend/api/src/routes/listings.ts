@@ -1,5 +1,11 @@
 import express from "express";
-import { getAllListings, getListing } from "../controllers/listings";
+import {
+  getAllListings,
+  getListing,
+  addListing,
+  updateListing,
+} from "../controllers/listings";
+import { canEditListing, isAuthenticated } from "../middlewares";
 
 export default (router: express.Router) => {
   // GET all listings
@@ -22,23 +28,30 @@ export default (router: express.Router) => {
 
   // TODO: Implement routes for create, update, delete
 
+  // CREATE listing
   router.post("/listings/add", async (req, res, next) => {
     try {
+      await isAuthenticated(req, res, next);
+      await addListing(req, res);
     } catch (error) {
       next(error); // Pass the error to Express's error handler
     }
   });
 
-  // UPDATE user by id (Admin or Owner)
+  // UPDATE listing by id (Admin or Owner)
   router.patch("/listings/:id", async (req, res, next) => {
     try {
+      // TODO: check how to use these methods for ensure only authorized people can update the listing
+      // await isAuthenticated(req, res, next), // Ensure user is logged in
+      // await canEditListing(req, res, next), // Ensure user can edit the listing
+      await updateListing(req, res); // Controller to handle the update
     } catch (error) {
       next(error);
     }
   });
 
-  // DELETE user by id (Admin or Owner)
-  router.delete("/listingss/:id", async (req, res, next) => {
+  // DELETE listing by id (Admin or Owner)
+  router.delete("/listings/:id", async (req, res, next) => {
     try {
     } catch (error) {
       next(error);

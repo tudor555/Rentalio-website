@@ -31,23 +31,8 @@ export const getUser = async (req: express.Request, res: express.Response) => {
   }
 };
 
-export const deleteUser = async (
-  req: express.Request,
-  res: express.Response
-) => {
-  try {
-    const { id } = req.params;
-
-    const deletedUser = await deleteUserById(id);
-
-    console.log("Succesfully delete user by id.");
-    return res.json(deletedUser);
-  } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
-  }
-};
-
+// TODO: Update this method to can update multiple fields
+// Similar with what is made on listing part
 export const updateUser = async (
   req: express.Request,
   res: express.Response
@@ -67,6 +52,23 @@ export const updateUser = async (
 
     console.log(`Succesfully update user by id.`);
     return res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
+
+export const deleteUser = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { id } = req.params;
+
+    const deletedUser = await deleteUserById(id);
+
+    console.log("Succesfully delete user by id.");
+    return res.json(deletedUser);
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
