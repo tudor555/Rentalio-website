@@ -39,7 +39,6 @@ export const getListing = async (
     return res.sendStatus(400);
   }
 };
-// TODO: Implement operation for create, update, delete
 
 export const addListing = async (
   req: express.Request,
@@ -164,10 +163,8 @@ export const updateListing = async (
         .json({ message: "Updating createdAt is not allowed" });
     }
 
-    // Apply updates and save
     const updatedListing = await updateListingById(id, updates);
 
-    // Respond with the updated listing
     console.log(`Succesfully updated the listing.`);
     return res.status(200).json(updatedListing);
   } catch (error) {
@@ -176,7 +173,6 @@ export const updateListing = async (
   }
 };
 
-// TODO: Check this, finish to implement
 export const deleteListing = async (
   req: express.Request,
   res: express.Response

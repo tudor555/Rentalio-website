@@ -4,6 +4,7 @@ import {
   getListing,
   addListing,
   updateListing,
+  deleteListing,
 } from "../controllers/listings";
 import { canEditListing, isAuthenticated } from "../middlewares";
 
@@ -31,7 +32,8 @@ export default (router: express.Router) => {
   // CREATE listing
   router.post("/listings/add", async (req, res, next) => {
     try {
-      await isAuthenticated(req, res, next);
+      // TODO: User need to be authenticated to can create a listing
+      // await isAuthenticated(req, res, next);
       await addListing(req, res);
     } catch (error) {
       next(error); // Pass the error to Express's error handler
@@ -44,7 +46,7 @@ export default (router: express.Router) => {
       // TODO: check how to use these methods for ensure only authorized people can update the listing
       // await isAuthenticated(req, res, next), // Ensure user is logged in
       // await canEditListing(req, res, next), // Ensure user can edit the listing
-      await updateListing(req, res); // Controller to handle the update
+      await updateListing(req, res);
     } catch (error) {
       next(error);
     }
@@ -53,6 +55,10 @@ export default (router: express.Router) => {
   // DELETE listing by id (Admin or Owner)
   router.delete("/listings/:id", async (req, res, next) => {
     try {
+      // TODO: check how to use these methods for ensure only authorized people can delete the listing
+      // await isAuthenticated(req, res, next), // Ensure user is logged in
+      // await canEditListing(req, res, next), // Ensure user can edit the listing
+      await deleteListing(req, res);
     } catch (error) {
       next(error);
     }
