@@ -1,12 +1,17 @@
 import express from "express";
-
 import {
   getAllUsers,
   getUser,
   deleteUser,
   updateUser,
+  updatePassword,
 } from "../controllers/users";
-import { isAuthenticated, isOwner, isAdmin } from "../middlewares";
+import {
+  isAuthenticated,
+  isOwner,
+  isAdmin,
+  checkRoleChange,
+} from "../middlewares";
 
 // TODO: Check and improve all this routes
 
@@ -54,37 +59,70 @@ export default (router: express.Router) => {
   // UPDATE user by id (Admin or Owner)
   router.patch("/users/:id", async (req, res, next) => {
     try {
-      const authResult = await new Promise<void>((resolve, reject) => {
-        isAuthenticated(req, res, (err) => {
-          if (err) {
-            reject(err); // Stop if not authenticated
-          } else {
-            resolve(); // Continue if authenticated
-          }
-        });
-      });
+      // TODO: Find a way to improve this, looks really ugly
+      // const authResult = await new Promise<void>((resolve, reject) => {
+      //   isAuthenticated(req, res, (err) => {
+      //     if (err) {
+      //       reject(err); // Stop if not authenticated
+      //     } else {
+      //       resolve(); // Continue if authenticated
+      //     }
+      //   });
+      // });
 
-      const ownerResult = await new Promise<void>((resolve, reject) => {
-        isOwner(req, res, (err) => {
-          if (err) {
-            reject(err); // Stop if not owner
-          } else {
-            resolve(); // Continue if owner
-          }
-        });
-      });
+      // const ownerResult = await new Promise<void>((resolve, reject) => {
+      //   isOwner(req, res, (err) => {
+      //     if (err) {
+      //       reject(err); // Stop if not owner
+      //     } else {
+      //       resolve(); // Continue if owner
+      //     }
+      //   });
+      // });
 
-      const adminResult = await new Promise<void>((resolve, reject) => {
-        isAdmin(req, res, (err) => {
-          if (err) {
-            reject(err); // Stop if not admin
-          } else {
-            resolve(); // Continue if admin
-          }
-        });
-      });
+      // const adminResult = await new Promise<void>((resolve, reject) => {
+      //   isAdmin(req, res, (err) => {
+      //     if (err) {
+      //       reject(err); // Stop if not admin
+      //     } else {
+      //       resolve(); // Continue if admin
+      //     }
+      //   });
+      // });
 
+      // Only the admin can change the role or a special case when the user made upgrade from visitor to owner
+      // await checkRoleChange(req, res, next);
       await updateUser(req, res);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // TODO: Method works, need to add restriction
+  router.patch("/users/:id/password", async (req, res, next) => {
+    try {
+      // TODO: Find a way to improve this, looks really ugly
+      // const authResult = await new Promise<void>((resolve, reject) => {
+      //   isAuthenticated(req, res, (err) => {
+      //     if (err) {
+      //       reject(err); // Stop if not authenticated
+      //     } else {
+      //       resolve(); // Continue if authenticated
+      //     }
+      //   });
+      // });
+
+      // const ownerResult = await new Promise<void>((resolve, reject) => {
+      //   isOwner(req, res, (err) => {
+      //     if (err) {
+      //       reject(err); // Stop if not owner
+      //     } else {
+      //       resolve(); // Continue if owner
+      //     }
+      //   });
+      // });
+
+      await updatePassword(req, res);
     } catch (error) {
       next(error);
     }
@@ -93,35 +131,36 @@ export default (router: express.Router) => {
   // DELETE user by id (Admin or Owner)
   router.delete("/users/:id", async (req, res, next) => {
     try {
-      const authResult = await new Promise<void>((resolve, reject) => {
-        isAuthenticated(req, res, (err) => {
-          if (err) {
-            reject(err); // Stop if not authenticated
-          } else {
-            resolve(); // Continue if authenticated
-          }
-        });
-      });
+      // TODO: Find a way to improve this, looks really ugly
+      // const authResult = await new Promise<void>((resolve, reject) => {
+      //   isAuthenticated(req, res, (err) => {
+      //     if (err) {
+      //       reject(err); // Stop if not authenticated
+      //     } else {
+      //       resolve(); // Continue if authenticated
+      //     }
+      //   });
+      // });
 
-      const ownerResult = await new Promise<void>((resolve, reject) => {
-        isOwner(req, res, (err) => {
-          if (err) {
-            reject(err); // Stop if not owner
-          } else {
-            resolve(); // Continue if owner
-          }
-        });
-      });
+      // const ownerResult = await new Promise<void>((resolve, reject) => {
+      //   isOwner(req, res, (err) => {
+      //     if (err) {
+      //       reject(err); // Stop if not owner
+      //     } else {
+      //       resolve(); // Continue if owner
+      //     }
+      //   });
+      // });
 
-      const adminResult = await new Promise<void>((resolve, reject) => {
-        isAdmin(req, res, (err) => {
-          if (err) {
-            reject(err); // Stop if not owner
-          } else {
-            resolve(); // Continue if owner
-          }
-        });
-      });
+      // const adminResult = await new Promise<void>((resolve, reject) => {
+      //   isAdmin(req, res, (err) => {
+      //     if (err) {
+      //       reject(err); // Stop if not owner
+      //     } else {
+      //       resolve(); // Continue if owner
+      //     }
+      //   });
+      // });
 
       await deleteUser(req, res);
     } catch (error) {

@@ -28,3 +28,16 @@ export const encryptPhoneNumber = (phone: string) => {
   encrypted += cipher.final("hex");
   return encrypted;
 };
+
+// Phone number decryption maybe need on api at a moment
+const decryptPhoneNumber = (encrypted: string) => {
+  const decipher = crypto.createDecipheriv(
+    "aes-256-cbc",
+    crypto.scryptSync(SECRET, "salt", 32),
+    Buffer.alloc(16, 0) // Initialization Vector (IV) must match the one used during encryption
+  );
+
+  let decrypted = decipher.update(encrypted, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+  return decrypted;
+};

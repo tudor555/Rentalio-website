@@ -1,6 +1,6 @@
 import express from "express";
 import { get, identity, merge } from "lodash";
-import { getUserBySessionToken } from "../models/users";
+import { getUserById, getUserBySessionToken } from "../models/users";
 import { getListingById } from "../models/listings";
 
 export const isAdmin = async (
@@ -70,6 +70,47 @@ export const isAuthenticated = async (
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
+  }
+};
+
+export const checkRoleChange = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    if (!role) {
+      return next();
+    }
+
+    const user = await getUserById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const allowedRoles = ["owner", "visitor", "admin"];
+
+    if (!allowedRoles.includes(role)) {
+      return res.status(400).json({ message: "Invalid role value" });
+    }
+
+    // Allow admins to change roles freely
+    if (user.role === "admin") {
+      return next();
+    }
+
+    // Allow upgrading from "visitor" to "owner"
+    if (user.role === "visitor" && role === "owner") {
+      return next();
+    }
+
+    return res.status(403).json({ message: "Role change not allowed" });
+  } catch (error) {
+    console.error("Error in role change middleware:", error);
+    return res.status(400);
   }
 };
 
