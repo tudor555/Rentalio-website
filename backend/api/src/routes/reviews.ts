@@ -1,4 +1,4 @@
-import { isAuthenticated } from "../middlewares";
+import express from "express";
 import {
   getAllReviews,
   getReview,
@@ -6,7 +6,7 @@ import {
   deleteReview,
   updateReview,
 } from "../controllers/reviews";
-import express from "express";
+import { isAuthenticated } from "../middlewares";
 
 export default (router: express.Router) => {
   // GET all reviews
