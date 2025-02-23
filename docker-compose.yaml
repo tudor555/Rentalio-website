@@ -1,5 +1,9 @@
 # version: '3.8'
 
+networks:
+  backend-network:
+    driver: bridge
+
 services:
   mongodb:
     image: mongo:latest
@@ -11,3 +15,36 @@ services:
       - ./env/db_env/db.env
     volumes:
       - ./mongo-data:/data/db
+    networks:
+      - backend-network
+    # TODO: made healtcheck for mongodb container
+    # healthcheck:
+    #   test: ["executable", "arg"]
+    #   interval: 1m30s
+    #   timeout: 30s
+    #   retries: 5
+    #   start_period: 30s
+
+  backend:
+    build:
+      context: ./backend/api
+    container_name: backend_api
+    restart: unless-stopped
+    ports:
+      - "3005:3005"
+    env_file:
+      - ./env/backend_env/api_env/api.env
+    volumes:
+      - ./backend/api:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - backend-network
+    depends_on:
+      - mongodb
+    # TODO: Made healthcheck for backend_api container
+    # healthcheck:
+    #   test: ["executable", "arg"]
+    #   interval: 1m30s
+    #   timeout: 30s
+    #   retries: 5
+    #   start_period: 30s

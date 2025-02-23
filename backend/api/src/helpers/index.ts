@@ -2,11 +2,11 @@ import crypto from "crypto";
 import path from "path";
 import dotenv from "dotenv";
 
-const envPath = path.resolve(
-  __dirname,
-  "../../../../env/backend_env/api_env/api.env"
-);
-dotenv.config({ path: envPath });
+// const envPath = path.resolve(
+//   __dirname,
+//   "../../../../env/backend_env/api_env/api.env"
+// );
+// dotenv.config({ path: envPath });
 
 const SECRET = process.env.SECRET || "default_secret";
 

@@ -10,11 +10,11 @@ import path from "path";
 
 import router from "./routes";
 
-const envPath = path.resolve(
-  __dirname,
-  "../../../env/backend_env/api_env/api.env"
-);
-dotenv.config({ path: envPath });
+// const envPath = path.resolve(
+//   __dirname,
+//   "../../../env/backend_env/api_env/api.env"
+// );
+// dotenv.config({ path: envPath });
 
 const port = process.env.API_PORT || 3000;
 
