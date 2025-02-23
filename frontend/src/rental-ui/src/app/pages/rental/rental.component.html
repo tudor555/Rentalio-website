@@ -1,1 +1,13 @@
-<p>rental works!</p>
+<div *ngIf="rentals$ | async as rentals; else loading">
+    <ul>
+        <li *ngFor="let rental of rentals">
+            <h3>{{ rental.title }}</h3>
+            <p>{{ rental.description }}</p>
+            <p><strong>Price:</strong> ${{ rental.basePrice }}</p>
+        </li>
+    </ul>
+</div>
+
+<ng-template #loading>
+    <p>Loading rentals...</p>
+</ng-template>
