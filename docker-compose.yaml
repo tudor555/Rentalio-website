@@ -17,13 +17,12 @@ services:
       - ./mongo-data:/data/db
     networks:
       - backend-network
-    # TODO: made healtcheck for mongodb container
-    # healthcheck:
-    #   test: ["executable", "arg"]
-    #   interval: 1m30s
-    #   timeout: 30s
-    #   retries: 5
-    #   start_period: 30s
+    healthcheck:
+      test: ["CMD", "mongosh", "--username", "$MONGO_INITDB_ROOT_USERNAME", "--password", "$MONGO_INITDB_ROOT_PASSWORD", "--eval", "db.runCommand('ping').ok"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 1m
 
   backend:
     build:
@@ -40,14 +39,14 @@ services:
     networks:
       - backend-network
     depends_on:
-      - mongodb
-    # TODO: Made healthcheck for backend_api container
-    # healthcheck:
-    #   test: ["executable", "arg"]
-    #   interval: 1m30s
-    #   timeout: 30s
-    #   retries: 5
-    #   start_period: 30s
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "node"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 1m
 
   frontend:
     build:
@@ -58,18 +57,20 @@ services:
       - "4200:4200"
     environment:
       - CHOKIDAR_USEPOLLING=true # Helps with live reloading inside Docker
+    # TODO: Check if can made live reload when have changes on file
     volumes:
       - ./frontend/rental-ui:/usr/src/app
       - /usr/src/app/node_modules
     networks:
       - backend-network
     depends_on:
-      - mongodb
-      - backend
-      # TODO: Made healthcheck for frontend container
-      # healthcheck:
-      #   test: ["executable", "arg"]
-      #   interval: 1m30s
-      #   timeout: 30s
-      #   retries: 5
-      #   start_period: 30s
+      mongodb:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4200"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 1m

@@ -16,5 +16,5 @@ COPY . .
 # Expose the application port
 EXPOSE 4200
 
-# Start the application using nodemon
+# Start the application using Angular command
 CMD ["npm", "start", "--", "--host", "0.0.0.0"]
