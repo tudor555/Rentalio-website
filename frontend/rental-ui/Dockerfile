@@ -16,6 +16,5 @@ COPY . .
 # Expose the application port
 EXPOSE 4200
 
-# Start the application using Angular command
-# CMD ["npm", "start", "--", "--host", "0.0.0.0"]
-CMD ["npm", "start", "--host", "0.0.0.0", "--poll", "2000", "--disable-host-check"]
+# Start the application using Angular and enable hot reload
+CMD ["npm", "start", "--", "--host", "0.0.0.0", "--poll=2000"]
