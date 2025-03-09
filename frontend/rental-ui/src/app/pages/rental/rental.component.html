@@ -1,13 +1,146 @@
-<div *ngIf="rentals$ | async as rentals; else loading">
-    <ul>
-        <li *ngFor="let rental of rentals">
-            <h3>{{ rental.title }}</h3>
-            <p>{{ rental.description }}</p>
-            <p><strong>Price:</strong> ${{ rental.basePrice }}</p>
-        </li>
-    </ul>
+<div class="bg-secondary min-h-screen text-white">
+    
+    <!-- Search Bar (Sticky on Scroll) -->
+    <div class="sticky top-0 bg-primary py-4 px-6 shadow-md z-50">
+        <div class="container mx-auto flex justify-center">
+            <input type="text" placeholder="Search rentals..." 
+                class="w-full md:w-2/3 lg:w-1/2 px-4 py-3 rounded-lg bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent">
+        </div>
+    </div>
+
+    <div class="container mx-auto py-10 flex flex-col md:flex-row gap-6">
+        
+        <!-- Sidebar (Hidden on Mobile, Visible on Desktop) -->
+        <aside class="w-full md:w-1/4 bg-primary p-6 rounded-lg shadow-lg hidden md:block sticky top-20 h-auto">
+            <h3 class="text-xl font-bold text-white mb-4">Sort & Filter</h3>
+
+            <!-- Sort Options -->
+            <div class="mb-4">
+                <label class="block mb-2">Sort by:</label>
+                <select class="w-full p-2 rounded-lg bg-white text-black">
+                    <option>Price: Low to High</option>
+                    <option>Price: High to Low</option>
+                    <option>Newest Listings</option>
+                </select>
+            </div>
+
+            <!-- 📍 Location Filter -->
+            <div class="mb-4">
+                <label class="block mb-2">Location:</label>
+                <input type="text" placeholder="Enter location..." 
+                    class="w-full p-2 rounded-lg bg-white text-black">
+            </div>
+
+            <!-- Price Range -->
+            <div class="mb-4">
+                <label class="block mb-2">Max Price:</label>
+                <input type="range" min="100" max="5000" step="100" class="w-full">
+            </div>
+
+            <!-- Property Type -->
+            <div class="mb-4">
+                <label class="block mb-2">Property Type:</label>
+                <select class="w-full p-2 rounded-lg bg-white text-black">
+                    <option>Apartment</option>
+                    <option>House</option>
+                    <option>Office</option>
+                </select>
+            </div>
+
+            <button class="w-full bg-accent text-white py-2 rounded-lg hover:bg-white hover:text-accent transition">
+                Apply Filters
+            </button>
+        </aside>
+
+        <!-- Mobile Filters Button -->
+        <button class="md:hidden w-full bg-accent text-white py-3 rounded-lg shadow-md" onclick="toggleFilters()">
+            Filter & Sort
+        </button>
+
+        <!-- Rental Listings -->
+        <div class="w-full md:w-3/4">
+            <h2 class="text-3xl font-bold text-white mb-6">Available Rentals</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Rental Card (Repeat for each rental) -->
+                <div class="bg-primary p-4 rounded-lg shadow-lg">
+                    <img src="assets/img/rental1.jpg" class="w-full h-48 rounded-lg object-cover">
+                    <div class="mt-4">
+                        <h3 class="text-xl font-bold text-accent">Modern Apartment</h3>
+                        <p class="text-white">📍 New York, NY</p>
+                        <p class="text-white font-bold mt-2">$1,500 / month</p>
+                        <button class="mt-4 bg-accent text-white px-4 py-2 rounded-lg hover:bg-white hover:text-accent transition">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-primary p-4 rounded-lg shadow-lg">
+                    <img src="assets/img/rental2.jpg" class="w-full h-48 rounded-lg object-cover">
+                    <div class="mt-4">
+                        <h3 class="text-xl font-bold text-accent">Luxury Condo</h3>
+                        <p class="text-white">📍 Los Angeles, CA</p>
+                        <p class="text-white font-bold mt-2">$2,800 / month</p>
+                        <button class="mt-4 bg-accent text-white px-4 py-2 rounded-lg hover:bg-white hover:text-accent transition">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-primary p-4 rounded-lg shadow-lg">
+                    <img src="assets/img/rental3.jpg" class="w-full h-48 rounded-lg object-cover">
+                    <div class="mt-4">
+                        <h3 class="text-xl font-bold text-accent">Cozy Office Space</h3>
+                        <p class="text-white">📍 Chicago, IL</p>
+                        <p class="text-white font-bold mt-2">$3,200 / month</p>
+                        <button class="mt-4 bg-accent text-white px-4 py-2 rounded-lg hover:bg-white hover:text-accent transition">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Mobile Filter Modal (Hidden by Default) -->
+    <div id="mobile-filters" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50">
+        <div class="bg-white text-black w-4/5 p-6 rounded-lg shadow-lg">
+            <h3 class="text-xl font-bold mb-4">Sort & Filter</h3>
+
+            <label class="block mb-2">Sort by:</label>
+            <select class="w-full p-2 rounded-lg bg-gray-100 text-black">
+                <option>Price: Low to High</option>
+                <option>Price: High to Low</option>
+                <option>Newest Listings</option>
+            </select>
+
+            <label class="block mt-4 mb-2">Location:</label>
+            <input type="text" placeholder="Enter location..." class="w-full p-2 rounded-lg bg-gray-100 text-black">
+
+            <label class="block mt-4 mb-2">Max Price:</label>
+            <input type="range" min="100" max="5000" step="100" class="w-full">
+
+            <label class="block mt-4 mb-2">Property Type:</label>
+            <select class="w-full p-2 rounded-lg bg-gray-100 text-black">
+                <option>Apartment</option>
+                <option>House</option>
+                <option>Office</option>
+            </select>
+
+            <div class="flex justify-between mt-6">
+                <button class="bg-red-500 text-white py-2 px-6 rounded-lg" onclick="toggleFilters()">Close</button>
+                <button class="bg-accent text-white py-2 px-6 rounded-lg">Apply</button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<ng-template #loading>
-    <p>Loading rentals...</p>
-</ng-template>
+<!-- JavaScript for Mobile Filter Modal -->
+<script>
+    function toggleFilters() {
+        document.getElementById('mobile-filters').classList.toggle('hidden');
+    }
+</script>
