@@ -1,5 +1,5 @@
 # Use an official Node.js image as a base
-FROM node:18
+FROM node:18-alpine
 
 # Set working directory inside the container
 WORKDIR /usr/src/app
@@ -17,4 +17,5 @@ COPY . .
 EXPOSE 4200
 
 # Start the application using Angular command
-CMD ["npm", "start", "--", "--host", "0.0.0.0"]
+# CMD ["npm", "start", "--", "--host", "0.0.0.0"]
+CMD ["npm", "start", "--host", "0.0.0.0", "--poll", "2000", "--disable-host-check"]
