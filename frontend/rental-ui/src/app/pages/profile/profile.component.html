@@ -1,1 +1,96 @@
-<p>profile works!</p>
+<div class="bg-secondary min-h-screen flex flex-col items-center justify-center text-white">
+    <div class="w-full max-w-5xl bg-primary p-12 rounded-xl shadow-2xl">
+        
+        <!-- User Info -->
+        <div class="flex flex-col items-center">
+            <img src="assets/img/avatar.png" alt="User Avatar" class="w-32 h-32 rounded-full border-4 border-accent shadow-lg">
+            <h2 class="text-3xl font-bold mt-4">John Doe</h2>
+            <p class="text-gray-300">john.doe&#64;example.com</p>
+            <span class="bg-accent px-4 py-2 rounded-lg text-white mt-2">Premium Member</span>
+        </div>
+
+        <!-- Profile Sections -->
+        <div class="mt-10 space-y-8">
+            
+            <!-- Account Details -->
+            <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold mb-4"><i class="fas fa-user-circle"></i> Account Details</h3>
+                <p class="text-gray-300">Manage your personal info and security settings.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div>
+                        <label class="block mb-2">Full Name:</label>
+                        <input type="text" value="John Doe" class="w-full p-4 text-lg rounded-lg bg-white text-black">
+                    </div>
+                    <div>
+                        <label class="block mb-2">Email:</label>
+                        <input type="email" value="john.doe@example.com" class="w-full p-4 text-lg rounded-lg bg-white text-black">
+                    </div>
+                </div>
+                <button class="mt-4 bg-accent text-white py-3 px-6 rounded-lg hover:bg-white hover:text-accent transition">
+                    Save Changes
+                </button>
+            </div>
+
+            <!-- Recent Bookings -->
+            <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold mb-4"><i class="fas fa-receipt"></i> Recent Bookings</h3>
+                <p class="text-gray-300">View your latest flight and rental bookings.</p>
+                <div class="mt-4 space-y-4">
+                    
+                    <!-- Rental Booking -->
+                    <div class="flex items-center bg-primary p-4 rounded-lg shadow-md">
+                        <i class="fas fa-home text-3xl text-accent mr-4"></i>
+                        <div class="flex-grow">
+                            <p class="font-bold text-lg">Luxury Apartment, New York</p>
+                            <p class="text-gray-300">Booking Date: March 5, 2025</p>
+                        </div>
+                        <button class="bg-accent text-white px-4 py-2 rounded-lg hover:bg-white hover:text-accent transition">
+                            View
+                        </button>
+                    </div>
+
+                    <!-- Flight Booking -->
+                    <div class="flex items-center bg-primary p-4 rounded-lg shadow-md">
+                        <i class="fas fa-plane text-3xl text-accent mr-4"></i>
+                        <div class="flex-grow">
+                            <p class="font-bold text-lg">New York → Paris</p>
+                            <p class="text-gray-300">Flight Date: March 20, 2025</p>
+                        </div>
+                        <button class="bg-accent text-white px-4 py-2 rounded-lg hover:bg-white hover:text-accent transition">
+                            View
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold mb-4"><i class="fas fa-cog"></i> Settings</h3>
+                <p class="text-gray-300">Customize your preferences and security.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div>
+                        <label class="block mb-2">Preferred Language:</label>
+                        <select class="w-full p-4 text-lg rounded-lg bg-white text-black">
+                            <option>English</option>
+                            <option>French</option>
+                            <option>Spanish</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-2">Payment Method:</label>
+                        <select class="w-full p-4 text-lg rounded-lg bg-white text-black">
+                            <option>Credit Card</option>
+                            <option>PayPal</option>
+                            <option>Crypto</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="mt-4 bg-accent text-white py-3 px-6 rounded-lg hover:bg-white hover:text-accent transition">
+                    Save Settings
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
