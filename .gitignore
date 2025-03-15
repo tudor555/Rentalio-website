@@ -4,3 +4,5 @@ mongo-data/
 
 *.env
 *.zip
+
+.DS_Store
