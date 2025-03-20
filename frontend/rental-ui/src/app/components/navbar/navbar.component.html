@@ -49,7 +49,7 @@
         >
       </nav>
 
-      <div>
+      <div *ngIf="currentUrl !== '/home' && currentUrl !== '/rental'">
         <a
           href="/login"
           class="px-4 py-2 bg-accent text-white rounded hover:bg-opacity-80"

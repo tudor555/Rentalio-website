@@ -27,6 +27,8 @@ export class NavbarComponent {
   }
 
   isActive(route: string): boolean {
-    return this.currentUrl === route;
+    console.log(this.router.url);
+    this.currentUrl = this.router.url;
+    return this.router.url === route;
   }
 }
