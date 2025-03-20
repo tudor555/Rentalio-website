@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ApiService } from '../../services/api.service';
+import { ApiService } from '../../../services/api.service';
 import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-rental',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './rental.component.html',
-  styleUrls: ['./rental.component.scss'],
+  templateUrl: './rentals-base.component.html',
+  styleUrls: ['./rentals-base.component.scss'],
 })
-export class RentalComponent {
+export class RentalsComponent {
   rentals$: Observable<any[]> = of([]);
 
   constructor(private apiService: ApiService) {
