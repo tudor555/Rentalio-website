@@ -3,6 +3,9 @@ import { get, identity, merge } from "lodash";
 import { getUserById, getUserBySessionToken } from "../models/users";
 import { getListingById } from "../models/listings";
 
+// TODO: Check methods for add improvements and separate to different files
+// Little refactoring of file
+
 export const isAuthenticated: express.RequestHandler = async (
   req: express.Request,
   res: express.Response,
@@ -185,6 +188,34 @@ export const canEditListing: express.RequestHandler = async (
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: "Permission check failed" });
+    return;
+  }
+};
+
+export const canEditStatusField: express.RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+): Promise<void> => {
+  try {
+    const currentUserRole = get(req, "identity.role") as string;
+    const { status } = req.body;
+
+    // If no status change requested, skip
+    if (!status) {
+      return next();
+    }
+
+    // Only admins can modify the status field
+    if (currentUserRole !== "admin") {
+      res.status(403).json({ message: "Only admin can edit the status field." });
+      return;
+    }
+
+    next();
+  } catch (error) {
+    console.error("Error in canEditReviewStatus middleware:", error);
+    res.status(400).json({ message: "Status check failed" });
     return;
   }
 };

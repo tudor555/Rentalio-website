@@ -6,8 +6,7 @@ import {
   updateReservation,
   deleteReservation,
 } from "../controllers/reservations";
-import { isAuthenticated } from "../middlewares";
-import { update } from "lodash";
+import { isAuthenticated, isAdmin, isOwnerOrAdmin } from "../middlewares";
 
 export default (router: express.Router) => {
   // GET all reservations
@@ -29,10 +28,8 @@ export default (router: express.Router) => {
   });
 
   // POST create reservation
-  // TODO: Finish implement, only authenticated user can create reservation
-  router.post("/reservations/add", async (req, res, next) => {
+  router.post("/reservations/add", isAuthenticated, async (req, res, next) => {
     try {
-      // await isAuthenticated(req, res, next);
       await addReservation(req, res);
     } catch (error) {
       next(error);
@@ -40,27 +37,31 @@ export default (router: express.Router) => {
   });
 
   // PATCH update reviews
-  // TODO: Finish implement, need to be authenticated, only owner and admin can edit reservation
-  // Also only admin can edit the status field
-  router.patch("/reservations/:id", async (req, res, next) => {
-    try {
-      // await isAuthenticated(req, res, next);
-      await updateReservation(req, res);
-    } catch (error) {
-      next(error);
+  router.patch(
+    "/reservations/:id",
+    isAuthenticated,
+    isOwnerOrAdmin,
+    async (req, res, next) => {
+      try {
+        await updateReservation(req, res);
+      } catch (error) {
+        next(error);
+      }
     }
-  });
+  );
 
   // DELETE reviews by id
-  // TODO: Finish implement, only admin can delete the reservation
-  // Middleware checking
-  // User will be notified that the reservation was canceled
-  router.delete("/reservations/:id", async (req, res, next) => {
-    try {
-      // await isAuthenticated(req, res, next);
-      await deleteReservation(req, res);
-    } catch (error) {
-      next(error);
+  router.delete(
+    "/reservations/:id",
+    isAuthenticated,
+    isAdmin,
+    async (req, res, next) => {
+      try {
+        // await isAuthenticated(req, res, next);
+        await deleteReservation(req, res);
+      } catch (error) {
+        next(error);
+      }
     }
-  });
+  );
 };

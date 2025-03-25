@@ -6,7 +6,7 @@ import {
   deleteReview,
   updateReview,
 } from "../controllers/reviews";
-import { isAuthenticated, isOwnerOrAdmin, canEditStatus } from "../middlewares";
+import { isAuthenticated, isOwnerOrAdmin, canEditStatusField } from "../middlewares";
 
 export default (router: express.Router) => {
   // GET all reviews
@@ -41,7 +41,7 @@ export default (router: express.Router) => {
     "/reviews/:id",
     isAuthenticated,
     isOwnerOrAdmin,
-    canEditStatus,
+    canEditStatusField,
     async (req, res, next) => {
       try {
         await updateReview(req, res);
