@@ -6,7 +6,7 @@ import {
   deleteReview,
   updateReview,
 } from "../controllers/reviews";
-import { isAuthenticated } from "../middlewares";
+import { isAuthenticated, isOwnerOrAdmin, canEditStatus } from "../middlewares";
 
 export default (router: express.Router) => {
   // GET all reviews
@@ -28,10 +28,8 @@ export default (router: express.Router) => {
   });
 
   // POST create reviews
-  // TODO: Finish implement, only authenticated user can create review
-  router.post("/reviews/add", async (req, res, next) => {
+  router.post("/reviews/add", isAuthenticated, async (req, res, next) => {
     try {
-      // await isAuthenticated(req, res, next);
       await addReview(req, res);
     } catch (error) {
       next(error);
@@ -39,25 +37,31 @@ export default (router: express.Router) => {
   });
 
   // PATCH update reviews
-  // TODO: Finish implement, need to be authenticated, only owner and admin can edit review
-  // Also only admin can edit the status field
-  router.patch("/reviews/:id", async (req, res, next) => {
-    try {
-      // await isAuthenticated(req, res, next);
-      await updateReview(req, res);
-    } catch (error) {
-      next(error);
+  router.patch(
+    "/reviews/:id",
+    isAuthenticated,
+    isOwnerOrAdmin,
+    canEditStatus,
+    async (req, res, next) => {
+      try {
+        await updateReview(req, res);
+      } catch (error) {
+        next(error);
+      }
     }
-  });
+  );
 
   // DELETE reviews by id
-  // TODO: Finish implement, only owner of review and admin can delete the review
-  router.delete("/reviews/:id", async (req, res, next) => {
-    try {
-      //   await isAuthenticated(req, res, next);
-      await deleteReview(req, res);
-    } catch (error) {
-      next(error);
+  router.delete(
+    "/reviews/:id",
+    isAuthenticated,
+    isOwnerOrAdmin,
+    async (req, res, next) => {
+      try {
+        await deleteReview(req, res);
+      } catch (error) {
+        next(error);
+      }
     }
-  });
+  );
 };
