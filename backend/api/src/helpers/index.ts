@@ -11,6 +11,7 @@ import dotenv from "dotenv";
 const SECRET = process.env.SECRET || "default_secret";
 
 export const random = () => crypto.randomBytes(128).toString("base64");
+
 export const authentication = (salt: string, password: string) => {
   return crypto
     .createHmac("sha256", [salt, password].join("/"))
@@ -40,4 +41,9 @@ const decryptPhoneNumber = (encrypted: string) => {
   let decrypted = decipher.update(encrypted, "hex", "utf8");
   decrypted += decipher.final("utf8");
   return decrypted;
+};
+
+export const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 };
