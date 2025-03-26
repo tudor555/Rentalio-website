@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -12,4 +12,15 @@ import { FooterComponent } from './components/footer/footer.component';
 })
 export class AppComponent {
   title = 'rental-ui';
+  hideFooter: boolean = false;
+
+  constructor(private router: Router, private activateRoute: ActivatedRoute) {
+    this.router.events.subscribe(() => {
+      const currentRoute = this.router.url;
+      this.hideFooter =
+        currentRoute.includes('/auth') ||
+        currentRoute.includes('/auth/login') ||
+        currentRoute.includes('/auth/signup');
+    });
+  }
 }

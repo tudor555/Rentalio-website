@@ -11,29 +11,32 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { AdminComponent } from './pages/admin/admin-base/admin-base.component';
 import { LoginComponent } from './pages/auth/login/login.component';
 import { SignupComponent } from './pages/auth/signup/signup.component';
+import { AuthComponent } from './pages/auth/auth.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' }, // Default route
   { path: 'home', component: HomeComponent },
-  // TODO: check if this match our needs
-  { path: 'rentals', component: RentalsComponent,
-    children: [
-      { path: 'rental/:id', component: RentalComponent }, // Child route for rental details
-    ],
-   },
-  // TODO: check if this is good or need to chanage
+  {
+    path: 'rentals',
+    component: RentalsComponent,
+    children: [{ path: 'rental/:id', component: RentalComponent }],
+  },
   {
     path: 'flights',
     component: FlightsComponent,
-    children: [
-      { path: 'flight', component: FlightComponent }, // Child route for flight details
-    ],
+    children: [{ path: 'flight', component: FlightComponent }],
   },
   { path: 'contact-us', component: ContactUsComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'admin', component: AdminComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'signup', component: SignupComponent },
+  {
+    path: 'auth',
+    component: AuthComponent,
+    children: [
+      { path: 'login', component: LoginComponent },
+      { path: 'signup', component: SignupComponent },
+    ],
+  },
   { path: '**', component: NotFoundComponent }, // Wildcard route for 404
 ];
