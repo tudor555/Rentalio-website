@@ -9,7 +9,10 @@ import {
 
 export const login = async (req: express.Request, res: express.Response) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+
+    email = email.trim();
+    password = password.trim();
 
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required" });
@@ -63,13 +66,18 @@ export const login = async (req: express.Request, res: express.Response) => {
 
 export const register = async (req: express.Request, res: express.Response) => {
   try {
-    const { username, email, role, phone, password, profilePicture } = req.body;
+    let { username, email, role, phone, password, profilePicture } = req.body;
 
     const ALLOWED_ROLES = ["owner", "visitor", "admin"];
 
     if (!email || !password || !username || !role) {
       return res.status(400).json({ error: "Missing required fields" });
     }
+
+    email = email.trim();
+    password = password.trim();
+    username = username.trim();
+    role = role.trim();
 
     if (!isValidEmail(email)) {
       return res.status(400).json({ error: "Invalid email format" });
@@ -93,6 +101,10 @@ export const register = async (req: express.Request, res: express.Response) => {
       return res
         .status(409)
         .json({ error: "User with this email already exists" });
+    }
+
+    if (phone && !/^\+?[1-9]\d{1,14}$/.test(phone)) {
+      return res.status(400).json({ error: "Invalid phone number format" });
     }
 
     const salt = random();
