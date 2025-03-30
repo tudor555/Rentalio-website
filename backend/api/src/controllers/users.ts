@@ -17,8 +17,8 @@ export const getAllUsers = async (
     console.log(`Succesfully get all users.`);
     return res.status(200).json(users);
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    console.error("Error fetching users:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -28,11 +28,15 @@ export const getUser = async (req: express.Request, res: express.Response) => {
 
     const user = await getUserById(id);
 
-    console.log(`Succesfully get user.`);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    console.log(`Successfully get user with ID: ${id}`);
     return res.status(200).json(user);
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    console.error("Error fetching user:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -75,7 +79,7 @@ export const updateUser = async (
     return res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Error updating user:", error);
-    return res.status(400);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -128,7 +132,7 @@ export const updatePassword = async (
     return res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
     console.error("Error updating password:", error);
-    return res.status(400);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -141,10 +145,14 @@ export const deleteUser = async (
 
     const deletedUser = await deleteUserById(id);
 
-    console.log("Succesfully delete user by id.");
-    return res.json(deletedUser);
+    if (!deletedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    console.log(`Successfully deleted user with ID: ${id}`);
+    return res.status(200).json(deletedUser);
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    console.error("Error deleting user:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
