@@ -34,6 +34,7 @@ export const routes: Routes = [
     path: 'auth',
     component: AuthComponent,
     children: [
+      { path: '', redirectTo: 'login', pathMatch: 'full' }, // Default to login
       { path: 'login', component: LoginComponent },
       { path: 'signup', component: SignupComponent },
     ],

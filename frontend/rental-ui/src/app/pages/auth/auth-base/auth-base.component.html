@@ -1,6 +1,8 @@
-<div class="relative h-screen w-full flex">
-  <div class="relative w-1/2">
-    <div>
+<div class="relative h-screen w-full flex bg-slate-200 py-4 px-6">
+  <div
+    class="relative w-1/2 flex flex-col items-center justify-between py-6 h-full overflow-y-auto"
+  >
+    <div [ngClass]="{ signupLogoSpace: signup }">
       <a
         routerLink="/home"
         class="font-bold text-2xl flex items-center justify-center"
@@ -9,20 +11,39 @@
         Rentalio
       </a>
     </div>
-    <div>
-      <h1>Welcome To Rentalio</h1>
-      <p>Find your perfect place to stay</p>
-      <div>
-        <button>Login</button>
-        <button>Sign up</button>
+    <div class="flex flex-col items-center gap-1">
+      <h1 class="tracking-wider text-3xl mb-2">Welcome To Rentalio</h1>
+      <p class="tracking-wide text-md">Find your perfect place to stay</p>
+      <div class="flex gap-4 mt-2">
+        <button
+          routerLink="/auth/login"
+          class="text-xl py-2 px-4 hover:bg-accent transition-all duration-300 rounded-lg"
+        >
+          Login
+        </button>
+        <button
+          routerLink="/auth/signup"
+          class="text-xl py-2 px-4 hover:bg-accent transition-all duration-300 rounded-lg"
+        >
+          Sign up
+        </button>
       </div>
     </div>
+    <div class="w-full">
+      <router-outlet></router-outlet>
+    </div>
+    <div class="w-8/12" [ngClass]="{ signupFooterSpace: signup }">
+      <p class="text-md text-slate-500 text-center">
+        &copy; {{ currentYear }} - Rentalio, All Rights Reserved.
+      </p>
+    </div>
   </div>
-  <div class="relative w-1/2">
+  <div class="relative w-1/2 shadow-lg">
+    <div class="absolute inset-0 bg-black opacity-20 rounded-xl"></div>
     <img
       src="https://images.pexels.com/photos/1022936/pexels-photo-1022936.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
       alt=""
-      class="h-full w-full object-cover"
+      class="h-full w-full object-cover rounded-xl"
     />
   </div>
 </div>
