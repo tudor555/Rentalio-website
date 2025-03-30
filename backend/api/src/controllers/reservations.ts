@@ -14,13 +14,13 @@ export const getAllReservations = async (
   res: express.Response
 ) => {
   try {
-    const reviews = await getReservations();
+    const reservations = await getReservations();
 
     console.log(`Succesfully get all reservations.`);
-    return res.status(200).json(reviews);
+    return res.status(200).json(reservations);
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    console.error("Error fetching reservations:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -31,13 +31,17 @@ export const getReservation = async (
   try {
     const { id } = req.params;
 
-    const review = await getReservationById(id);
+    const reservation = await getReservationById(id);
 
-    console.log(`Succesfully get reservation.`);
-    return res.status(200).json(review);
+    if (!reservation) {
+      return res.status(404).json({ error: "Reservation not found" });
+    }
+
+    console.log(`Successfully retrieved reservation with ID: ${id}`);
+    return res.status(200).json(reservation);
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    console.error("Error fetching reservation:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -118,11 +122,11 @@ export const addReservation = async (
       totalAmount,
     });
 
-    console.log(`Reservation created successfully.`);
-    return res.status(200).json(newReservation);
+    console.log(`Successfully created reservation for listing ${listingId}`);
+    return res.status(201).json(newReservation);
   } catch (error) {
-    console.error(`Error creating reservation:`, error);
-    return res.sendStatus(400);
+    console.error("Error creating reservation:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -138,10 +142,9 @@ export const updateReservation = async (
       return res.status(400).json({ message: "Reservation ID is required" });
     }
 
-    const reservationId = await getReservationById(id);
-
-    if (!reservationId) {
-      return res.status(400).json({ message: "Resevation ID does not exist" });
+    const existingReservation = await getReservationById(id);
+    if (!existingReservation) {
+      return res.status(404).json({ error: "Reservation not found" });
     }
 
     // Fields that cannot be updated
@@ -182,15 +185,11 @@ export const updateReservation = async (
 
     const updatedReservation = await updateReservationById(id, updateData);
 
-    if (!updatedReservation) {
-      return res.status(404).json({ message: "Reservation not found" });
-    }
-
-    console.log(`Reservation ${id} updated successfully.`);
+    console.log(`Successfully updated reservation with ID: ${id}`);
     return res.status(200).json(updatedReservation);
   } catch (error) {
     console.error("Error updating reservation:", error);
-    return res.sendStatus(400);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -201,12 +200,12 @@ export const deleteReservation = async (
   try {
     const { id } = req.params;
 
-    const deletedUser = await deleteReservationById(id);
+    const deletedReservation = await deleteReservationById(id);
 
-    console.log("Succesfully delete reservation by id.");
-    return res.json(deletedUser);
+    console.log(`Successfully deleted reservation with ID: ${id}`);
+    return res.status(200).json(deletedReservation);
   } catch (error) {
-    console.log(`Error deleting reservation:`, error);
-    return res.sendStatus(400);
+    console.error("Error deleting reservation:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
