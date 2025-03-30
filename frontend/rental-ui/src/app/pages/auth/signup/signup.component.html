@@ -1,7 +1,7 @@
-<div class="flex items-center justify-center mt-5">
+<div class="flex items-center justify-center mt-7">
   <div class="w-full max-w-md rounded-xl">
     <!-- Title -->
-    <h2 class="text-3xl text-center mb-6">
+    <h2 class="text-3xl text-center mb-6 font-bold">
       <i class="fas fa-user-plus text-accent"></i> Sign Up
     </h2>
 
@@ -65,6 +65,28 @@
               class="w-full p-4 text-lg rounded-lg bg-white text-black placeholder-gray-500"
             />
             <i class="fas fa-lock text-2xl text-accent absolute right-2"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone Number -->
+      <div class="flex items-center gap-4">
+        <div class="flex-grow">
+          <label class="block mb-2 text-lg">Phone Number:</label>
+          <div class="flex relative items-center">
+            <input
+              type="tel"
+              placeholder="Enter your phone number"
+              class="w-full p-4 text-lg rounded-lg bg-white text-black placeholder-gray-500"
+              pattern="[0-9]*"
+              maxlength="15"
+              required
+              (input)="onPhoneInput($event)"
+            />
+
+            <i
+              class="fas fa-phone-alt text-2xl text-accent absolute right-2"
+            ></i>
           </div>
         </div>
       </div>

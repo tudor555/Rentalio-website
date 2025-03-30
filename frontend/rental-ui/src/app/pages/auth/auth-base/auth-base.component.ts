@@ -15,6 +15,7 @@ import {
 })
 export class AuthComponent {
   signup: boolean = false; // Flag to check if the user is on the signup page
+  login: boolean = true; // Flag to check if the user is on the login page
   currentYear: number = new Date().getFullYear();
 
   constructor(private router: Router) {}
@@ -23,6 +24,7 @@ export class AuthComponent {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.signup = event.url.includes('/auth/signup');
+        this.login = event.url.includes('/auth/login');
       }
     });
   }
