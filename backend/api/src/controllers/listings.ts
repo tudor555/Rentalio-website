@@ -13,13 +13,13 @@ export const getAllListings = async (
   res: express.Response
 ) => {
   try {
-    const users = await getListings();
+    const listings = await getListings();
 
     console.log(`Succesfully get all listings.`);
-    return res.status(200).json(users);
+    return res.status(200).json(listings);
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    console.error("Error fetching listings:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -32,11 +32,15 @@ export const getListing = async (
 
     const listing = await getListingById(id);
 
-    console.log(`Succesfully get listing.`);
+    if (!listing) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
+    console.log(`Successfully retrieved listing with ID: ${id}`);
     return res.status(200).json(listing);
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    console.error("Error fetching listing:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -84,9 +88,7 @@ export const addListing = async (
 
     const user = await getUserById(ownerId);
     if (!user) {
-      return res
-        .status(403)
-        .json({ message: "Unauthorized: User does not exist" });
+      return res.status(403).json({ error: "Owner does not exist" });
     }
 
     const newListing = {
@@ -104,11 +106,11 @@ export const addListing = async (
 
     const listing = await createListing(newListing);
 
-    console.log(`Succesfully add listing.`);
-    return res.status(200).json(listing);
+    console.log("Successfully created listing.");
+    return res.status(201).json(listing);
   } catch (error) {
     console.error("Error creating listing:", error);
-    return res.sendStatus(400);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -149,27 +151,18 @@ export const updateListing = async (
         .json({ message: "Base price must be greater than zero" });
     }
 
-    // Prevent updates to restricted fields like `ownerId`
-    if (updates.ownerId) {
-      return res
-        .status(400)
-        .json({ message: "Updating ownerId is not allowed" });
-    }
-
-    // Prevent updating immutable fields like `createdAt`
-    if (updates.createdAt) {
-      return res
-        .status(400)
-        .json({ message: "Updating createdAt is not allowed" });
+    // Prevent updates to restricted fields
+    if (updates.ownerId || updates.createdAt) {
+      return res.status(400).json({ error: "Cannot update restricted fields" });
     }
 
     const updatedListing = await updateListingById(id, updates);
 
-    console.log(`Succesfully updated the listing.`);
+    console.log(`Successfully updated listing with ID: ${id}`);
     return res.status(200).json(updatedListing);
   } catch (error) {
     console.error("Error updating listing:", error);
-    return res.status(400);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -180,12 +173,12 @@ export const deleteListing = async (
   try {
     const { id } = req.params;
 
-    const deletedUser = await deleteListingById(id);
+    const deletedListing = await deleteListingById(id);
 
-    console.log("Succesfully delete listing by id.");
-    return res.json(deletedUser);
+    console.log(`Successfully deleted listing with ID: ${id}`);
+    return res.status(200).json(deletedListing);
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    console.error("Error deleting listing:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
