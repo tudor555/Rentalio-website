@@ -11,7 +11,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { AdminComponent } from './pages/admin/admin-base/admin-base.component';
 import { LoginComponent } from './pages/auth/login/login.component';
 import { SignupComponent } from './pages/auth/signup/signup.component';
-import { AuthComponent } from './pages/auth/auth.component';
+import { AuthComponent } from './pages/auth/auth-base/auth-base.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 
 export const routes: Routes = [
