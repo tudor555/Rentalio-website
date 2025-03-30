@@ -19,8 +19,8 @@ export const getAllReviews = async (
     console.log(`Succesfully get all reviews.`);
     return res.status(200).json(reviews);
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    console.error("Error fetching reviews:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -33,11 +33,15 @@ export const getReview = async (
 
     const review = await getReviewById(id);
 
-    console.log(`Succesfully get review.`);
+    if (!review) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    console.log(`Successfully retrieved review with ID: ${id}`);
     return res.status(200).json(review);
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    console.error("Error fetching review:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -59,10 +63,8 @@ export const addReview = async (
     ]);
 
     if (!existingListing || !existingUser) {
-      return res.status(400).json({
-        message: !existingListing
-          ? "Listing does not exist"
-          : "User does not exist",
+      return res.status(404).json({
+        message: !existingListing ? "Listing not found" : "User not found",
       });
     }
 
@@ -80,11 +82,13 @@ export const addReview = async (
       comment,
     });
 
-    console.log(`Review created successfully.`);
-    return res.status(200).json(newReview);
+    console.log(
+      `Successfully created review for listing: ${listingId}, by user: ${userId}`
+    );
+    return res.status(201).json(newReview);
   } catch (error) {
-    console.error(`Error creating review:`, error);
-    return res.sendStatus(400);
+    console.error("Error creating review:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -118,8 +122,8 @@ export const updateReview = async (
       updateFields.comment = comment;
     }
 
-    const allowedStatuses = ["pending", "approved", "rejected"];
     if (status !== undefined) {
+      const allowedStatuses = ["pending", "approved", "rejected"];
       if (!allowedStatuses.includes(status)) {
         return res.status(400).json({
           message: `Invalid status. Allowed values: ${allowedStatuses.join(
@@ -132,11 +136,11 @@ export const updateReview = async (
 
     const updatedReview = await updateReviewById(id, updateFields);
 
-    console.log(`Review updated successfully.`);
+    console.log(`Successfully updated review with ID: ${id}`);
     return res.status(200).json(updatedReview);
   } catch (error) {
-    console.error(`Error updating review:`, error);
-    return res.sendStatus(400);
+    console.error("Error updating review:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -149,10 +153,10 @@ export const deleteReview = async (
 
     const deletedUser = await deleteReviewById(id);
 
-    console.log("Succesfully delete review by id.");
-    return res.json(deletedUser);
+    console.log(`Successfully deleted review with ID: ${id}`);
+    return res.status(200).json(deletedUser);
   } catch (error) {
-    console.log(`Error deleting review:`, error);
-    return res.sendStatus(400);
+    console.error("Error deleting review:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
