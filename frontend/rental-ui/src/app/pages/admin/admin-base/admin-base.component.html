@@ -1,91 +1,119 @@
-<div class="flex h-screen bg-secondary">
-    <!-- Sidebar -->
-    <aside class="w-64 bg-primary text-white p-5 flex flex-col">
-        <h2 class="text-2xl font-bold mb-5">Admin Panel</h2>
-        <ul class="space-y-3">
-            <li>
-                <a routerLink="/admin" routerLinkActive="bg-accent"
-                    class="block p-2 rounded hover:bg-accent hover:text-primary transition">Dashboard</a>
-            </li>
-            <li>
-                <a routerLink="/admin/properties" routerLinkActive="bg-accent"
-                    class="block p-2 rounded hover:bg-accent hover:text-primary transition">Manage Rentals</a>
-            </li>
-            <li>
-                <a routerLink="/admin/users" routerLinkActive="bg-accent"
-                    class="block p-2 rounded hover:bg-accent hover:text-primary transition">Users</a>
-            </li>
-            <li>
-                <a routerLink="/admin/bookings" routerLinkActive="bg-accent"
-                    class="block p-2 rounded hover:bg-accent hover:text-primary transition">Bookings</a>
-            </li>
-            <li>
-                <a routerLink="/admin/reports" routerLinkActive="bg-accent"
-                    class="block p-2 rounded hover:bg-accent hover:text-primary transition">Reports</a>
-            </li>
-        </ul>
-        <div class="mt-auto">
-            <a href="/" class="block p-2 bg-red-600 hover:bg-red-700 rounded text-center">Logout</a>
-        </div>
-    </aside>
+<div class="flex h-screen bg-secondary py-32 px-4">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-primary text-white p-5 flex flex-col">
+    <h2 class="text-2xl font-bold mb-5">Admin Panel</h2>
+    <ul class="space-y-3">
+      <li>
+        <a
+          routerLink="/admin"
+          routerLinkActive="bg-accent"
+          class="block p-2 rounded hover:bg-accent hover:text-primary transition"
+          >Dashboard</a
+        >
+      </li>
+      <li>
+        <a
+          routerLink="/admin/properties"
+          routerLinkActive="bg-accent"
+          class="block p-2 rounded hover:bg-accent hover:text-primary transition"
+          >Manage Rentals</a
+        >
+      </li>
+      <li>
+        <a
+          routerLink="/admin/users"
+          routerLinkActive="bg-accent"
+          class="block p-2 rounded hover:bg-accent hover:text-primary transition"
+          >Users</a
+        >
+      </li>
+      <li>
+        <a
+          routerLink="/admin/bookings"
+          routerLinkActive="bg-accent"
+          class="block p-2 rounded hover:bg-accent hover:text-primary transition"
+          >Bookings</a
+        >
+      </li>
+      <li>
+        <a
+          routerLink="/admin/reports"
+          routerLinkActive="bg-accent"
+          class="block p-2 rounded hover:bg-accent hover:text-primary transition"
+          >Reports</a
+        >
+      </li>
+    </ul>
+    <div class="mt-auto">
+      <a
+        href="/"
+        class="block p-2 bg-red-600 hover:bg-red-700 rounded text-center"
+        >Logout</a
+      >
+    </div>
+  </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 p-10 bg-secondary">
-        <h1 class="text-2xl font-bold text-primary mb-5">Admin Dashboard</h1>
+  <!-- Main Content -->
+  <main class="flex-1 p-10 bg-secondary">
+    <h1 class="text-2xl font-bold text-primary mb-5">Admin Dashboard</h1>
 
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div class="bg-accent p-5 rounded shadow">
-                <h2 class="text-lg font-semibold text-primary">Total Properties</h2>
-                <p class="text-3xl font-bold mt-2 text-white">85</p>
-            </div>
-            <div class="bg-accent p-5 rounded shadow">
-                <h2 class="text-lg font-semibold text-primary">Total Users</h2>
-                <p class="text-3xl font-bold mt-2 text-white">230</p>
-            </div>
-            <div class="bg-accent p-5 rounded shadow">
-                <h2 class="text-lg font-semibold text-primary">Total Bookings</h2>
-                <p class="text-3xl font-bold mt-2 text-white">140</p>
-            </div>
-        </div>
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div class="bg-accent p-5 rounded shadow">
+        <h2 class="text-lg font-semibold text-primary">Total Properties</h2>
+        <p class="text-3xl font-bold mt-2 text-white">85</p>
+      </div>
+      <div class="bg-accent p-5 rounded shadow">
+        <h2 class="text-lg font-semibold text-primary">Total Users</h2>
+        <p class="text-3xl font-bold mt-2 text-white">230</p>
+      </div>
+      <div class="bg-accent p-5 rounded shadow">
+        <h2 class="text-lg font-semibold text-primary">Total Bookings</h2>
+        <p class="text-3xl font-bold mt-2 text-white">140</p>
+      </div>
+    </div>
 
-        <!-- Users Table -->
-        <div class="mt-10">
-            <h2 class="text-xl font-bold text-primary mb-3">Users Management</h2>
-            <div class="bg-white p-5 rounded shadow overflow-x-auto">
-                <table class="w-full border-collapse">
-                    <thead>
-                        <tr class="bg-gray-200">
-                            <th class="p-2 text-left">ID</th>
-                            <th class="p-2 text-left">Name</th>
-                            <th class="p-2 text-left">Role</th>
-                            <th class="p-2 text-left">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="border-t">
-                            <td class="p-2">1</td>
-                            <td class="p-2">John Doe</td>
-                            <td class="p-2">Owner</td>
-                            <td class="p-2">
-                                <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                                    Remove
-                                </button>
-                            </td>
-                        </tr>
-                        <tr class="border-t">
-                            <td class="p-2">2</td>
-                            <td class="p-2">Jane Smith</td>
-                            <td class="p-2">Visitor</td>
-                            <td class="p-2">
-                                <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                                    Remove
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
+    <!-- Users Table -->
+    <div class="mt-10">
+      <h2 class="text-xl font-bold text-primary mb-3">Users Management</h2>
+      <div class="bg-white p-5 rounded shadow overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="p-2 text-left">ID</th>
+              <th class="p-2 text-left">Name</th>
+              <th class="p-2 text-left">Role</th>
+              <th class="p-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-t">
+              <td class="p-2">1</td>
+              <td class="p-2">John Doe</td>
+              <td class="p-2">Owner</td>
+              <td class="p-2">
+                <button
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              </td>
+            </tr>
+            <tr class="border-t">
+              <td class="p-2">2</td>
+              <td class="p-2">Jane Smith</td>
+              <td class="p-2">Visitor</td>
+              <td class="p-2">
+                <button
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
 </div>
