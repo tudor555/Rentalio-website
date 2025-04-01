@@ -6,7 +6,12 @@ import {
   updateReservation,
   deleteReservation,
 } from "../controllers/reservations";
-import { isAuthenticated, isAdmin, isOwnerOrAdmin } from "../middlewares";
+import {
+  isAuthenticated,
+  isAdmin,
+  isOwnerOrAdmin,
+  validateObjectId,
+} from "../middlewares";
 
 export default (router: express.Router) => {
   // GET all reservations
@@ -19,13 +24,17 @@ export default (router: express.Router) => {
   });
 
   // GET reservation by id
-  router.get("/reservations/:id", async (req, res, next) => {
-    try {
-      await getReservation(req, res);
-    } catch (error) {
-      next(error);
+  router.get(
+    "/reservations/:id",
+    validateObjectId("id"),
+    async (req, res, next) => {
+      try {
+        await getReservation(req, res);
+      } catch (error) {
+        next(error);
+      }
     }
-  });
+  );
 
   // POST create reservation
   router.post("/reservations/add", isAuthenticated, async (req, res, next) => {
@@ -39,6 +48,7 @@ export default (router: express.Router) => {
   // PATCH update reviews
   router.patch(
     "/reservations/:id",
+    validateObjectId("id"),
     isAuthenticated,
     isOwnerOrAdmin,
     async (req, res, next) => {
@@ -53,6 +63,7 @@ export default (router: express.Router) => {
   // DELETE reviews by id
   router.delete(
     "/reservations/:id",
+    validateObjectId("id"),
     isAuthenticated,
     isAdmin,
     async (req, res, next) => {

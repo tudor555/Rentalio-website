@@ -1,5 +1,10 @@
 import mongoose, { mongo } from "mongoose";
 
+interface GetListingsOptions {
+  filter?: Record<string, any>;
+  sort?: Record<string, 1 | -1>;
+}
+
 const ListingSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String },
@@ -59,7 +64,10 @@ export const ListingModel = mongoose.model(
 // CRUD Operations
 
 // Get all listings
-export const getListings = () => ListingModel.find();
+// TODO: Check if this is good enough
+export const getListings = ({ filter = {}, sort = {} }: GetListingsOptions = {}) => {
+  return ListingModel.find(filter).sort(sort);
+};
 
 // Get listing by ID
 export const getListingById = (id: string) => ListingModel.findById(id);

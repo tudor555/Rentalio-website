@@ -11,6 +11,7 @@ import {
   isOwner,
   isOwnerOrAdmin,
   checkRoleChange,
+  validateObjectId,
 } from "../middlewares";
 
 export default (router: express.Router) => {
@@ -24,17 +25,23 @@ export default (router: express.Router) => {
   });
 
   // GET user by id
-  router.get("/users/:id", isAuthenticated, async (req, res, next) => {
-    try {
-      await getUser(req, res);
-    } catch (error) {
-      next(error);
+  router.get(
+    "/users/:id",
+    validateObjectId("id"),
+    isAuthenticated,
+    async (req, res, next) => {
+      try {
+        await getUser(req, res);
+      } catch (error) {
+        next(error);
+      }
     }
-  });
+  );
 
   // UPDATE user by id (Admin or Owner)
   router.patch(
     "/users/:id",
+    validateObjectId("id"),
     isAuthenticated,
     isOwnerOrAdmin,
     checkRoleChange,
@@ -50,6 +57,7 @@ export default (router: express.Router) => {
   // UPDATE password user (Owner only)
   router.patch(
     "/users/:id/password",
+    validateObjectId("id"),
     isAuthenticated,
     isOwner,
     async (req, res, next) => {
@@ -64,6 +72,7 @@ export default (router: express.Router) => {
   // DELETE user by id (Admin or Owner)
   router.delete(
     "/users/:id",
+    validateObjectId("id"),
     isAuthenticated,
     isOwnerOrAdmin,
     async (req, res, next) => {

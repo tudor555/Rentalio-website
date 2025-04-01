@@ -44,6 +44,72 @@ export const getListing = async (
   }
 };
 
+// TODO: Finish implement and request a explanation from ChatGPT
+export const searchListings = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const {
+      category,
+      city,
+      country,
+      title,
+      ownerId,
+      amenities,
+      priceMin,
+      priceMax,
+      from,
+      to,
+      sort,
+    } = req.query;
+
+    const filter: any = {};
+
+    if (category) filter.category = category;
+    if (city) filter["location.city"] = city;
+    if (country) filter["location.country"] = country;
+    if (title) filter.title = { $regex: title as string, $options: "i" };
+    if (ownerId) filter.ownerId = ownerId;
+
+    if (priceMin || priceMax) {
+      filter.basePrice = {};
+      if (priceMin) filter.basePrice.$gte = Number(priceMin);
+      if (priceMax) filter.basePrice.$lte = Number(priceMax);
+    }
+
+    if (amenities) {
+      const amenitiesArray = (amenities as string).split(",");
+      filter.amenities = { $all: amenitiesArray };
+    }
+
+    if (from || to) {
+      filter["availability.from"] = { $lte: new Date(from as string) };
+      filter["availability.to"] = { $gte: new Date(to as string) };
+    }
+
+    const sortOptions: Record<string, any> = {
+      price_asc: { basePrice: 1 },
+      price_desc: { basePrice: -1 },
+      createdAt_desc: { createdAt: -1 },
+      createdAt_asc: { createdAt: 1 },
+      title_asc: { title: 1 },
+      title_desc: { title: -1 },
+    };
+
+    const sortQuery = sortOptions[sort as string] || {};
+
+    const listings = await getListings({ filter, sort: sortQuery });
+
+    console.log("Filtered listings search performed");
+    return res.status(200).json(listings);
+  } catch (error) {
+    console.error("Error searching listings:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
 export const addListing = async (
   req: express.Request,
   res: express.Response

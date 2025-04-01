@@ -4,3 +4,4 @@ export * from "./ownership/isOwner";
 export * from "./ownership/isOwnerOrAdmin";
 export * from "./roles/checkRoleChange";
 export * from "./field-update/canEditStatusField";
+export * from "./validators/validateObjectId";

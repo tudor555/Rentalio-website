@@ -6,7 +6,12 @@ import {
   deleteReview,
   updateReview,
 } from "../controllers/reviews";
-import { isAuthenticated, isOwnerOrAdmin, canEditStatusField } from "../middlewares";
+import {
+  isAuthenticated,
+  isOwnerOrAdmin,
+  canEditStatusField,
+  validateObjectId,
+} from "../middlewares";
 
 export default (router: express.Router) => {
   // GET all reviews
@@ -19,7 +24,7 @@ export default (router: express.Router) => {
   });
 
   // GET review by id
-  router.get("/reviews/:id", async (req, res, next) => {
+  router.get("/reviews/:id", validateObjectId("id"), async (req, res, next) => {
     try {
       await getReview(req, res);
     } catch (error) {
@@ -39,6 +44,7 @@ export default (router: express.Router) => {
   // PATCH update reviews
   router.patch(
     "/reviews/:id",
+    validateObjectId("id"),
     isAuthenticated,
     isOwnerOrAdmin,
     canEditStatusField,
@@ -54,6 +60,7 @@ export default (router: express.Router) => {
   // DELETE reviews by id
   router.delete(
     "/reviews/:id",
+    validateObjectId("id"),
     isAuthenticated,
     isOwnerOrAdmin,
     async (req, res, next) => {
