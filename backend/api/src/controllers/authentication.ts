@@ -103,7 +103,7 @@ export const register = async (req: express.Request, res: express.Response) => {
         .json({ error: "User with this email already exists" });
     }
 
-    if (phone && !/^\+?[1-9]\d{1,14}$/.test(phone)) {
+    if (phone && !/^\d{10,15}$/.test(phone)) {
       return res.status(400).json({ error: "Invalid phone number format" });
     }
 
