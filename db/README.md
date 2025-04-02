@@ -30,7 +30,6 @@ src/
 │   ├── createUsersCollection.ts        # Migration script for the users collection
 │   ├── createListingsCollection.ts     # Migration script for the listings collection
 │   ├── createReservationsCollection.ts # Migration script for the reservations collection
-│   ├── createFlightsCollection.ts      # Migration script for the flights collection
 │   ├── createReviewsCollection.ts      # Migration script for the reviews collection
 │   └── createPaymentsCollection.ts     # Migration script for the payments collection
 │
@@ -90,7 +89,6 @@ npm run migrate # Create database
 npm run migrate:users # Create users collection
 npm run migrate:listings # Create listings collection
 npm run migrate:reservations # Create reservations collection
-npm run migrate:flights # Create flights collection
 npm run migrate:reviews # Create reviews collection
 npm run migrate:payments # Create payments collection
 ```
@@ -102,7 +100,6 @@ npm run migrate:payments # Create payments collection
   - Users: Manages user profiles and authentication.
   - Listings: Stores property listings for rental or booking.
   - Reservations: Tracks booking records for listings.
-  - Flights: Holds information about flights (fetched from external APIs).
   - Reviews: Manages user reviews on listings.
   - Payments: Tracks payments made for reservations.
 
