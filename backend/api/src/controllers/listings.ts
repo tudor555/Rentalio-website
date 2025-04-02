@@ -44,7 +44,7 @@ export const getListing = async (
   }
 };
 
-// TODO: Finish implement and request a explanation from ChatGPT
+// Method for filter listings based on different criteria
 export const searchListings = async (
   req: express.Request,
   res: express.Response
@@ -108,7 +108,6 @@ export const searchListings = async (
     return res.status(500).json({ error: "Internal server error" });
   }
 };
-
 
 export const addListing = async (
   req: express.Request,

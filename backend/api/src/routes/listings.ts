@@ -13,9 +13,6 @@ import {
   validateObjectId,
 } from "../middlewares";
 
-// TODO: Check methods for add improvements
-// TODO: Add route that permit parameters for sortings listings by different parameters
-
 export default (router: express.Router) => {
   // GET all listings
   router.get("/listings", async (req, res, next) => {
@@ -27,7 +24,15 @@ export default (router: express.Router) => {
   });
 
   // GET listings with certain parameters
-  // TODO: Finish implement and check with multiple types of requests
+  // Example usage of /listings/search with query parameters:
+  // - ?city=Oradea
+  // - ?category=apartment&country=Romania
+  // - ?title=cozy&priceMin=100&priceMax=500
+  // - ?amenities=wifi,kitchen,parking
+  // - ?from=2025-05-01&to=2025-05-10
+  // - ?sort=price_asc (options: price_asc, price_desc, createdAt_asc, createdAt_desc, title_asc, title_desc)
+  // All query parameters are optional and can be combined
+  // Returns filtered and sorted listings based on query
   router.get("/listings/search", async (req, res, next) => {
     try {
       await searchListings(req, res);

@@ -64,8 +64,10 @@ export const ListingModel = mongoose.model(
 // CRUD Operations
 
 // Get all listings
-// TODO: Check if this is good enough
-export const getListings = ({ filter = {}, sort = {} }: GetListingsOptions = {}) => {
+export const getListings = ({
+  filter = {},
+  sort = {},
+}: GetListingsOptions = {}) => {
   return ListingModel.find(filter).sort(sort);
 };
 
