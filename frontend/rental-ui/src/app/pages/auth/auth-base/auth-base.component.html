@@ -1,4 +1,4 @@
-<div class="relative h-screen w-full flex bg-slate-200 py-4 px-6">
+<div class="relative h-screen w-full flex bg-primary py-4 px-6 text-white">
   <div
     class="relative w-1/2 flex flex-col items-center justify-between py-6 h-full overflow-y-auto"
   >
@@ -20,7 +20,7 @@
           class="text-xl py-2 px-4 transition-all duration-300 rounded-lg"
           [ngClass]="{
             'bg-accent': login,
-            'bg-orange-50 hover:bg-orange-100': !login
+            'bg-slate-400 hover:bg-orange-400': !login
           }"
         >
           Login
@@ -30,7 +30,7 @@
           class="text-xl py-2 px-4 transition-all duration-300 rounded-lg"
           [ngClass]="{
             'bg-accent': signup,
-            'bg-orange-50 hover:bg-orange-100': !signup
+            'bg-slate-400 hover:bg-orange-400': !signup
           }"
         >
           Sign up

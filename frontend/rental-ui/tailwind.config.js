@@ -10,6 +10,7 @@ module.exports = {
         secondary: "#2C3E50", // Charcoal Gray
         accent: "#D97B43", // Faded Orange
         accentText: "#FAFAFA",
+        secondaryLighter: "#2B567A", // Lighter Charcoal Gray
       },
       height: {
         screen: "100vh",
