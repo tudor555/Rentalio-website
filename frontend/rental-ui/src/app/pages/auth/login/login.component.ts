@@ -17,7 +17,10 @@ export class LoginComponent {
 
   constructor(private api: ApiService, private router: Router) {}
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
   login(form: NgForm) {
     if (form.invalid) {
       // Mark all as touched to show validation messages
@@ -34,7 +37,11 @@ export class LoginComponent {
       next: (res) => {
         localStorage.setItem('token', res.token); // Store token
         // TODO: return the user to the page that was before login action
+<<<<<<< Updated upstream
         this.router.navigate(['/home']);        // Redirect to profile
+=======
+        this.router.navigate(['/home']);
+>>>>>>> Stashed changes
       },
       error: (err) => {
         this.error = err?.error?.error || 'Login failed';
