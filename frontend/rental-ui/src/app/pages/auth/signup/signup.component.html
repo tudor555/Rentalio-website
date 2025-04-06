@@ -1,4 +1,4 @@
-<div class="flex items-center justify-center mt-7">
+<div class="flex items-center justify-center mt-7 px-4 sm:px-6">
   <div class="w-full max-w-md rounded-xl">
     <!-- Title -->
     <h2 class="text-3xl text-center mb-6 font-bold">
@@ -6,92 +6,77 @@
     </h2>
 
     <!-- Signup Form -->
-    <form class="space-y-4">
+    <form class="space-y-6">
       <!-- Full Name -->
-      <div class="flex items-center gap-4">
-        <div class="flex-grow">
-          <label class="block mb-2 text-lg">Full Name:</label>
-          <div class="flex relative items-center">
-            <input
-              type="text"
-              placeholder="Enter your full name"
-              class="w-full p-4 text-lg rounded-lg bg-white text-black placeholder-gray-500"
-            />
-            <i class="fas fa-user text-2xl text-accent absolute right-2"></i>
-          </div>
+      <div>
+        <label class="block mb-2 text-lg">Full Name:</label>
+        <div class="flex relative items-center">
+          <input
+            type="text"
+            placeholder="Enter your full name"
+            class="w-full p-4 text-lg rounded-lg bg-white text-black placeholder-gray-500"
+          />
+          <i class="fas fa-user text-2xl text-accent absolute right-2"></i>
         </div>
       </div>
 
       <!-- Email -->
-      <div class="flex items-center gap-4">
-        <div class="flex-grow">
-          <label class="block mb-2 text-lg">Email:</label>
-          <div class="flex relative items-center">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              class="w-full p-4 text-lg rounded-lg bg-white text-black placeholder-gray-500"
-            />
-            <i
-              class="fas fa-envelope text-2xl text-accent absolute right-2"
-            ></i>
-          </div>
+      <div>
+        <label class="block mb-2 text-lg">Email:</label>
+        <div class="flex relative items-center">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            class="w-full p-4 text-lg rounded-lg bg-white text-black placeholder-gray-500"
+          />
+          <i class="fas fa-envelope text-2xl text-accent absolute right-2"></i>
         </div>
       </div>
 
       <!-- Password -->
-      <div class="flex items-center gap-4">
-        <div class="flex-grow">
-          <label class="block mb-2 text-lg">Password:</label>
-          <div class="flex relative items-center">
-            <input
-              type="password"
-              placeholder="Create a password"
-              class="w-full p-4 text-lg rounded-lg bg-white text-black placeholder-gray-500"
-            />
-            <i class="fas fa-lock text-2xl text-accent absolute right-2"></i>
-          </div>
+      <div>
+        <label class="block mb-2 text-lg">Password:</label>
+        <div class="flex relative items-center">
+          <input
+            type="password"
+            placeholder="Create a password"
+            class="w-full p-4 text-lg rounded-lg bg-white text-black placeholder-gray-500"
+          />
+          <i class="fas fa-lock text-2xl text-accent absolute right-2"></i>
         </div>
       </div>
 
       <!-- Confirm Password -->
-      <div class="flex items-center gap-4">
-        <div class="flex-grow">
-          <label class="block mb-2 text-lg">Confirm Password:</label>
-          <div class="flex relative items-center">
-            <input
-              type="password"
-              placeholder="Confirm your password"
-              class="w-full p-4 text-lg rounded-lg bg-white text-black placeholder-gray-500"
-            />
-            <i class="fas fa-lock text-2xl text-accent absolute right-2"></i>
-          </div>
+      <div>
+        <label class="block mb-2 text-lg">Confirm Password:</label>
+        <div class="flex relative items-center">
+          <input
+            type="password"
+            placeholder="Confirm your password"
+            class="w-full p-4 text-lg rounded-lg bg-white text-black placeholder-gray-500"
+          />
+          <i class="fas fa-lock text-2xl text-accent absolute right-2"></i>
         </div>
       </div>
 
       <!-- Phone Number -->
-      <div class="flex items-center gap-4">
-        <div class="flex-grow">
-          <label class="block mb-2 text-lg">Phone Number:</label>
-          <div class="flex relative items-center">
-            <input
-              type="tel"
-              placeholder="Enter your phone number"
-              class="w-full p-4 text-lg rounded-lg bg-white text-black placeholder-gray-500"
-              pattern="[0-9]*"
-              maxlength="15"
-              required
-              (input)="onPhoneInput($event)"
-            />
-
-            <i
-              class="fas fa-phone-alt text-2xl text-accent absolute right-2"
-            ></i>
-          </div>
+      <div>
+        <label class="block mb-2 text-lg">Phone Number:</label>
+        <div class="flex relative items-center">
+          <input
+            type="tel"
+            placeholder="Enter your phone number"
+            class="w-full p-4 text-lg rounded-lg bg-white text-black placeholder-gray-500"
+            pattern="[0-9]*"
+            maxlength="15"
+            required
+            (input)="onPhoneInput($event)"
+          />
+          <i class="fas fa-phone-alt text-2xl text-accent absolute right-2"></i>
         </div>
       </div>
 
-      <!-- Remember Me & Terms -->
+      <!-- Checkboxes -->
       <div class="flex flex-col gap-2 text-sm">
         <label class="flex items-center gap-2">
           <input type="checkbox" class="w-4 h-4" />
@@ -100,11 +85,12 @@
         <label class="flex items-center gap-2">
           <input type="checkbox" class="w-4 h-4" />
           I agree to the
+          <!-- TODO: need to implement the page for term and conditions -->
           <a href="#" class="text-accent hover:underline">Terms & Conditions</a>
         </label>
       </div>
 
-      <!-- Signup Button -->
+      <!-- Sign Up Button -->
       <button
         type="submit"
         class="w-full bg-accent text-white py-4 text-xl font-bold rounded-lg hover:bg-white hover:text-accent transition flex items-center justify-center gap-2"
@@ -112,8 +98,6 @@
       >
         <i class="fas fa-user-check"></i> Sign Up
       </button>
-
-      <!-- Login Redirect -->
     </form>
   </div>
 </div>

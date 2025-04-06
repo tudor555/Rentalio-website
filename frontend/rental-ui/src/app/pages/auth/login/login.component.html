@@ -1,56 +1,45 @@
-<div class="w-full max-w-md rounded-xl mx-auto relative">
+<div class="w-full max-w-md rounded-xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
   <!-- Title -->
   <h2 class="text-3xl font-bold text-center mb-6">
     <i class="fas fa-user-lock text-accent"></i> Login
   </h2>
 
   <!-- Login Form -->
-  <form class="space-y-4">
+  <form class="space-y-6">
     <!-- Email -->
-    <div class="flex items-center gap-4">
-      <div class="flex-grow">
-        <label class="block mb-2 text-lg">Email:</label>
-        <div class="flex items-center gap-4 relative">
-          <input
-            type="email"
-            placeholder="Enter your email"
-            class="w-full p-4 text-lg rounded-lg bg-white text-black placeholder-gray-500"
-          />
-          <i class="fas fa-envelope text-2xl text-accent absolute right-2"></i>
-        </div>
+    <div>
+      <label class="block mb-2 text-lg">Email:</label>
+      <div class="flex items-center gap-4 relative">
+        <input type="email" placeholder="Enter your email"
+          class="w-full p-4 text-lg rounded-lg bg-white text-black placeholder-gray-500" />
+        <i class="fas fa-envelope text-2xl text-accent absolute right-2"></i>
       </div>
     </div>
 
     <!-- Password -->
-    <div class="flex items-center gap-4 w-full">
-      <div class="flex-grow">
-        <label class="block mb-2 text-lg">Password:</label>
-        <div class="flex items-center gap-4 relative">
-          <input
-            type="password"
-            placeholder="Enter your password"
-            class="w-full py-3 px-4 text-lg rounded-lg bg-white text-black placeholder-gray-500"
-          />
-          <i class="fas fa-lock text-2xl text-accent absolute right-2"></i>
-        </div>
+    <div>
+      <label class="block mb-2 text-lg">Password:</label>
+      <div class="flex items-center gap-4 relative">
+        <input type="password" placeholder="Enter your password"
+          class="w-full py-3 px-4 text-lg rounded-lg bg-white text-black placeholder-gray-500" />
+        <i class="fas fa-lock text-2xl text-accent absolute right-2"></i>
       </div>
     </div>
 
-    <div class="flex justify-between items-center text-sm">
+    <!-- Remember + Forgot -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm gap-2">
       <label class="flex items-center gap-2">
         <input type="checkbox" class="w-4 h-4" />
         Remember Me
       </label>
-      <!-- TODO: implement forgot password -->
+      <!-- TODO: implement page for reset password -->
       <a href="#" class="text-accent hover:underline">Forgot Password?</a>
     </div>
 
     <!-- Login Button -->
-    <button
-      type="submit"
+    <button type="submit"
       class="w-full bg-accent text-white py-3 text-xl font-bold rounded-lg hover:bg-orange-400 hover:text-white transition flex items-center justify-center gap-2"
-      (click)="login()"
-    >
+      (click)="login()">
       <i class="fas fa-sign-in-alt"></i> Login
     </button>
   </form>
