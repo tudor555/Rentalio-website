@@ -1,22 +1,49 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { ApiService } from '../../../services/api.service';
+import { FormsModule, NgForm } from '@angular/forms';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-signup',
-  imports: [],
+  imports: [FormsModule, NgIf],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss',
 })
 export class SignupComponent {
-  constructor(private route: Router) {}
+  username = '';
+  email = '';
+  password = '';
+  confirmPassword = '';
+  phone = '';
+  agreedToTerms = false;
+  error: string | null = null;
 
-  onPhoneInput(event: any) {
-    const input = event.target;
-    // Replace non-digit characters with empty string
-    input.value = input.value.replace(/\D/g, '');
-  }
+  constructor(private api: ApiService, private router: Router) {}
 
-  signup() {
-    this.route.navigate(['/home']); // Redirect to home page after signup
+  signup(form: NgForm) {
+    if (form.invalid) {
+      // Mark all as touched to show validation messages
+      form.control.markAllAsTouched();
+      return;
+    }
+
+    const payload = {
+      username: this.username,
+      email: this.email,
+      password: this.password,
+      phone: this.phone,
+      role: 'visitor',
+    };
+
+    this.api.post('auth/register', payload).subscribe({
+      next: () => {
+        this.error = null;
+        this.router.navigate(['/auth/login']);
+      },
+      error: (err) => {
+        this.error = err?.error?.error || 'Signup failed.';
+      },
+    });
   }
 }
