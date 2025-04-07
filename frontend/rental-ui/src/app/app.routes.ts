@@ -9,6 +9,9 @@ import { FlightComponent } from './pages/flights/flight/flight.component';
 import { ContactUsComponent } from './pages/contact-us/contact-us.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { AdminComponent } from './pages/admin/admin-base/admin-base.component';
+import { AdminUsersComponent } from './pages/admin/admin-users/admin-users.component';
+import { AdminRentalsComponent } from './pages/admin/admin-rentals/admin-rentals.component';
+import { AdminReservationsComponent } from './pages/admin/admin-reservations/admin-reservations.component';
 import { LoginComponent } from './pages/auth/login/login.component';
 import { SignupComponent } from './pages/auth/signup/signup.component';
 import { AuthComponent } from './pages/auth/auth-base/auth-base.component';
@@ -29,7 +32,15 @@ export const routes: Routes = [
   },
   { path: 'contact-us', component: ContactUsComponent },
   { path: 'profile', component: ProfileComponent },
-  { path: 'admin', component: AdminComponent },
+  {
+    path: 'admin',
+    component: AdminComponent,
+    children: [
+      { path: 'users', component: AdminUsersComponent },
+      { path: 'rentals', component: AdminRentalsComponent },
+      { path: 'reservations', component: AdminReservationsComponent },
+    ],
+  },
   {
     path: 'auth',
     component: AuthComponent,
