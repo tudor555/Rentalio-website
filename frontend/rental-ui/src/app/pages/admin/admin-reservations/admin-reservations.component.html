@@ -1,1 +1,69 @@
-<p>admin-reservations works!</p>
+<div>
+    <h1 class="text-2xl font-bold text-white mb-6">Reservations Management</h1>
+
+    <!-- Search + Filter -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+        <input type="text" placeholder="Search reservations..."
+            class="w-full sm:w-64 px-4 py-2 rounded bg-white text-black focus:outline-none" />
+        <!-- TODO: made fine adjustments for design of select -->
+        <select
+            class="w-full sm:w-48 px-4 py-2 rounded bg-primary text-accent focus:outline-none focus:ring-2 focus:ring-accent">
+            <option value="">All Statuses</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="pending">Pending</option>
+            <option value="canceled">Canceled</option>
+        </select>
+    </div>
+
+    <!-- Reservations Table -->
+    <div class="bg-white p-5 rounded shadow overflow-x-auto">
+        <table class="w-full border-collapse min-w-[700px]">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2 text-left">ID</th>
+                    <th class="p-2 text-left">Guest</th>
+                    <th class="p-2 text-left">Rental</th>
+                    <th class="p-2 text-left">Check-in</th>
+                    <th class="p-2 text-left">Check-out</th>
+                    <th class="p-2 text-left">Status</th>
+                    <th class="p-2 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="border-t hover:bg-gray-100 transition">
+                    <td class="p-2">1</td>
+                    <td class="p-2">Alice</td>
+                    <td class="p-2">Cozy Apartment</td>
+                    <td class="p-2">2024-06-12</td>
+                    <td class="p-2">2024-06-15</td>
+                    <td class="p-2 text-green-600 font-semibold">Confirmed</td>
+                    <td class="p-2 space-x-2">
+                        <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                            Edit
+                        </button>
+                        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                            Cancel
+                        </button>
+                    </td>
+                </tr>
+                <tr class="border-t hover:bg-gray-100 transition">
+                    <td class="p-2">2</td>
+                    <td class="p-2">Bob</td>
+                    <td class="p-2">Beach House</td>
+                    <td class="p-2">2024-07-03</td>
+                    <td class="p-2">2024-07-10</td>
+                    <td class="p-2 text-yellow-500 font-semibold">Pending</td>
+                    <td class="p-2 space-x-2">
+                        <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                            Edit
+                        </button>
+                        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                            Cancel
+                        </button>
+                    </td>
+                </tr>
+                <!-- More rows -->
+            </tbody>
+        </table>
+    </div>
+</div>
