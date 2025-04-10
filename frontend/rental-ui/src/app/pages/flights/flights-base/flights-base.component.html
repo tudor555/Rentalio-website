@@ -1,107 +1,108 @@
-<div
-  class="bg-secondary flex flex-col text-white relative w-full items-center justify-center py-32"
->
+<div class="bg-secondary flex flex-col text-white relative w-full items-center justify-center py-32">
   <div class="relative bg-primary pt-6 rounded-xl shadow-2xl w-11/12">
     <h2 class="text-4xl font-bold text-center mb-4">
       <i class="fas fa-plane-departure text-accent"></i> Search Flights
     </h2>
 
     <!-- Flight Search Form -->
-    <form class="space-y-8">
+    <form class="space-y-8" #flightForm="ngForm" (ngSubmit)="submitFlightSearch(flightForm)">
       <!-- Departure & Arrival -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 place-items-center">
         <div class="flex items-center justify-center gap-4 w-11/12">
           <i class="fas fa-plane-departure text-3xl text-accent"></i>
           <div class="flex-grow">
             <label class="block mb-2 text-xl">From:</label>
-            <input
-              type="text"
+            <input type="text" name="from" required [(ngModel)]="from" #fromInput="ngModel"
               placeholder="Departure airport (e.g., CDG)"
-              class="w-full p-5 text-lg rounded-lg bg-white text-black placeholder-gray-500"
-            />
+              class="w-full p-5 text-lg rounded-lg bg-white text-black placeholder-gray-500" />
+            <p class="text-red-500 text-sm mt-1" *ngIf="fromInput.invalid && fromInput.touched">
+              *Departure airport is required.
+            </p>
           </div>
         </div>
 
-        <div
-          class="flex items-center justify-center gap-4 w-11/12 place-items-center"
-        >
+        <div class="flex items-center justify-center gap-4 w-11/12 place-items-center">
           <i class="fas fa-plane-arrival text-3xl text-accent"></i>
           <div class="flex-grow">
             <label class="block mb-2 text-xl">To:</label>
-            <input
-              type="text"
+            <input type="text" name="destination" required [(ngModel)]="destination" #toInput="ngModel"
               placeholder="Destination airport (e.g., AUS)"
-              class="w-full p-5 text-lg rounded-lg bg-white text-black placeholder-gray-500"
-            />
+              class="w-full p-5 text-lg rounded-lg bg-white text-black placeholder-gray-500" />
+            <p class="text-red-500 text-sm mt-1" *ngIf="toInput.invalid && toInput.touched">
+              *Destination airport is required.
+            </p>
           </div>
         </div>
       </div>
 
       <!-- Dates -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 place-items-center">
+        <!-- Departure date -->
         <div class="flex items-center justify-center gap-4 w-11/12">
           <i class="fas fa-calendar-alt text-3xl text-accent"></i>
           <div class="flex-grow">
             <label class="block mb-2 text-xl">Departure Date:</label>
-            <input
-              type="date"
-              class="w-full p-5 text-lg rounded-lg bg-white text-black"
-            />
+            <input type="date" name="departureDate" required [(ngModel)]="departureDate" [min]="today"
+              #departureDateInput="ngModel" (ngModelChange)="departureDateInvalid = false"
+              class="w-full p-5 text-lg rounded-lg bg-white text-black" />
+            <p class="text-red-500 text-sm mt-1" *ngIf="departureDateInput.invalid && departureDateInput.touched">
+              *Departure date is required.
+            </p>
+            <p class="text-red-500 text-sm mt-1" *ngIf="departureDateInvalid">
+              *Departure date cannot be in the past.
+            </p>
           </div>
         </div>
 
+        <!-- Return date -->
         <div class="flex items-center justify-center gap-4 w-11/12">
           <i class="fas fa-calendar-check text-3xl text-accent"></i>
           <div class="flex-grow">
             <label class="block mb-2 text-xl">Return Date (Optional):</label>
-            <input
-              type="date"
-              class="w-full p-5 text-lg rounded-lg bg-white text-black"
-            />
+            <input type="date" name="returnDate" [min]="departureDate || today" [(ngModel)]="returnDate"
+              (ngModelChange)="returnDateInvalid = false" class="w-full p-5 text-lg rounded-lg bg-white text-black" />
+            <p class="text-red-500 text-sm mt-1" *ngIf="returnDateInvalid">
+              *Return date cannot be before the departure date.
+            </p>
           </div>
         </div>
       </div>
 
       <!-- Passengers -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 place-items-center">
+        <!-- Adults -->
         <div class="flex items-center justify-center gap-4 w-11/12">
           <i class="fas fa-user text-3xl text-accent"></i>
           <div class="flex-grow">
             <label class="block mb-2 text-xl">Adults:</label>
-            <input
-              type="number"
-              min="1"
-              value="1"
-              class="w-full p-5 text-lg rounded-lg bg-white text-black"
-            />
+            <input type="number" name="adults" min="1" required [(ngModel)]="adults" #adultsInput="ngModel"
+              class="w-full p-5 text-lg rounded-lg bg-white text-black" />
+            <p class="text-red-500 text-sm mt-1" *ngIf="adultsInput.invalid && adultsInput.touched">
+              *At least 1 adult is required.
+            </p>
           </div>
         </div>
 
+        <!-- Childrens -->
         <div class="flex items-center justify-center gap-4 w-11/12">
           <i class="fas fa-child text-3xl text-accent"></i>
           <div class="flex-grow">
-            <label class="block mb-2 text-xl">Children:</label>
-            <input
-              type="number"
-              min="0"
-              value="0"
-              class="w-full p-5 text-lg rounded-lg bg-white text-black"
-            />
+            <label class="block mb-2 text-xl">Children (Optional):</label>
+            <input type="number" name="children" min="0" [(ngModel)]="children"
+              class="w-full p-5 text-lg rounded-lg bg-white text-black" />
           </div>
         </div>
       </div>
 
-      <!-- Search Button -->
-      <div class="flex justify-center">
-        <button
-          type="submit"
-          class="w-full md:w-1/2 lg:w-3/12 bg-accent text-white py-5 text-xl font-bold rounded-xl hover:bg-white hover:text-accent transition flex items-center justify-center gap-2 mb-6"
-          (click)="navigateToFlight()"
-        >
-          <i class="fas fa-search"></i> Search Flights
+      <!-- Submit -->
+      <div class="flex justify-center pt-6">
+        <button type="submit"
+          class="w-full md:w-1/2 lg:w-3/12 bg-accent text-white py-5 text-xl font-bold rounded-xl hover:bg-white hover:text-accent transition flex items-center justify-center gap-2 mb-6">
+          <i class="fas fa-search mr-2"></i> Find Flights
         </button>
       </div>
     </form>
-    <router-outlet></router-outlet>
+
+    <!-- <router-outlet></router-outlet> -->
   </div>
 </div>
