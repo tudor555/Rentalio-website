@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ApiService } from '../../../services/api.service';
 import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-rental',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './rentals-base.component.html',
   styleUrls: ['./rentals-base.component.scss'],
 })

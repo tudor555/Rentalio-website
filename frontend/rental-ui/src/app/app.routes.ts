@@ -22,11 +22,8 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' }, // Default route
   { path: 'home', component: HomeComponent },
-  {
-    path: 'rentals',
-    component: RentalsComponent,
-    children: [{ path: 'rental/:id', component: RentalComponent }],
-  },
+  { path: 'rentals', component: RentalsComponent },
+  { path: 'rental/:id', component: RentalComponent },
   {
     path: 'flights',
     component: FlightsComponent,
