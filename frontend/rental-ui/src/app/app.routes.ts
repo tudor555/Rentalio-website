@@ -4,6 +4,7 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { RentalsComponent } from './pages/rentals/rentals-base/rentals-base.component';
 import { RentalComponent } from './pages/rentals/rental/rental.component';
+import { ReserveRentalComponent } from './pages/rentals/reserve-rental/reserve-rental.component';
 import { FlightsComponent } from './pages/flights/flights-base/flights-base.component';
 import { FlightComponent } from './pages/flights/flight/flight.component';
 import { ContactUsComponent } from './pages/contact-us/contact-us.component';
@@ -24,6 +25,7 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'rentals', component: RentalsComponent },
   { path: 'rental/:id', component: RentalComponent },
+  { path: 'rental/:id/reserve', component: ReserveRentalComponent },
   {
     path: 'flights',
     component: FlightsComponent,

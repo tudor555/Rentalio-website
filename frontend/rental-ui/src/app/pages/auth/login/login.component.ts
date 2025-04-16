@@ -15,6 +15,7 @@ export class LoginComponent {
   password = '';
   error: string | null = null;
 
+  // TODO: Save response from api on a cookie
   constructor(private api: ApiService, private router: Router) {}
 
   login(form: NgForm) {
