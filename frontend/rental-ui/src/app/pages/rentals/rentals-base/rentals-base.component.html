@@ -1,7 +1,7 @@
 <div class="bg-secondary min-h-screen text-white pt-24 px-6 overflow-x-hidden">
   <!-- TODO: Add the search bar on the page -->
   <!-- Search Bar -->
-   <!-- Search Bar (Sticky on Scroll) -->
+  <!-- Search Bar (Sticky on Scroll) -->
   <div class="sticky top-0 bg-primary py-0 px-6 shadow-md z-50">
     <div class="container mx-auto flex justify-center">
       <!-- <input type="text" placeholder="Search rentals..." 
@@ -76,7 +76,10 @@
               class="w-full h-48 rounded-lg object-cover pointer-events-none" alt="Rental Image" />
             <div class="mt-4">
               <h3 class="text-xl font-bold text-accent">{{ rental.title }}</h3>
-              <p class="text-black">📍 {{ rental.location.city }}, {{ rental.location.country }}</p>
+              <p class="text-black">
+                <i class="fas fa-map-marker-alt text-accent"></i>
+                {{ rental.location.city }}, {{ rental.location.country }}
+              </p>
               <!-- TODO: Implement the site price -->
               <!-- Made a service for calculate price: base pric + site fee -->
               <p class="text-black font-bold mt-2">${{ rental.basePrice }} / day</p>
