@@ -4,9 +4,10 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { RentalsComponent } from './pages/rentals/rentals-base/rentals-base.component';
 import { RentalComponent } from './pages/rentals/rental/rental.component';
+import { RentalListPropertyComponent } from './pages/rentals/rental-list-property/rental-list-property.component';
 import { ReserveRentalComponent } from './pages/rentals/reserve-rental/reserve-rental.component';
 import { FlightsComponent } from './pages/flights/flights-base/flights-base.component';
-import { FlightComponent } from './pages/flights/flight/flight.component';
+import { FlightsListComponent } from './pages/flights/flights-list/flight-list.component';
 import { ContactUsComponent } from './pages/contact-us/contact-us.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { AdminComponent } from './pages/admin/admin-base/admin-base.component';
@@ -24,13 +25,12 @@ export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' }, // Default route
   { path: 'home', component: HomeComponent },
   { path: 'rentals', component: RentalsComponent },
+  // Static before dynamic, don't move this above :id
+  { path: 'rental/list-property', component: RentalListPropertyComponent },
   { path: 'rental/:id', component: RentalComponent },
   { path: 'rental/:id/reserve', component: ReserveRentalComponent },
-  {
-    path: 'flights',
-    component: FlightsComponent,
-    children: [{ path: 'flight', component: FlightComponent }],
-  },
+  { path: 'flights', component: FlightsComponent },
+  { path: 'flights/list', component: FlightsListComponent },
   { path: 'contact-us', component: ContactUsComponent },
   { path: 'profile', component: ProfileComponent },
   {
