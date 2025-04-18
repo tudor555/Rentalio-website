@@ -3,6 +3,7 @@ import mongoose, { mongo } from "mongoose";
 interface GetListingsOptions {
   filter?: Record<string, any>;
   sort?: Record<string, 1 | -1>;
+  limit?: number;
 }
 
 const ListingSchema = new mongoose.Schema({
@@ -67,8 +68,13 @@ export const ListingModel = mongoose.model(
 export const getListings = ({
   filter = {},
   sort = {},
+  limit,
 }: GetListingsOptions = {}) => {
-  return ListingModel.find(filter).sort(sort);
+  const query = ListingModel.find(filter).sort(sort);
+  if (limit) {
+    query.limit(limit);
+  }
+  return query;
 };
 
 // Get listing by ID

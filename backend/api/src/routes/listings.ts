@@ -25,6 +25,7 @@ export default (router: express.Router) => {
 
   // GET listings with certain parameters
   // Example usage of /listings/search with query parameters:
+  // - ?limit=number
   // - ?city=Oradea
   // - ?category=apartment&country=Romania
   // - ?title=cozy&priceMin=100&priceMax=500

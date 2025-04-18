@@ -62,6 +62,7 @@ export const searchListings = async (
       from,
       to,
       sort,
+      limit
     } = req.query;
 
     const filter: any = {};
@@ -99,7 +100,9 @@ export const searchListings = async (
 
     const sortQuery = sortOptions[sort as string] || {};
 
-    const listings = await getListings({ filter, sort: sortQuery });
+    const limitNumber = limit ? parseInt(limit as string, 10) : undefined;
+
+    const listings = await getListings({ filter, sort: sortQuery, limit: limitNumber });
 
     console.log("Filtered listings search performed");
     return res.status(200).json(listings);
