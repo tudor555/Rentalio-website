@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ApiService } from '../../../services/api.service';
 import { NgIf } from '@angular/common';
+import { CookieUtil } from '../../../services/cookie.service';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,6 @@ export class LoginComponent {
   password = '';
   error: string | null = null;
 
-  // TODO: Save response from api on a cookie
   constructor(private api: ApiService, private router: Router) {}
 
   login(form: NgForm) {
@@ -32,7 +32,8 @@ export class LoginComponent {
 
     this.api.post<{ token: string }>('auth/login', credentials).subscribe({
       next: (res) => {
-        localStorage.setItem('token', res.token); // Store token
+        CookieUtil.setCookie('USER-DATA', JSON.stringify(res)); // Store api response in a cookie
+
         // TODO: return the user to the page that was before login action
         this.router.navigate(['/home']);
       },
