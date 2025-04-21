@@ -1,8 +1,15 @@
-<app-navbar *ngIf="!hideFooter"></app-navbar>
 <!-- Navbar Component -->
-<main>
-  <router-outlet></router-outlet>
+<app-navbar *ngIf="!hideComponents"></app-navbar>
+
+<div
+  *ngIf="hideComponents"
+  class="h-12 w-full fixed top-0 left-0 z-40 bg-primary"
+></div>
+
+<main class="pt-12">
   <!-- Routed Component -->
+  <router-outlet></router-outlet>
 </main>
-<app-footer *ngIf="!hideFooter"></app-footer>
+
 <!-- Footer Component -->
+<app-footer *ngIf="!hideComponents"></app-footer>

@@ -13,12 +13,12 @@ import { FooterComponent } from './components/footer/footer.component';
 })
 export class AppComponent {
   title = 'rental-ui';
-  hideFooter: boolean = false;
+  hideComponents: boolean = false;
 
-  constructor(private router: Router, private activateRoute: ActivatedRoute) {
+  constructor(private router: Router) {
     this.router.events.subscribe(() => {
       const currentRoute = this.router.url;
-      this.hideFooter =
+      this.hideComponents =
         currentRoute.includes('/auth') ||
         currentRoute.includes('/auth/login') ||
         currentRoute.includes('/auth/signup');
