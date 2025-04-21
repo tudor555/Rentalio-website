@@ -1,134 +1,73 @@
-<!-- TODO: Finish implement navbar to works good and cant be override it -->
-
-<header class="absolute w-full top-0 z-50">
+<header [ngClass]="{
+    'translate-y-0': isNavbarVisible,
+    '-translate-y-full': !isNavbarVisible
+  }" class="transition-transform duration-300 fixed top-0 left-0 w-full z-50 bg-primary">
   <div class="container mx-auto px-6 lg:px-20">
-    <div class="flex justify-between items-center py-4">
+    <div class="flex justify-between items-center py-2">
       <!-- Logo Section -->
-      <a
-        routerLink="/home"
-        class="text-white font-bold text-2xl flex items-center justify-center"
-      >
-        <img src="assets/logo-rentalio-512x512.png" alt="Logo" class="h-20" />
+      <a routerLink="/home" class="text-white font-bold text-2xl flex items-center justify-center">
+        <img src="assets/logo-rentalio-512x512.png" alt="Logo" class="h-12" />
         Rentalio
       </a>
 
       <!-- Desktop Menu -->
       <nav class="hidden md:flex space-x-8">
-        <a
-          routerLink="/home"
-          routerLinkActive="text-accent-active"
-          [ngClass]="{ 'text-accent-active': isActive('/home') }"
-          class="text-white hover:text-accent"
-          >Home</a
-        >
-        <a
-          routerLink="/rentals"
-          routerLinkActive="text-accent-active"
-          [ngClass]="{ 'text-accent-active': isActive('/rentals') }"
-          class="text-white hover:text-accent"
-          >Rentals</a
-        >
-        <a
-          routerLink="/flights"
-          routerLinkActive="text-accent-active"
-          [ngClass]="{ 'text-accent-active': isActive('/flights') }"
-          class="text-white hover:text-accent"
-          >Flights</a
-        >
-        <a
-          routerLink="/contact-us"
-          routerLinkActive="text-accent-active"
-          [ngClass]="{ 'text-accent-active': isActive('/contact-us') }"
-          class="text-white hover:text-accent"
-          >About</a
-        >
-        <a
-          routerLink="/profile"
-          routerLinkActive="text-accent-active"
-          [ngClass]="{ 'text-accent-active': isActive('/profile') }"
-          class="text-white hover:text-accent"
-          >Profile</a
-        >
+        <a routerLink="/home" routerLinkActive="!text-accent font-semibold" [routerLinkActiveOptions]="{ exact: true }"
+          class="text-white hover:text-accent transition-colors duration-200">Home</a>
+        <a routerLink="/rentals" routerLinkActive="!text-accent font-semibold"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="text-white hover:text-accent transition-colors duration-200">
+          Rentals
+        </a>
+        <a routerLink="/flights" routerLinkActive="!text-accent font-semibold"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="text-white hover:text-accent transition-colors duration-200">Flights</a>
+        <a routerLink="/contact-us" routerLinkActive="!text-accent font-semibold"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="text-white hover:text-accent transition-colors duration-200">About</a>
+        <a routerLink="/profile" routerLinkActive="!text-accent font-semibold"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="text-white hover:text-accent transition-colors duration-200">Profile</a>
       </nav>
 
-      <div *ngIf="currentUrl !== '/home' && currentUrl !== '/rentals'">
-        <a
-          href="/login"
-          class="px-4 py-2 bg-accent text-white rounded hover:bg-opacity-80"
-          >Login</a
-        >
-        <a
-          href="/signup"
-          class="px-4 py-2 bg-accent text-primary rounded ml-2 hover:bg-opacity-80"
-          >Sign Up</a
-        >
+      <div *ngIf="!isLoggedIn">
+        <a routerLink="/auth/login" class="px-4 py-2 bg-accent text-white rounded hover:bg-opacity-80">Login</a>
+        <a routerLink="/auth/signup" class="px-4 py-2 bg-accent text-primary rounded ml-2 hover:bg-opacity-80">Sign
+          Up</a>
       </div>
 
-      <!-- Icons Section -->
+      <!-- Icon Section -->
       <div class="flex items-center space-x-4">
-        <a
-          routerLink="/admin"
-          [ngClass]="{ 'text-accent-active': isActive('/admin') }"
-          class="text-white hover:text-accent"
-        >
+        <a *ngIf="isAdmin" routerLink="/admin/dashboard" routerLinkActive="!text-accent"
+          [routerLinkActiveOptions]="{ exact: true }" class="text-white hover:text-accent">
           <i class="fas fa-user-shield text-xl"></i>
         </a>
-        <a
-          routerLink=""
-          [ngClass]="{ 'text-accent-active': isActive('') }"
-          class="text-white hover:text-accent hidden md:block"
-        >
-          <i class="fas fa-search text-xl"></i>
-        </a>
-        <button
-          (click)="toggleMobileMenu()"
-          class="md:hidden text-white focus:outline-none"
-        >
+        <button (click)="toggleMobileMenu()" class="md:hidden text-white focus:outline-none">
           <i class="fas fa-bars text-2xl"></i>
         </button>
       </div>
     </div>
 
-    <!-- Mobile Menu (Hidden by Default) -->
-    <div
-      [ngClass]="{ block: isMobileMenuOpen, hidden: !isMobileMenuOpen }"
-      class="md:hidden"
-    >
-      <a
-        routerLink="/home"
-        routerLinkActive="text-accent-active"
-        [ngClass]="{ 'text-accent-active': isActive('/home') }"
-        class="block text-white p-2"
-        >Home</a
-      >
-      <a
-        routerLink="/rentals"
-        routerLinkActive="text-accent-active"
-        [ngClass]="{ 'text-accent-active': isActive('/rentals') }"
-        class="block text-white p-2"
-        >Rentals</a
-      >
-      <a
-        routerLink="/flights"
-        routerLinkActive="text-accent-active"
-        [ngClass]="{ 'text-accent-active': isActive('/flights') }"
-        class="block text-white p-2"
-        >Flights</a
-      >
-      <a
-        routerLink="/contact-us"
-        routerLinkActive="text-accent-active"
-        [ngClass]="{ 'text-accent-active': isActive('/contact-us') }"
-        class="block text-white p-2"
-        >Contact Us</a
-      >
-      <a
-        routerLink="/profile"
-        routerLinkActive="text-accent-active"
-        [ngClass]="{ 'text-accent-active': isActive('/profile') }"
-        class="block text-white p-2"
-        >Profile</a
-      >
+    <!-- Mobile Menu -->
+    <div [ngClass]="{ block: isMobileMenuOpen, hidden: !isMobileMenuOpen }" class="md:hidden">
+      <a routerLink="/home" (click)="toggleMobileMenu()" routerLinkActive="!text-accent font-semibold"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="block text-white p-2 hover:text-accent transition-colors duration-200">Home</a>
+      <a routerLink="/rentals" (click)="toggleMobileMenu()" routerLinkActive="!text-accent font-semibold"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="block text-white p-2 hover:text-accent transition-colors duration-200">Rentals</a>
+      <a routerLink="/flights" (click)="toggleMobileMenu()" routerLinkActive="!text-accent font-semibold"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="block text-white p-2 hover:text-accent transition-colors duration-200">Flights</a>
+      <a routerLink="/contact-us" (click)="toggleMobileMenu()" routerLinkActive="!text-accent font-semibold"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="block text-white p-2 hover:text-accent transition-colors duration-200">Contact Us</a>
+      <a routerLink="/profile" (click)="toggleMobileMenu()" routerLinkActive="!text-accent font-semibold"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="block text-white p-2 hover:text-accent transition-colors duration-200">Profile</a>
+      <hr class="border-gray-600 my-2" />
+      <a routerLink="/auth/login" (click)="toggleMobileMenu()" class="block text-white py-2 px-4">Login</a>
+      <a routerLink="/auth/signup" (click)="toggleMobileMenu()" class="block text-white py-2 px-4">Sign Up</a>
     </div>
   </div>
 </header>
