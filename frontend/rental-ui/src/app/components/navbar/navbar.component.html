@@ -25,9 +25,11 @@
         <a routerLink="/contact-us" routerLinkActive="!text-accent font-semibold"
           [routerLinkActiveOptions]="{ exact: true }"
           class="text-white hover:text-accent transition-colors duration-200">About</a>
-        <a routerLink="/profile" routerLinkActive="!text-accent font-semibold"
-          [routerLinkActiveOptions]="{ exact: true }"
-          class="text-white hover:text-accent transition-colors duration-200">Profile</a>
+        <div *ngIf="isLoggedIn">
+          <a routerLink="/profile" routerLinkActive="!text-accent font-semibold"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="text-white hover:text-accent transition-colors duration-200">Profile</a>
+        </div>
       </nav>
 
       <div *ngIf="!isLoggedIn">
