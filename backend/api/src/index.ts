@@ -17,11 +17,13 @@ import router from "./routes";
 // dotenv.config({ path: envPath });
 
 const port = process.env.API_PORT || 3000;
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:4200";
 
 const app = express();
 
 app.use(
   cors({
+    origin: FRONTEND_URL,
     credentials: true,
   })
 );

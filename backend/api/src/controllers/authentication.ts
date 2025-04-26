@@ -3,6 +3,7 @@ import { createUser, getUserByEmail } from "../models/users";
 import {
   authentication,
   encryptPhoneNumber,
+  decryptPhoneNumber,
   isValidEmail,
   random,
 } from "../helpers";
@@ -43,8 +44,10 @@ export const login = async (req: express.Request, res: express.Response) => {
     await user.save();
 
     res.cookie("USER-AUTH", sessionToken, {
-      domain: "localhost", // TODO: make this dynamic in env for production
-      path: "/",
+      httpOnly: true, // Block JS access to cookie
+      secure: false, // Secure false for localhost (only true for HTTPS)
+      sameSite: "lax", // Allow sending cookie with normal navigation
+      path: "/", // cookie available everywhere
     });
 
     const sanitizedUser = {
@@ -52,7 +55,7 @@ export const login = async (req: express.Request, res: express.Response) => {
       username: user.username,
       email: user.email,
       role: user.role,
-      phone: user.phone,
+      phone: decryptPhoneNumber(user.phone),
       profilePicture: user.profilePicture,
       createdAt: user.createdAt,
     };
