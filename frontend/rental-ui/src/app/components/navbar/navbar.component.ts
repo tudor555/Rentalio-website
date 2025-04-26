@@ -3,6 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { UserSessionService } from '../../services/user-session.service';
+import { CookieUtil } from '../../services/cookie.service';
 
 @Component({
   selector: 'app-navbar',
@@ -15,6 +16,7 @@ export class NavbarComponent {
   isMobileMenuOpen: boolean = false;
   currentUrl: string = '';
   isNavbarVisible: boolean = true;
+  showLogoutModal: boolean = false;
   isLoggedIn: boolean = false;
   isAdmin: boolean = false;
 
@@ -57,5 +59,21 @@ export class NavbarComponent {
     }
 
     this.lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+  }
+
+  openLogoutModal() {
+    this.showLogoutModal = true;
+  }
+
+  confirmLogout() {
+    UserSessionService.clearUser();
+    CookieUtil.deleteCookie('USER-AUTH');
+    this.isLoggedIn = false;
+    this.isAdmin = false;
+    this.router.navigate(['/home']);
+  }
+
+  cancelLogout() {
+    this.showLogoutModal = false;
   }
 }
