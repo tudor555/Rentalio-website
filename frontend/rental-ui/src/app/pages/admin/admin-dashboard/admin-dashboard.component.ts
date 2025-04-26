@@ -15,7 +15,7 @@ export class AdminDashboardComponent implements OnInit {
   totalReservations = 0;
 
   ngOnInit(): void {
-    this.apiService.get<any[]>('users').subscribe((users) => {
+    this.apiService.get<any[]>('users', true).subscribe((users) => {
       this.totalUsers = users.length;
     });
 
