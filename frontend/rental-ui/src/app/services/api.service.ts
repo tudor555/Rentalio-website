@@ -11,19 +11,26 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  get<T>(endpoint: string): Observable<T> {
-    return this.http.get<T>(`${this.baseUrl}/${endpoint}`);
+  get<T>(endpoint: string, withCredentials: boolean = false): Observable<T> {
+    return this.http.get<T>(`${this.baseUrl}/${endpoint}`, {
+      withCredentials,
+    });
+  }
+  post<T>(endpoint: string, body: any, withCredentials: boolean = false): Observable<T> {
+    return this.http.post<T>(`${this.baseUrl}/${endpoint}`, body, {
+      withCredentials,
+    });
   }
 
-  post<T>(endpoint: string, body: any): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}/${endpoint}`, body);
+  patch<T>(endpoint: string, body: any, withCredentials: boolean = false): Observable<T> {
+    return this.http.patch<T>(`${this.baseUrl}/${endpoint}`, body, {
+      withCredentials,
+    });
   }
 
-  patch<T>(endpoint: string, body: any): Observable<T> {
-    return this.http.patch<T>(`${this.baseUrl}/${endpoint}`, body);
-  }
-
-  delete<T>(endpoint: string): Observable<T> {
-    return this.http.delete<T>(`${this.baseUrl}/${endpoint}`);
+  delete<T>(endpoint: string, withCredentials: boolean = false): Observable<T> {
+    return this.http.delete<T>(`${this.baseUrl}/${endpoint}`, {
+      withCredentials,
+    });
   }
 }
