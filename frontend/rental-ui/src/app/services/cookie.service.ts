@@ -1,11 +1,4 @@
 export class CookieUtil {
-  static setCookie(name: string, value: string, days = 7) {
-    const expires = new Date(Date.now() + days * 864e5).toUTCString();
-    document.cookie = `${name}=${encodeURIComponent(
-      value
-    )}; expires=${expires}; path=/`;
-  }
-
   static getCookie(name: string): string {
     if (typeof document === 'undefined') return '';
     return document.cookie.split('; ').reduce((r, v) => {
@@ -15,6 +8,6 @@ export class CookieUtil {
   }
 
   static deleteCookie(name: string) {
-    this.setCookie(name, '', -1);
+    document.cookie = `${name}=; Max-Age=0; path=/`;
   }
 }
