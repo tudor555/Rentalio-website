@@ -10,6 +10,7 @@ import { FlightsComponent } from './pages/flights/flights-base/flights-base.comp
 import { FlightsListComponent } from './pages/flights/flights-list/flight-list.component';
 import { ContactUsComponent } from './pages/contact-us/contact-us.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { AdminComponent } from './pages/admin/admin-base/admin-base.component';
 import { AdminDashboardComponent } from './pages/admin/admin-dashboard/admin-dashboard.component';
 import { AdminUsersComponent } from './pages/admin/admin-users/admin-users.component';
@@ -33,6 +34,7 @@ export const routes: Routes = [
   { path: 'flights/list', component: FlightsListComponent },
   { path: 'contact-us', component: ContactUsComponent },
   { path: 'profile', component: ProfileComponent },
+  { path: 'change-password', component: ChangePasswordComponent },
   {
     path: 'admin',
     component: AdminComponent,
@@ -55,4 +57,5 @@ export const routes: Routes = [
     ],
   },
   { path: '**', component: NotFoundComponent }, // Wildcard route for 404
+  { path: 'not-found', component: NotFoundComponent }, // Wildcard route for 404
 ];
