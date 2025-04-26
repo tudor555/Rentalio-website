@@ -19,6 +19,7 @@ export const authentication = (salt: string, password: string) => {
     .digest("hex");
 };
 
+// Phone number encryption
 export const encryptPhoneNumber = (phone: string) => {
   const cipher = crypto.createCipheriv(
     "aes-256-cbc",
@@ -30,8 +31,8 @@ export const encryptPhoneNumber = (phone: string) => {
   return encrypted;
 };
 
-// Phone number decryption maybe need on api at a moment
-const decryptPhoneNumber = (encrypted: string) => {
+// Phone number decryption
+export const decryptPhoneNumber = (encrypted: string) => {
   const decipher = crypto.createDecipheriv(
     "aes-256-cbc",
     crypto.scryptSync(SECRET, "salt", 32),
