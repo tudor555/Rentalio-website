@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ApiService } from '../../../services/api.service';
 import { NgIf } from '@angular/common';
-import { CookieUtil } from '../../../services/cookie.service';
+import { UserSessionService } from '../../../services/user-session.service';
 
 @Component({
   selector: 'app-login',
@@ -30,17 +30,19 @@ export class LoginComponent {
       password: this.password,
     };
 
-    this.api.post<{ token: string }>('auth/login', credentials).subscribe({
-      next: (res) => {
-        CookieUtil.setCookie('USER-DATA', JSON.stringify(res)); // Store api response in a cookie
+    this.api
+      .post<{ token: string }>('auth/login', credentials, true)
+      .subscribe({
+        next: (res) => {
+          UserSessionService.saveUser(res);
 
-        // TODO: return the user to the page that was before login action
-        this.router.navigate(['/home']);
-      },
-      error: (err) => {
-        this.error = err?.error?.error || 'Login failed';
-        console.error('Login error:', err);
-      },
-    });
+          // TODO: return the user to the page that was before login action
+          this.router.navigate(['/home']);
+        },
+        error: (err) => {
+          this.error = err?.error?.error || 'Login failed';
+          console.error('Login error:', err);
+        },
+      });
   }
 }

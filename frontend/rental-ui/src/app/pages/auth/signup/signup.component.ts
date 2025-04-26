@@ -11,12 +11,12 @@ import { NgIf } from '@angular/common';
   styleUrl: './signup.component.scss',
 })
 export class SignupComponent {
-  username = '';
-  email = '';
-  password = '';
-  confirmPassword = '';
-  phone = '';
-  agreedToTerms = false;
+  username: string = '';
+  email: string = '';
+  password: string = '';
+  confirmPassword: string = '';
+  phone: string = '';
+  agreedToTerms: boolean = false;
   error: string | null = null;
 
   constructor(private api: ApiService, private router: Router) {}
