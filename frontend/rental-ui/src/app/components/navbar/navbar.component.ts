@@ -2,7 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { CookieUtil } from '../../services/cookie.service';
+import { UserSessionService } from '../../services/user-session.service';
 
 @Component({
   selector: 'app-navbar',
@@ -33,21 +33,20 @@ export class NavbarComponent {
   }
 
   ngOnInit() {
-    const userData = CookieUtil.getCookie('USER-DATA');
-    if (userData) {
-      this.isLoggedIn = true;
-      try {
-        const parsedUser = JSON.parse(userData);
-        this.isAdmin = parsedUser.role === 'admin';
-      } catch (error) {
-        console.error('Failed to parse user data:', error);
-      }
+    const user = UserSessionService.loadUser();
+    if (user) {
+      this.isLoggedIn = UserSessionService.isLoggedIn();
+      this.isAdmin = UserSessionService.isAdmin(); // Check if the user is an admin
+    } else {
+      this.isLoggedIn = false;
+      this.isAdmin = false;
     }
   }
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    const currentScroll =
+      window.pageYOffset || document.documentElement.scrollTop;
 
     if (currentScroll > this.lastScrollTop && currentScroll > 100) {
       // Scrolling down
