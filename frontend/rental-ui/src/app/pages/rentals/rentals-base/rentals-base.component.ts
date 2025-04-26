@@ -3,55 +3,45 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../../services/api.service';
 import { Observable, of } from 'rxjs';
+import { UserSessionService } from '../../../services/user-session.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-rental',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './rentals-base.component.html',
   styleUrls: ['./rentals-base.component.scss'],
 })
 export class RentalsComponent {
-  rentals$: Observable<any[]> = of([]);
+  isLoggedIn: boolean = UserSessionService.isLoggedIn();
+  rentals: Observable<any[]> = of([]);
+  searchTitle: string = '';
 
   constructor(private apiService: ApiService) {
     this.fetchRentals();
   }
 
   fetchRentals(): void {
-    this.rentals$ = this.apiService.get<any[]>('listings');
+    this.rentals = this.apiService.get<any>('listings');
   }
 
-  // Create a new rental
-  addRental(newRental: any): void {
-    this.apiService.post<any>('listings', newRental).subscribe({
-      next: (response) => {
-        console.log('Rental added:', response);
-        this.fetchRentals(); // Refresh the list after adding
-      },
-      error: (err) => console.error('Error adding rental:', err),
-    });
-  }
+  searchByTitle() {
+    const trimmedTitle = this.searchTitle.trim();
+  
+    if (!trimmedTitle) {
+      // If empty, fetch all listings
+      this.fetchRentals();
+      return;
+    }
 
-  // Update an existing rental
-  updateRental(id: string, updatedData: any): void {
-    this.apiService.patch<any>(`listings/${id}`, updatedData).subscribe({
-      next: (response) => {
-        console.log('Rental updated:', response);
-        this.fetchRentals(); // Refresh the list after updating
+    this.apiService.get<any>(`listings/search?title=${trimmedTitle}`).subscribe({
+      next: (data) => {
+        this.rentals= of(data);
       },
-      error: (err) => console.error('Error updating rental:', err),
-    });
-  }
-
-  // Delete a rental
-  deleteRental(id: string): void {
-    this.apiService.delete<any>(`listings/${id}`).subscribe({
-      next: () => {
-        console.log(`Rental ${id} deleted`);
-        this.fetchRentals(); // Refresh the list after deleting
+      error: (err) => {
+        console.error('Error fetching rental details:', err);
       },
-      error: (err) => console.error('Error deleting rental:', err),
     });
   }
 }

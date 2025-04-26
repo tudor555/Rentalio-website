@@ -1,11 +1,24 @@
 <div class="bg-secondary min-h-screen text-white pt-12 px-6 overflow-x-hidden">
-  <!-- TODO: Add the search bar on the page -->
-  <!-- Search Bar -->
-  <!-- Search Bar (Sticky on Scroll) -->
-  <div class="sticky top-0 bg-primary py-0 px-6 shadow-md z-50">
-    <div class="container mx-auto flex justify-center">
-      <!-- <input type="text" placeholder="Search rentals..." 
-                class="w-full md:w-2/3 lg:w-1/2 px-4 py-3 rounded-lg bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent"> -->
+  <!-- Search Bar and List Property Button -->
+  <div class="top-0 bg-secondary z-50 py-4 px-6">
+    <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <!-- Search Bar + Search Button -->
+      <div class="flex-1 w-full md:w-auto flex items-center gap-2">
+        <input type="text" [(ngModel)]="searchTitle" (keyup.enter)="searchByTitle()" placeholder="Search rentals..."
+          class="w-full md:w-96 px-6 py-3 rounded-full bg-slate-500 text-black placeholder-white focus:outline-none focus:ring-2 focus:ring-accent transition" />
+        <button (click)="searchByTitle()"
+          class="bg-accent text-white px-6 py-3 rounded-full hover:bg-white hover:text-accent transition flex items-center gap-2">
+          <i class="fas fa-search"></i> Search
+        </button>
+      </div>
+
+      <!-- List Property Button -->
+      <ng-container *ngIf="isLoggedIn">
+        <button routerLink="/rental/list-property"
+          class="mt-4 md:mt-0 bg-accent text-white font-bold px-6 py-3 rounded-full hover:bg-white hover:text-accent transition flex items-center gap-2">
+          <i class="fas fa-plus-circle"></i> List Your Property
+        </button>
+      </ng-container>
     </div>
   </div>
 
@@ -13,7 +26,7 @@
   <div class="container mx-auto py-10 flex flex-col md:flex-row gap-6">
     <!-- TODO: Made sort option to work with api -->
     <!-- Sidebar (Desktop) -->
-    <aside class="w-full md:w-1/4 bg-secondary p-6 rounded-lg hidden md:block sticky top-24 h-fit">
+    <aside class="w-full md:w-1/4 bg-primary shadow-md p-6 rounded-lg hidden md:block sticky top-24 h-fit">
       <h3 class="text-xl font-bold text-white mb-4">Sort & Filter</h3>
 
       <!-- Sort Options -->
@@ -69,11 +82,14 @@
       <h2 class="text-3xl font-bold mb-6">Available Rentals</h2>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <ng-container *ngIf="rentals$ | async as rentals">
+        <ng-container *ngIf="rentals | async as rentals">
           <a *ngFor="let rental of rentals" [routerLink]="['/rental', rental._id]"
             class="bg-slate-500 p-4 rounded-lg shadow-lg block hover:shadow-xl transition">
-            <img [src]="rental.images.length ? rental.images[0] : 'assets/background-image-test.jpg'"
-              class="w-full h-48 rounded-lg object-cover pointer-events-none" alt="Rental Image" />
+            <img [src]="
+                rental.images.length
+                  ? rental.images[0]
+                  : 'assets/background-image-test.jpg'
+              " class="w-full h-48 rounded-lg object-cover pointer-events-none" alt="Rental Image" />
             <div class="mt-4">
               <h3 class="text-xl font-bold text-accent">{{ rental.title }}</h3>
               <p class="text-black">
@@ -82,7 +98,9 @@
               </p>
               <!-- TODO: Implement the site price -->
               <!-- Made a service for calculate price: base pric + site fee -->
-              <p class="text-black font-bold mt-2">${{ rental.basePrice }} / day</p>
+              <p class="text-black font-bold mt-2">
+                ${{ rental.basePrice }} / day
+              </p>
               <button class="mt-4 bg-accent text-white px-4 py-2 rounded-lg hover:bg-white hover:text-accent transition"
                 (click)="$event.preventDefault()">
                 View Details
@@ -125,7 +143,9 @@
       </select>
 
       <div class="flex justify-between mt-6">
-        <button class="bg-red-500 text-white py-2 px-6 rounded-lg">Close</button>
+        <button class="bg-red-500 text-white py-2 px-6 rounded-lg">
+          Close
+        </button>
         <button class="bg-accent text-white py-2 px-6 rounded-lg">Apply</button>
       </div>
     </div>
