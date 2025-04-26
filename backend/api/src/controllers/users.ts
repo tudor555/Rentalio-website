@@ -5,7 +5,12 @@ import {
   deleteUserById,
   updateUserById,
 } from "../models/users";
-import { random, authentication, encryptPhoneNumber } from "../helpers";
+import {
+  random,
+  authentication,
+  encryptPhoneNumber,
+  decryptPhoneNumber,
+} from "../helpers";
 
 export const getAllUsers = async (
   req: express.Request,
@@ -30,6 +35,10 @@ export const getUser = async (req: express.Request, res: express.Response) => {
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user.phone) {
+      user.phone = decryptPhoneNumber(user.phone);
     }
 
     console.log(`Successfully get user with ID: ${id}`);
@@ -74,6 +83,10 @@ export const updateUser = async (
     }
 
     const updatedUser = await updateUserById(id, updates);
+
+    if (updatedUser.phone) {
+      updatedUser.phone = decryptPhoneNumber(updatedUser.phone);
+    }
 
     console.log(`Successfully updated the user with ID: ${id}`);
     return res.status(200).json(updatedUser);
@@ -147,6 +160,10 @@ export const deleteUser = async (
 
     if (!deletedUser) {
       return res.status(404).json({ error: "User not found" });
+    }
+
+    if (deletedUser.phone) {
+      deletedUser.phone = decryptPhoneNumber(deletedUser.phone);
     }
 
     console.log(`Successfully deleted user with ID: ${id}`);
