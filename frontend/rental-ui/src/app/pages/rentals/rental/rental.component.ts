@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../../services/api.service';
+import { PricingService } from '../../../services/pricing.service';
 
 @Component({
   selector: 'app-rental',
@@ -15,7 +16,7 @@ export class RentalComponent {
   rentalId: string = '';
   currentImageIndex: number = 0;
 
-  constructor(private route: ActivatedRoute, private apiService: ApiService) {
+  constructor(private route: ActivatedRoute, private apiService: ApiService, private pricingService: PricingService) {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.rentalId = id;
@@ -32,6 +33,10 @@ export class RentalComponent {
         console.error('Error fetching rental details:', err);
       },
     });
+  }
+
+  getFinalPrice(basePrice: number): number {
+    return this.pricingService.calculateTotalPrice(basePrice);
   }
 
   prevImage(): void {

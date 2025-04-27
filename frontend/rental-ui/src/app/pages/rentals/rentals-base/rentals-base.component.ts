@@ -5,6 +5,7 @@ import { ApiService } from '../../../services/api.service';
 import { Observable, of } from 'rxjs';
 import { UserSessionService } from '../../../services/user-session.service';
 import { FormsModule } from '@angular/forms';
+import { PricingService } from '../../../services/pricing.service';
 
 @Component({
   selector: 'app-rental',
@@ -38,12 +39,19 @@ export class RentalsComponent {
     { value: 'other', label: 'Other' },
   ];
 
-  constructor(private apiService: ApiService) {
+  constructor(
+    private apiService: ApiService,
+    private pricingService: PricingService
+  ) {
     this.fetchRentals();
   }
 
   fetchRentals(): void {
     this.rentals = this.apiService.get<any>('listings');
+  }
+
+  getFinalPrice(basePrice: number): number {
+    return this.pricingService.calculateTotalPrice(basePrice);
   }
 
   searchByTitle() {

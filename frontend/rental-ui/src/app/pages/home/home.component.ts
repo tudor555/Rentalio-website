@@ -3,6 +3,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { FormsModule } from '@angular/forms';
+import { PricingService } from '../../services/pricing.service';
 
 @Component({
   selector: 'app-home',
@@ -31,7 +32,10 @@ export class HomeComponent {
     'assets/images/destinations/winter-forest-river.jpeg',
   ];
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private pricingService: PricingService
+  ) {}
 
   // Function to handle the scroll action
   scrollToChoose() {
@@ -59,6 +63,10 @@ export class HomeComponent {
 
     // Shuffle the image array
     this.imageUrls = this.shuffleArray(this.imageUrls);
+  }
+
+  getFinalPrice(basePrice: number): number {
+    return this.pricingService.calculateTotalPrice(basePrice);
   }
 
   validateDate() {

@@ -88,6 +88,7 @@
         <h2 class="text-3xl font-bold mb-6">Available Rentals</h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- TODO: add pagination, maybe need some djustemnts on api part -->
           <ng-container *ngIf="rentals | async as rentals">
             <a *ngFor="let rental of rentals" [routerLink]="['/rental', rental._id]"
               class="bg-slate-500 p-4 rounded-lg shadow-lg block hover:shadow-xl transition">
@@ -102,10 +103,9 @@
                   <i class="fas fa-map-marker-alt text-accent"></i>
                   {{ rental.location.city }}, {{ rental.location.country }}
                 </p>
-                <!-- TODO: Implement the site price -->
-                <!-- Made a service for calculate price: base pric + site fee -->
+
                 <p class="text-black font-bold mt-2">
-                  ${{ rental.basePrice }} / day
+                  ${{ getFinalPrice(rental.basePrice) }} / day
                 </p>
                 <button
                   class="mt-4 bg-accent text-white px-4 py-2 rounded-lg hover:bg-white hover:text-accent transition"
