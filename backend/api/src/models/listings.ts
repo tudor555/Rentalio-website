@@ -22,6 +22,12 @@ const ListingSchema = new mongoose.Schema({
     required: true,
   },
   basePrice: { type: Number, required: true }, // Owner's price
+  priceType: { 
+    type: String, 
+    enum: ["hour", "day", "week", "month", "year"], 
+    required: true,
+    default: "day"
+  },
   images: [{ type: String }],
   location: {
     country: { type: String, required: true },
@@ -55,6 +61,7 @@ const ListingSchema = new mongoose.Schema({
   tags: [{ type: String }],
   createdAt: { type: Date, default: Date.now },
 });
+
 
 export const ListingModel = mongoose.model(
   "Listing",
