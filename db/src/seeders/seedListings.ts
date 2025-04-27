@@ -11,6 +11,7 @@ const seedListings = async () => {
       description: "A stylish apartment close to all amenities.",
       category: "apartment",
       basePrice: 120,
+      priceType: "day",
       images: [],
       location: {
         country: "Romania",
@@ -34,6 +35,7 @@ const seedListings = async () => {
       description: "Ideal for day or night matches.",
       category: "tennis_field",
       basePrice: 60,
+      priceType: "day",
       images: [],
       location: {
         country: "Spain",
