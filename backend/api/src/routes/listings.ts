@@ -27,6 +27,7 @@ export default (router: express.Router) => {
   // Example usage of /listings/search with query parameters:
   // - ?limit=number
   // - ?city=Oradea
+  // - ?priceType=day ("hour", "day", "week", "month", "year")
   // - ?category=apartment&country=Romania
   // - ?title=cozy&priceMin=100&priceMax=500
   // - ?amenities=wifi,kitchen,parking

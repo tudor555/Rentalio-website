@@ -62,7 +62,8 @@ export const searchListings = async (
       from,
       to,
       sort,
-      limit
+      limit,
+      priceType,
     } = req.query;
 
     const filter: any = {};
@@ -72,6 +73,7 @@ export const searchListings = async (
     if (country) filter["location.country"] = country;
     if (title) filter.title = { $regex: title as string, $options: "i" };
     if (ownerId) filter.ownerId = ownerId;
+    if (priceType) filter.priceType = priceType;
 
     if (priceMin || priceMax) {
       filter.basePrice = {};
@@ -102,7 +104,11 @@ export const searchListings = async (
 
     const limitNumber = limit ? parseInt(limit as string, 10) : undefined;
 
-    const listings = await getListings({ filter, sort: sortQuery, limit: limitNumber });
+    const listings = await getListings({
+      filter,
+      sort: sortQuery,
+      limit: limitNumber,
+    });
 
     console.log("Filtered listings search performed");
     return res.status(200).json(listings);
@@ -122,6 +128,7 @@ export const addListing = async (
       description,
       category,
       basePrice,
+      priceType,
       images,
       location,
       amenities,
@@ -134,6 +141,7 @@ export const addListing = async (
       !title ||
       !category ||
       !basePrice ||
+      !priceType ||
       !location?.country ||
       !location?.city ||
       !location?.address ||
@@ -154,6 +162,11 @@ export const addListing = async (
       return res.status(400).json({ message: "Invalid category" });
     }
 
+    const allowedPriceTypes = ["hour", "day", "week", "month", "year"];
+    if (!allowedPriceTypes.includes(priceType)) {
+      return res.status(400).json({ message: "Invalid price type" });
+    }
+
     const user = await getUserById(ownerId);
     if (!user) {
       return res.status(403).json({ error: "Owner does not exist" });
@@ -164,6 +177,7 @@ export const addListing = async (
       description,
       category,
       basePrice,
+      priceType,
       images: images || [],
       location,
       amenities: amenities || [],
@@ -217,6 +231,13 @@ export const updateListing = async (
       return res
         .status(400)
         .json({ message: "Base price must be greater than zero" });
+    }
+
+    if (updates.priceType) {
+      const allowedPriceTypes = ["hour", "day", "week", "month", "year"];
+      if (!allowedPriceTypes.includes(updates.priceType)) {
+        return res.status(400).json({ message: "Invalid price type" });
+      }
     }
 
     // Prevent updates to restricted fields
