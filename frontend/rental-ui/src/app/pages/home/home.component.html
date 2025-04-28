@@ -52,7 +52,7 @@
 
           <!-- Price and CTA -->
           <p class="text-black font-bold mt-2">
-            ${{ getFinalPrice(listing.basePrice) }} / day
+            ${{ getFinalPrice(listing.basePrice) }} / {{ listing?.priceType || 'day' }}
           </p>
           <div
             class="bg-secondary py-3 px-6 border border-slate-300 rounded-xl transition-transform duration-300 hover:bg-accent hover:-translate-y-1 cursor-pointer">
