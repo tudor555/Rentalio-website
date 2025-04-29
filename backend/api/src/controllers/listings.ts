@@ -169,7 +169,7 @@ export const addListing = async (
 
     const user = await getUserById(ownerId);
     if (!user) {
-      return res.status(403).json({ error: "Owner does not exist" });
+      return res.status(403).json({ message: "Owner does not exist" });
     }
 
     const newListing = {
@@ -192,7 +192,7 @@ export const addListing = async (
     return res.status(201).json(listing);
   } catch (error) {
     console.error("Error creating listing:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
