@@ -45,4 +45,9 @@ export class UserSessionService {
     const user = this.loadUser();
     return user?.role === 'admin';
   }
+
+  static isOwnerOrAdmin(): boolean {
+    const user = this.loadUser();
+    return user?.role === 'owner' || user?.role === 'admin';
+  }
 }
