@@ -93,6 +93,6 @@ export class ProfileComponent {
   get profilePicture(): string {
     return this.user?.profilePicture && this.user.profilePicture !== 'null'
       ? this.user.profilePicture
-      : 'assets/avatar-icon.jpg';
+      : 'assets/images/profile/avatar-icon.jpg';
   }
 }

@@ -3,7 +3,7 @@
   <div class="relative h-[85dvh]">
     <div class="absolute inset-0 bg-black opacity-60 z-10"></div>
     <div class="absolute inset-0 z-0">
-      <img class="w-full h-full object-cover" src="/assets/hero-background-oradea.jpeg"
+      <img class="w-full h-full object-cover" src="/assets/images/hero-section/hero-background-oradea.jpeg"
         alt="background homepage image" />
     </div>
 
@@ -35,7 +35,7 @@
         <a [routerLink]="['/rental', listing._id]"
           class="relative flex flex-col items-center justify-between gap-2 max-w-sm p-4 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow duration-300 bg-slate-500">
           <!-- Listing Image -->
-          <img [src]="listing.images?.[0] || '/assets/background-image-test.jpg'"
+          <img [src]="listing.images?.[0] || '/assets/images/rentals-defaults/livingroom-overview-default.jpeg'"
             class="h-72 w-64 object-cover rounded-xl mb-4 brightness-90 hover:brightness-100 hover:scale-105 transition-all duration-300"
             [alt]="listing.title" />
 
