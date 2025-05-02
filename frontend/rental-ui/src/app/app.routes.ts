@@ -11,6 +11,7 @@ import { FlightsListComponent } from './pages/flights/flights-list/flight-list.c
 import { ContactUsComponent } from './pages/contact-us/contact-us.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
+import { BecomeOwnerComponent } from './pages/become-owner/become-owner.component';
 import { AdminComponent } from './pages/admin/admin-base/admin-base.component';
 import { AdminDashboardComponent } from './pages/admin/admin-dashboard/admin-dashboard.component';
 import { AdminUsersComponent } from './pages/admin/admin-users/admin-users.component';
@@ -35,6 +36,7 @@ export const routes: Routes = [
   { path: 'contact-us', component: ContactUsComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'change-password', component: ChangePasswordComponent },
+  { path: 'become-owner', component: BecomeOwnerComponent },
   {
     path: 'admin',
     component: AdminComponent,

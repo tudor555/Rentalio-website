@@ -1,149 +1,265 @@
-<!-- TODO: Add functionalities for page -->
 <div class="min-h-screen bg-primary mx-auto px-6 lg:px-20 py-10 text-white">
+  <h1 class="text-3xl font-bold text-accent mb-8 text-center">
+    List Your Property
+  </h1>
 
-    <h1 class="text-3xl font-bold text-accent mb-8 text-center">List Your Property</h1>
+  <form class="space-y-8" #propertyForm="ngForm" (ngSubmit)="listingSubmit(propertyForm)">
+    <!-- Title -->
+    <div>
+      <label for="title" class="block mb-2 text-accent">
+        <i class="fas fa-heading"></i> Title
+      </label>
+      <input type="text" id="title" name="title" [(ngModel)]="property.title" #titleInput="ngModel"
+        placeholder="Enter a catchy title for your property"
+        class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+        required />
+      <p class="text-red-500 text-sm mt-1" *ngIf="titleInput.invalid && titleInput.touched">
+        *Title is required.
+      </p>
+    </div>
 
-    <form class="space-y-8">
+    <!-- Description -->
+    <div>
+      <label for="description" class="block mb-2 text-accent">
+        <i class="fa-solid fa-file-pen"></i> Description
+      </label>
+      <textarea id="description" name="description" [(ngModel)]="property.description" #descriptionInput="ngModel"
+        rows="4" placeholder="Describe your property in detail"
+        class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+        required></textarea>
+      <p class="text-red-500 text-sm mt-1" *ngIf="descriptionInput.invalid && descriptionInput.touched">
+        *Description is required.
+      </p>
+    </div>
 
-        <!-- Title -->
-        <div>
-            <label class="block mb-2 text-accent">Title</label>
-            <input type="text"
-                class="w-full bg-secondary p-3 rounded text-white focus:outline-none focus:ring-2 focus:ring-accent" />
+    <!-- Category -->
+    <div>
+      <label for="category" class="block mb-2 text-accent">
+        <i class="fa-solid fa-list"></i> Category
+      </label>
+      <select id="category" name="category" [(ngModel)]="property.category" #categoryInput="ngModel"
+        class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+        required>
+        <option *ngFor="let type of propertyTypes" [value]="type.value" [disabled]="type.value === ''">
+          {{ type.label }}
+        </option>
+      </select>
+      <p class="text-red-500 text-sm mt-1" *ngIf="categoryInput.invalid && categoryInput.touched">
+        *Category is required.
+      </p>
+    </div>
+
+    <!-- Price + Price Type -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label for="price" class="block mb-2 text-accent">
+          <i class="fa-solid fa-money-bill-wave"></i> Base Price ($)
+        </label>
+        <input type="number" id="price" name="price" [(ngModel)]="property.basePrice" #priceInput="ngModel" min="0"
+          placeholder="Enter base price"
+          class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+          required />
+        <p class="text-red-500 text-sm mt-1" *ngIf="priceInput.invalid && priceInput.touched">
+          *Price is required and must be a positive number.
+        </p>
+      </div>
+
+      <div>
+        <label for="priceType" class="block mb-2 text-accent">
+          <i class="fa-solid fa-clock"></i> Price Type
+        </label>
+        <select id="priceType" name="priceType" [(ngModel)]="property.priceType" #priceTypeInput="ngModel"
+          class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+          required>
+          <option *ngFor="let type of priceTypes" [value]="type.value" [disabled]="type.value === ''">
+            {{ type.label }}
+          </option>
+        </select>
+        <p class="text-red-500 text-sm mt-1" *ngIf="priceTypeInput.invalid && priceTypeInput.touched">
+          *Price type is required.
+        </p>
+      </div>
+    </div>
+
+    <!-- Images Upload -->
+    <div>
+      <!-- Hidden file input -->
+      <input type="file" id="fileInput" class="hidden" (change)="onImageUpload($event)" multiple
+        accept=".jpg,.jpeg,.png,.svg,.webp" />
+
+      <!-- Upload Box -->
+      <div (click)="triggerFileInput()" id="image-upload"
+        class="flex flex-col items-center justify-center border-2 border-dashed border-accent rounded-xl p-6 cursor-pointer bg-secondary hover:bg-secondary-dark transition"
+        [class.opacity-50]="previewImages.length >= 16">
+        <i class="fas fa-cloud-upload-alt text-4xl text-accent mb-4"></i>
+        <p class="text-white mb-2">Click to upload or drag & drop</p>
+        <p class="text-gray-400 text-sm">PNG, JPG, SVG, WEBP up to 5MB</p>
+      </div>
+
+      <!-- Image Previews -->
+      <div class="grid grid-cols-4 gap-4 mt-6" *ngIf="previewImages.length > 0">
+        <div class="relative group" *ngFor="let imageUrl of previewImages; let i = index">
+          <img [src]="imageUrl" alt="Preview" class="rounded-lg object-cover w-full h-32" />
+          <button type="button" (click)="removeImage(i)"
+            class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
+      </div>
 
-        <!-- Description -->
-        <div>
-            <label class="block mb-2 text-accent">Description</label>
-            <textarea rows="4"
-                class="w-full bg-secondary p-3 rounded text-white focus:outline-none focus:ring-2 focus:ring-accent"></textarea>
-        </div>
+      <!-- Images Uploaded Count -->
+      <div class="text-gray-400 text-sm mt-2" *ngIf="previewImages.length > 0">
+        {{ previewImages.length }}/16 images uploaded
+      </div>
 
-        <!-- Category -->
-        <div>
-            <label class="block mb-2 text-accent">Category</label>
-            <select
-                class="w-full bg-secondary p-3 rounded text-white focus:outline-none focus:ring-2 focus:ring-accent">
-                <option>Select a category</option>
-                <option>Apartment</option>
-                <option>Playground</option>
-                <option>Football Field</option>
-                <option>Tennis Field</option>
-                <option>Office</option>
-                <option>Other</option>
-            </select>
-        </div>
+      <!-- Disclaimer -->
+      <div class="text-l text-gray-500 italic mt-1" *ngIf="previewImages.length > 0">
+        * Images will appear naturally styled in the final post.
+      </div>
+    </div>
 
-        <!-- Price -->
-        <div>
-            <label class="block mb-2 text-accent">Base Price (€)</label>
-            <input type="number" min="0"
-                class="w-full bg-secondary p-3 rounded text-white focus:outline-none focus:ring-2 focus:ring-accent" />
-        </div>
+    <!-- Location -->
+    <div class="grid md:grid-cols-2 gap-6">
+      <div>
+        <label for="country" class="block mb-2 text-accent">
+          <i class="fa-solid fa-earth-europe"></i> Country
+        </label>
+        <input type="text" id="country" name="country" [(ngModel)]="property.location.country" #countryInput="ngModel"
+          placeholder="Enter country"
+          class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+          required />
+        <p class="text-red-500 text-sm mt-1" *ngIf="countryInput.invalid && countryInput.touched">
+          *Country is required.
+        </p>
+      </div>
+      <div>
+        <label for="city" class="block mb-2 text-accent">
+          <i class="fa-solid fa-city"></i> City
+        </label>
+        <input type="text" id="city" name="city" [(ngModel)]="property.location.city" #cityInput="ngModel"
+          placeholder="Enter city"
+          class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+          required />
+        <p class="text-red-500 text-sm mt-1" *ngIf="cityInput.invalid && cityInput.touched">
+          *City is required.
+        </p>
+      </div>
+    </div>
 
-        <!-- Images Upload -->
-        <div>
-            <label class="block mb-2 text-accent">Upload Images</label>
+    <!-- Address -->
+    <div class="mt-6">
+      <label for="address" class="block mb-2 text-accent">
+        <i class="fa-solid fa-location-dot"></i> Address
+      </label>
+      <input type="text" id="address" name="address" [(ngModel)]="property.location.address" #addressInput="ngModel"
+        placeholder="Enter full address"
+        class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+        required />
+      <p class="text-red-500 text-sm mt-1" *ngIf="addressInput.invalid && addressInput.touched">
+        *Address is required.
+      </p>
+    </div>
 
-            <!-- Upload Area -->
-            <div
-                class="flex flex-col items-center justify-center border-2 border-dashed border-accent rounded-lg p-6 cursor-pointer bg-secondary hover:bg-secondary-dark transition">
-                <i class="fas fa-cloud-upload-alt text-4xl text-accent mb-4"></i>
-                <p class="text-white mb-2">Click to upload or drag & drop</p>
-                <p class="text-gray-400 text-sm">PNG, JPG up to 5MB</p>
-            </div>
+    <!-- Coordinates -->
+    <div class="grid md:grid-cols-2 gap-6 mt-6">
+      <!-- Latitude -->
+      <div>
+        <label for="latitude" class="block mb-2 text-accent">
+          <i class="fa-solid fa-map-location-dot"></i> Latitude
+        </label>
+        <input type="number" id="latitude" name="latitude" [(ngModel)]="property.location.coordinates.lat"
+          #latitudeInput="ngModel" step="any" placeholder="Enter latitude"
+          class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent" />
+      </div>
 
-            <!-- Preview Area (static for now) -->
-            <div class="grid grid-cols-3 gap-4 mt-6">
-                <!-- Example preview boxes -->
-                <div class="relative group">
-                    <img src="https://via.placeholder.com/150" alt="Preview"
-                        class="rounded-lg object-cover w-full h-32" />
-                    <button type="button"
-                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="relative group">
-                    <img src="https://via.placeholder.com/150" alt="Preview"
-                        class="rounded-lg object-cover w-full h-32" />
-                    <button type="button"
-                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <!-- More preview images could appear dynamically -->
-            </div>
-        </div>
+      <!-- Longitude -->
+      <div>
+        <label for="longitude" class="block mb-2 text-accent">
+          <i class="fa-solid fa-map-location-dot"></i> Longitude
+        </label>
+        <input type="number" id="longitude" name="longitude" [(ngModel)]="property.location.coordinates.lng"
+          #longitudeInput="ngModel" step="any" placeholder="Enter longitude"
+          class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent" />
+      </div>
+    </div>
 
+    <!-- Amenities -->
+    <div class="mt-6">
+      <label for="amenities" class="block mb-2 text-accent">
+        <i class="fas fa-concierge-bell"></i> Amenities (comma separated)
+      </label>
+      <input type="text" id="amenities" name="amenities" [(ngModel)]="amenitiesString" #amenitiesInput="ngModel"
+        placeholder="e.g. WiFi, Parking, Pool, Air Conditioning"
+        class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent" />
+    </div>
 
-        <!-- Location -->
-        <div class="grid md:grid-cols-2 gap-6">
-            <div>
-                <label class="block mb-2 text-accent">Country</label>
-                <input type="text"
-                    class="w-full bg-secondary p-3 rounded text-white focus:outline-none focus:ring-2 focus:ring-accent" />
-            </div>
-            <div>
-                <label class="block mb-2 text-accent">City</label>
-                <input type="text"
-                    class="w-full bg-secondary p-3 rounded text-white focus:outline-none focus:ring-2 focus:ring-accent" />
-            </div>
-        </div>
+    <!-- Availability -->
+    <div class="grid md:grid-cols-2 gap-6 mt-6">
+      <!-- Available From -->
+      <div>
+        <label for="availableFrom" class="block mb-2 text-accent">
+          <i class="fa-solid fa-calendar-days"></i> Available From
+        </label>
+        <input type="date" id="availableFrom" name="availableFrom" [(ngModel)]="property.availability.from"
+          #availableFromInput="ngModel" [min]="today"
+          class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+          required />
+        <p class="text-red-500 text-sm mt-1" *ngIf="
+            (availableFromInput.invalid && availableFromInput.touched) ||
+            (isAvailableFromValidation() && availableFromInput.touched)
+          ">
+          *Available From date is required and must not be in the past.
+        </p>
+      </div>
 
-        <div class="mt-6">
-            <label class="block mb-2 text-accent">Address</label>
-            <input type="text"
-                class="w-full bg-secondary p-3 rounded text-white focus:outline-none focus:ring-2 focus:ring-accent" />
-        </div>
+      <!-- Available To -->
+      <div>
+        <label for="availableTo" class="block mb-2 text-accent">
+          <i class="fa-solid fa-calendar-days"></i> Available To (optional)
+        </label>
+        <input type="date" id="availableTo" name="availableTo" [(ngModel)]="property.availability.to"
+          #availableToInput="ngModel" [min]="property.availability.from || today"
+          class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent" />
+        <p class="text-red-500 text-sm mt-1" *ngIf="availableToInput.touched && isAvailableFromValidation()">
+          *Available To date must be after or equal to Available From and not in
+          the past.
+        </p>
+      </div>
+    </div>
 
-        <!-- Coordinates -->
-        <div class="grid md:grid-cols-2 gap-6 mt-6">
-            <div>
-                <label class="block mb-2 text-accent">Latitude</label>
-                <input type="number" step="any"
-                    class="w-full bg-secondary p-3 rounded text-white focus:outline-none focus:ring-2 focus:ring-accent" />
-            </div>
-            <div>
-                <label class="block mb-2 text-accent">Longitude</label>
-                <input type="number" step="any"
-                    class="w-full bg-secondary p-3 rounded text-white focus:outline-none focus:ring-2 focus:ring-accent" />
-            </div>
-        </div>
+    <!-- Submit Button -->
+    <div class="text-center mt-10">
+      <button type="submit" [disabled]="propertyForm.invalid"
+        class="px-6 py-3 rounded bg-accent text-white font-semibold transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white hover:text-accent">
+        <i class="fa-solid fa-circle-plus"></i>
+        Publish Listing
+      </button>
+    </div>
+    <div *ngIf="errorMessage" class="text-red-500 mt-4 text-center font-medium">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="successMessage" class="text-green-500 mt-4 text-center font-medium">
+      {{ successMessage }}
+    </div>
+  </form>
 
-        <!-- Amenities -->
-        <div class="mt-6">
-            <label class="block mb-2 text-accent">Amenities (comma separated)</label>
-            <input type="text" placeholder="WiFi, Parking, Pool, ..."
-                class="w-full bg-secondary p-3 rounded text-white focus:outline-none focus:ring-2 focus:ring-accent" />
-        </div>
-
-        <!-- Availability -->
-        <div class="grid md:grid-cols-3 gap-6 mt-6">
-            <div>
-                <label class="block mb-2 text-accent">Available From</label>
-                <input type="date"
-                    class="w-full bg-secondary p-3 rounded text-white focus:outline-none focus:ring-2 focus:ring-accent" />
-            </div>
-            <div>
-                <label class="block mb-2 text-accent">Available To</label>
-                <input type="date"
-                    class="w-full bg-secondary p-3 rounded text-white focus:outline-none focus:ring-2 focus:ring-accent" />
-            </div>
-            <div>
-                <label class="block mb-2 text-accent">Minimum Stay (days)</label>
-                <input type="number" min="1"
-                    class="w-full bg-secondary p-3 rounded text-white focus:outline-none focus:ring-2 focus:ring-accent" />
-            </div>
-        </div>
-
-        <!-- Submit Button -->
-        <div class="text-center mt-10">
-            <button type="button"
-                class="bg-accent hover:bg-accent-dark text-white font-bold py-3 px-8 rounded-lg transition duration-300">
-                Publish Listing
-            </button>
-        </div>
-
-    </form>
+  <!-- Success Modal -->
+  <div *ngIf="showSuccessModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="bg-primary rounded-2xl p-8 w-full max-w-md text-center shadow-lg">
+      <h2 class="text-2xl font-semibold text-accent mb-4">
+        <i class="fa-solid fa-circle-check"></i> Property Listed Successfully!
+      </h2>
+      <p class="mb-6 text-white">
+        Do you want to list another property or go to rentals page?
+      </p>
+      <div class="flex justify-center gap-4">
+        <button (click)="listAnother()" class="px-4 py-2 bg-accent text-white rounded hover:bg-accent-dark">
+          List Another
+        </button>
+        <button (click)="goToRentals()" class="px-4 py-2 bg-gray-200 text-accent rounded hover:bg-gray-300">
+          Go to Rentals
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
