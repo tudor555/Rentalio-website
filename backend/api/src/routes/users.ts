@@ -54,6 +54,21 @@ export default (router: express.Router) => {
     }
   );
 
+  // UPDATE user role by id
+  router.patch(
+    "/users/role-change/:id",
+    validateObjectId("id"),
+    isAuthenticated,
+    checkRoleChange,
+    async (req, res, next) => {
+      try {
+        await updateUser(req, res);
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
+
   // UPDATE password user (Owner only)
   router.patch(
     "/users/:id/password",

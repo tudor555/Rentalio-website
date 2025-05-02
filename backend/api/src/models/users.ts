@@ -31,4 +31,4 @@ export const deleteUserById = (id: string) =>
   UserModel.findByIdAndDelete({ _id: id });
 
 export const updateUserById = (id: string, values: Record<string, any>) =>
-  UserModel.findByIdAndUpdate(id, values);
+  UserModel.findByIdAndUpdate(id, values, { new: true });
