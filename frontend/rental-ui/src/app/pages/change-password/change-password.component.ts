@@ -25,9 +25,7 @@ export class ChangePasswordComponent {
   constructor(private api: ApiService, private router: Router) {}
 
   ngOnInit(): void {
-    const userLoogedIn = UserSessionService.isLoggedIn();
-
-    if (!userLoogedIn) {
+    if (!UserSessionService.isLoggedIn()) {
       this.router.navigateByUrl('/auth/login');
       return;
     }
