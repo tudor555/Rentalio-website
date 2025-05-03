@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { airportsMapping } from "../config-files/airports-list";
 import path from "path";
 import dotenv from "dotenv";
 
@@ -47,4 +48,14 @@ export const decryptPhoneNumber = (encrypted: string) => {
 export const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
+};
+
+export const getIATACode = (input: string): string | null => {
+  const lowerInput = input.toLowerCase();
+
+  const match = airportsMapping.find((airport) =>
+    airport.name?.toLowerCase().includes(lowerInput)
+  );
+
+  return match?.iata || null;
 };
