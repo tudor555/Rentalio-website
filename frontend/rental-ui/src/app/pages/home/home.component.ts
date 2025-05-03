@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { FormsModule } from '@angular/forms';
 import { PricingService } from '../../services/pricing.service';
@@ -33,6 +33,7 @@ export class HomeComponent {
   ];
 
   constructor(
+    private router: Router,
     private apiService: ApiService,
     private pricingService: PricingService
   ) {}
@@ -79,13 +80,17 @@ export class HomeComponent {
   }
 
   onBuyTickets() {
-    console.log('Flight info:', {
-      from: this.departure,
-      to: this.destination,
-      date: this.departureDate,
-    });
+    const payload = {
+      from: this.departure.trim(),
+      destination: this.destination.trim(),
+      departureDate: this.departureDate,
+      flightType: 2,
+      adults: 1, // Default to 1 adult
+    };
 
-    // TODO: Now perform your actual flight search or API request here. After redirect to 'flights/list'
+    this.router.navigate(['/flights/list'], {
+      queryParams: payload,
+    });
   }
 
   // Shuffle image array

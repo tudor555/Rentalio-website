@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-flights',
-  imports: [RouterOutlet, CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './flights-base.component.html',
   styleUrl: './flights-base.component.scss',
 })
@@ -19,6 +19,8 @@ export class FlightsComponent {
   returnDateInvalid = false;
   adults = 1;
   children = 0;
+
+  constructor(private router: Router) {}
 
   submitFlightSearch(form: NgForm) {
     const todayDate = new Date(this.today);
@@ -36,16 +38,23 @@ export class FlightsComponent {
       return;
     }
 
-    const payload = {
+    let payload: any = {
       from: this.from.trim(),
       destination: this.destination.trim(),
       departureDate: this.departureDate,
-      returnDate: this.returnDate || null,
-      adults: this.adults,
-      children: this.children || 0,
+      flightType: this.returnDate ? 1 : 2,
+      adults: this.adults || 1,
     };
+    if (this.returnDate) {
+      payload.returnDate = this.returnDate;
+    }
 
-    console.log('Flight search submitted:', payload);
-    // Insert your API logic or routing here
+    if (this.children) {
+      payload.children = this.children;
+    }
+
+    this.router.navigate(['/flights/list'], {
+      queryParams: payload,
+    });
   }
 }
