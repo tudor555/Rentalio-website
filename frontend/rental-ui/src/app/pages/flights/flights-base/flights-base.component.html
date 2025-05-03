@@ -14,7 +14,7 @@
             <label class="block mb-2 text-xl">From:</label>
             <input type="text" name="from" required [(ngModel)]="from" #fromInput="ngModel"
               placeholder="Departure airport (e.g., CDG)"
-              class="w-full p-5 text-lg rounded-lg bg-white text-black placeholder-gray-500" />
+              class="w-full p-5 text-lg rounded-lg bg-slate-500 text-black placeholder-white" />
             <p class="text-red-500 text-sm mt-1" *ngIf="fromInput.invalid && fromInput.touched">
               *Departure airport is required.
             </p>
@@ -27,7 +27,7 @@
             <label class="block mb-2 text-xl">To:</label>
             <input type="text" name="destination" required [(ngModel)]="destination" #toInput="ngModel"
               placeholder="Destination airport (e.g., AUS)"
-              class="w-full p-5 text-lg rounded-lg bg-white text-black placeholder-gray-500" />
+              class="w-full p-5 text-lg rounded-lg bg-slate-500 text-black placeholder-white" />
             <p class="text-red-500 text-sm mt-1" *ngIf="toInput.invalid && toInput.touched">
               *Destination airport is required.
             </p>
@@ -44,7 +44,7 @@
             <label class="block mb-2 text-xl">Departure Date:</label>
             <input type="date" name="departureDate" required [(ngModel)]="departureDate" [min]="today"
               #departureDateInput="ngModel" (ngModelChange)="departureDateInvalid = false"
-              class="w-full p-5 text-lg rounded-lg bg-white text-black" />
+              class="w-full p-5 text-lg rounded-lg bg-slate-500 text-white" />
             <p class="text-red-500 text-sm mt-1" *ngIf="departureDateInput.invalid && departureDateInput.touched">
               *Departure date is required.
             </p>
@@ -60,7 +60,8 @@
           <div class="flex-grow">
             <label class="block mb-2 text-xl">Return Date (Optional):</label>
             <input type="date" name="returnDate" [min]="departureDate || today" [(ngModel)]="returnDate"
-              (ngModelChange)="returnDateInvalid = false" class="w-full p-5 text-lg rounded-lg bg-white text-black" />
+              (ngModelChange)="returnDateInvalid = false"
+              class="w-full p-5 text-lg rounded-lg bg-slate-500 text-white" />
             <p class="text-red-500 text-sm mt-1" *ngIf="returnDateInvalid">
               *Return date cannot be before the departure date.
             </p>
@@ -76,7 +77,7 @@
           <div class="flex-grow">
             <label class="block mb-2 text-xl">Adults:</label>
             <input type="number" name="adults" min="1" required [(ngModel)]="adults" #adultsInput="ngModel"
-              class="w-full p-5 text-lg rounded-lg bg-white text-black" />
+              class="w-full p-5 text-lg rounded-lg bg-slate-500 text-white" />
             <p class="text-red-500 text-sm mt-1" *ngIf="adultsInput.invalid && adultsInput.touched">
               *At least 1 adult is required.
             </p>
@@ -89,7 +90,7 @@
           <div class="flex-grow">
             <label class="block mb-2 text-xl">Children (Optional):</label>
             <input type="number" name="children" min="0" [(ngModel)]="children"
-              class="w-full p-5 text-lg rounded-lg bg-white text-black" />
+              class="w-full p-5 text-lg rounded-lg bg-slate-500 text-white" />
           </div>
         </div>
       </div>
