@@ -16,13 +16,26 @@ const ReservationSchema = new mongoose.Schema({
     required: true,
     ref: "User",
   },
+  fullName: { type: String, required: true },
+  email: { type: String, required: true },
+  paymentMethod: {
+    type: String,
+    enum: ["credit-card", "paypal", "bank-transfer"],
+    required: true,
+  },
+  priceType: {
+    type: String,
+    enum: ["hour", "day", "week", "month", "year"],
+    required: true,
+  },
+  numberOfHours: { type: Number }, // Used if priceType === 'hour'
+  startDate: { type: Date, required: true },
+  endDate: { type: Date }, // Required if not hourly
   status: {
     type: String,
     enum: ["pending", "confirmed", "cancelled"],
     default: "pending",
   },
-  startDate: { type: Date, required: true },
-  endDate: { type: Date, required: true },
   ownerAmount: { type: Number, required: true }, // Owner's share
   siteFee: { type: Number, required: true }, // Platform's fee
   totalAmount: { type: Number, required: true }, // User-visible total
