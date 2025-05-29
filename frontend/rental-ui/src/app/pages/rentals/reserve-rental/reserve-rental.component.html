@@ -1,1 +1,144 @@
-<p>reserve-rental works!</p>
+<div class="min-h-screen bg-primary flex items-center justify-center p-4">
+  <div class="w-full max-w-7xl bg-secondary rounded-2xl shadow-lg p-8 space-y-6" *ngIf="rental">
+    <!-- Back Button -->
+    <div class="w-full">
+      <button (click)="goBack()"
+        class="inline-flex items-center gap-2 bg-accent text-white px-4 py-2 rounded-lg hover:bg-white hover:text-accent transition font-medium">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back to details
+      </button>
+    </div>
+
+    <!-- Heading -->
+    <h2 class="text-3xl font-bold text-center text-accent">
+      <i class="fa-solid fa-calendar-check mr-2"></i>Book: {{ rental.title }}
+    </h2>
+
+    <!-- Content Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Image -->
+      <div>
+        <img [src]="
+            rental.images.length
+              ? rental.images[0]
+              : '/assets/images/rentals-defaults/livingroom-overview-default.jpeg'
+          " alt="Rental Image" class="w-full rounded-xl shadow-md" />
+      </div>
+
+      <div class="space-y-3 text-white">
+        <h3 class="text-xl font-semibold">{{ rental.title }}</h3>
+        <p>{{ rental.description }}</p>
+
+        <p class="text-sm">
+          <i class="fa-solid fa-location-dot text-accent"></i>
+          {{ rental.location.city }}, {{ rental.location.country }}
+        </p>
+
+        <p class="text-lg font-medium text-accent">
+          Price: ${{ getFinalPrice(rental.basePrice) }} / {{ rental.priceType }}
+        </p>
+
+        <div *ngIf="rental.amenities?.length">
+          <p class="font-medium text-white">Amenities:</p>
+          <ul class="list-disc list-inside text-sm text-white">
+            <li *ngFor="let amenity of rental.amenities">{{ amenity }}</li>
+          </ul>
+        </div>
+
+        <p class="text-xl font-medium text-accent pt-4">
+          Total Price: ${{ totalPrice }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form #reservationForm="ngForm" (ngSubmit)="submitReservation()"
+      class="grid grid-cols-1 md:grid-cols-2 gap-4 text-white">
+      <!-- Start Date -->
+      <div>
+        <label class="block text-sm font-medium">Start Date</label>
+        <input type="date" (keydown)="preventTyping($event)" name="startDate" required [(ngModel)]="startDate"
+          [min]="today" (change)="updateTotalPrice()" #startDateModel="ngModel"
+          class="mt-1 w-full p-2 rounded-md border border-accent bg-slate-500 text-white" />
+        <p *ngIf="startDateModel.invalid && startDateModel.touched" class="text-red-400 text-sm">
+          Start date is required and cannot be in the past.
+        </p>
+      </div>
+
+      <!-- End Date -->
+      <div *ngIf="rental?.priceType !== 'hour'">
+        <label class="block text-sm font-medium">End Date</label>
+        <input type="date" (keydown)="preventTyping($event)" name="endDate" required [(ngModel)]="endDate"
+          [min]="startDate || today" (change)="updateTotalPrice()" #endDateModel="ngModel"
+          class="mt-1 w-full p-2 rounded-md border border-accent bg-slate-500 text-white" />
+        <p *ngIf="endDateModel.invalid && endDateModel.touched" class="text-red-500 text-sm">
+          End date is required and must be after the start date.
+        </p>
+      </div>
+
+      <!-- Number of Hours -->
+      <div *ngIf="rental?.priceType === 'hour'">
+        <label class="block text-sm font-medium">Number of Hours</label>
+        <input type="number" name="numberOfHours" required [(ngModel)]="numberOfHours" min="1" max="24"
+          (input)="updateTotalPrice()" #hoursModel="ngModel"
+          class="mt-1 w-full p-2 rounded-md border border-accent bg-slate-500 text-white" />
+        <p *ngIf="hoursModel.invalid && hoursModel.touched" class="text-red-500 text-sm">
+          Enter a value between 1 and 24 hours.
+        </p>
+      </div>
+
+      <!-- Full Name -->
+      <div>
+        <label class="block text-sm font-medium">Full Name</label>
+        <input type="text" name="fullName" required [(ngModel)]="fullName" #fullNameModel="ngModel"
+          placeholder="John Doe"
+          class="mt-1 w-full p-2 rounded-md border border-accent bg-slate-500 placeholder-white text-black" />
+        <p *ngIf="fullNameModel.invalid && fullNameModel.touched" class="text-red-500 text-sm">
+          Full name is required.
+        </p>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="block text-sm font-medium">Email</label>
+        <input type="email" name="email" required pattern="^[a-zA-Z]+@[a-zA-Z]+\.[a-zA-Z]{2,}$" [(ngModel)]="email"
+          #emailModel="ngModel" placeholder="john@example.com"
+          class="mt-1 w-full p-2 rounded-md border border-accent bg-slate-500 placeholder-white text-black" />
+        <p *ngIf="emailModel.invalid && emailModel.touched" class="text-red-500 text-sm">
+          A valid email is required (letters&#64;domain.extension).
+        </p>
+      </div>
+
+      <!-- Payment Method -->
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium">Payment Method</label>
+        <select name="paymentMethod" required [(ngModel)]="paymentMethod" #paymentMethodModel="ngModel"
+          class="mt-1 w-full p-2 rounded-md border border-accent bg-slate-500 text-white">
+          <option value="" disabled selected>Select a method</option>
+          <option value="credit-card">Credit Card</option>
+          <option value="paypal">PayPal</option>
+          <option value="bank-transfer">Bank Transfer</option>
+        </select>
+        <p *ngIf="paymentMethodModel.invalid && paymentMethodModel.touched" class="text-red-500 text-sm">
+          Please select a payment method.
+        </p>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="md:col-span-2 text-center">
+        <button [disabled]="reservationForm.invalid" type="submit"
+          class="mt-4 px-6 py-3 bg-accent text-white font-semibold rounded-xl hover:bg-white hover:text-accent transition disabled:opacity-50">
+          <i class="fa-solid fa-paper-plane mr-2"></i>Reserve Now
+        </button>
+
+        <!-- Feedback Message -->
+        <p *ngIf="feedbackMessage" [ngClass]="{
+            'text-green-500': feedbackType === 'success',
+            'text-red-500': feedbackType === 'error'
+          }" class="mt-2 text-sm font-medium">
+          {{ feedbackMessage }}
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
