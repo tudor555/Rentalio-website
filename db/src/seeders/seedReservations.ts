@@ -12,26 +12,50 @@ const seedReservations = async () => {
   const reservations = [
     {
       listingId: new ObjectId(), // replace with real listing ID
-      userId: new ObjectId(),    // user making the reservation
-      ownerId: new ObjectId(),   // owner of the listing
-      status: "confirmed",
+      userId: new ObjectId(), // user making the reservation
+      ownerId: new ObjectId(), // owner of the listing
+      fullName: "Alice Seed",
+      email: "alice@example.com",
+      paymentMethod: "credit-card",
+      priceType: "day",
       startDate: now,
       endDate: twoDaysLater,
       ownerAmount: 200,
       siteFee: 30,
       totalAmount: 230,
+      status: "confirmed",
       createdAt: now,
     },
     {
       listingId: new ObjectId(),
       userId: new ObjectId(),
       ownerId: new ObjectId(),
-      status: "pending",
+      fullName: "Bob Seeder",
+      email: "bob@example.com",
+      paymentMethod: "paypal",
+      priceType: "day",
       startDate: twoDaysLater,
       endDate: fiveDaysLater,
       ownerAmount: 350,
       siteFee: 50,
       totalAmount: 400,
+      status: "pending",
+      createdAt: now,
+    },
+    {
+      listingId: new ObjectId(),
+      userId: new ObjectId(),
+      ownerId: new ObjectId(),
+      fullName: "Charlie Hourly",
+      email: "charlie@example.com",
+      paymentMethod: "bank-transfer",
+      priceType: "hour",
+      numberOfHours: 4,
+      startDate: now,
+      ownerAmount: 160,
+      siteFee: 20,
+      totalAmount: 180,
+      status: "confirmed",
       createdAt: now,
     },
   ];
@@ -43,7 +67,9 @@ const seedReservations = async () => {
       await collection.insertMany(reservations);
       console.log("Reservations seeded successfully!");
     } else {
-      console.log("Reservations collection already has data. Skipping seeding.");
+      console.log(
+        "Reservations collection already has data. Skipping seeding."
+      );
     }
   } catch (error) {
     console.error("Error seeding reservations:", error);
