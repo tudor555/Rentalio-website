@@ -51,7 +51,8 @@ export class RentalsComponent {
   }
 
   getFinalPrice(basePrice: number): number {
-    return this.pricingService.calculateTotalPrice(basePrice);
+    const amounts = this.pricingService.calculateTotalPrice(basePrice);
+    return amounts.totalAmount;
   }
 
   searchByTitle() {

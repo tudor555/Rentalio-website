@@ -16,7 +16,11 @@ export class RentalComponent {
   rentalId: string = '';
   currentImageIndex: number = 0;
 
-  constructor(private route: ActivatedRoute, private apiService: ApiService, private pricingService: PricingService) {
+  constructor(
+    private route: ActivatedRoute,
+    private apiService: ApiService,
+    private pricingService: PricingService
+  ) {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.rentalId = id;
@@ -36,7 +40,8 @@ export class RentalComponent {
   }
 
   getFinalPrice(basePrice: number): number {
-    return this.pricingService.calculateTotalPrice(basePrice);
+    const amounts = this.pricingService.calculateTotalPrice(basePrice);
+    return amounts.totalAmount;
   }
 
   prevImage(): void {
