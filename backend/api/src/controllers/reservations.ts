@@ -8,6 +8,7 @@ import {
   ReservationModel,
 } from "../models/reservations";
 import { getListingById } from "../models/listings";
+import { getUserById } from "../models/users";
 
 export const getAllReservations = async (
   req: express.Request,
@@ -53,6 +54,11 @@ export const addReservation = async (
     const {
       listingId,
       userId,
+      fullName,
+      email,
+      paymentMethod,
+      priceType,
+      numberOfHours,
       startDate,
       endDate,
       totalAmount,
@@ -63,32 +69,16 @@ export const addReservation = async (
     if (
       !listingId ||
       !userId ||
+      !fullName ||
+      !email ||
+      !paymentMethod ||
+      !priceType ||
       !startDate ||
-      !endDate ||
       !totalAmount ||
-      !ownerAmount
+      !ownerAmount ||
+      !siteFee
     ) {
       return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    const startData = new Date(startDate);
-    const endData = new Date(endDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Normalize to avoid time mismatches
-
-    if (isNaN(startData.getTime()) || isNaN(endData.getTime())) {
-      return res.status(400).json({ message: "Invalid date format" });
-    }
-
-    // Ensure the dates are in the future
-    if (startData < today || endData < today) {
-      return res.status(400).json({ message: "Dates cannot be in the past" });
-    }
-
-    if (startData >= endData) {
-      return res
-        .status(400)
-        .json({ message: "Start date must be before end date" });
     }
 
     const listing = await getListingById(listingId);
@@ -96,25 +86,86 @@ export const addReservation = async (
       return res.status(404).json({ message: "Listing does not exist" });
     }
 
-    // Check if the listing is already reserved for the given dates
-    const overlappingReservations = await ReservationModel.find({
-      listingId,
-      $or: [
-        { startDate: { $lt: endData }, endDate: { $gt: startData } }, // Overlapping dates
-      ],
-    });
-
-    if (overlappingReservations.length > 0) {
-      return res
-        .status(400)
-        .json({ message: "Listing is already reserved for these dates" });
+    const user = await getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User does not exist" });
     }
 
-    // Create reservation
+    const allowedPaymentMethods = ["credit-card", "paypal", "bank-transfer"];
+    if (!allowedPaymentMethods.includes(paymentMethod)) {
+      return res.status(400).json({
+        message: `Invalid payment method. Allowed values: ${allowedPaymentMethods.join(
+          ", "
+        )}`,
+      });
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const startData = new Date(startDate);
+
+    if (isNaN(startData.getTime())) {
+      return res.status(400).json({ message: "Invalid start date format" });
+    }
+
+    if (startData < today) {
+      return res
+        .status(400)
+        .json({ message: "Start date cannot be in the past" });
+    }
+
+    let endData = null;
+
+    // Handle hourly vs other bookings
+    if (priceType === "hour") {
+      if (!numberOfHours || numberOfHours < 1 || numberOfHours > 24) {
+        return res
+          .status(400)
+          .json({ message: "Invalid number of hours (must be 1-24)" });
+      }
+    } else {
+      if (!endDate) {
+        return res
+          .status(400)
+          .json({
+            message: "End date is required for non-hourly reservations",
+          });
+      }
+
+      endData = new Date(endDate);
+      if (isNaN(endData.getTime())) {
+        return res.status(400).json({ message: "Invalid end date format" });
+      }
+
+      if (endData <= startData) {
+        return res
+          .status(400)
+          .json({ message: "End date must be after start date" });
+      }
+
+      // Prevent double bookings
+      const overlappingReservations = await ReservationModel.find({
+        listingId,
+        $or: [{ startDate: { $lt: endData }, endDate: { $gt: startData } }],
+      });
+
+      if (overlappingReservations.length > 0) {
+        return res
+          .status(400)
+          .json({ message: "Listing is already reserved for these dates" });
+      }
+    }
+
     const newReservation = await createReservation({
       listingId,
       userId,
       ownerId: listing.ownerId,
+      fullName,
+      email,
+      paymentMethod,
+      priceType,
+      numberOfHours: priceType === "hour" ? numberOfHours : undefined,
       startDate: startData,
       endDate: endData,
       ownerAmount,
