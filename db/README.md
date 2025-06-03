@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project provides a series of scripts to manage MongoDB database and collection creation using TypeScript. \
+This project provides a series of scripts to manage MongoDB database and collection creation using TypeScript. <br>
 The scripts cover the initialization of essential collections for a platform that deals with user management, listings, reservations, payments, and more.
 
 The project uses TypeScript along with `ts-node` to execute migration scripts seamlessly.
@@ -13,9 +13,10 @@ The project uses TypeScript along with `ts-node` to execute migration scripts se
 2. [Prerequisites](#prerequisites)
 3. [Installation](#installation)
 4. [Migration Script](#migration-script)
-5. [Database and Collection Initialization](#database-and-collection-initialization)
-6. [Troubleshooting](#troubleshooting)
-7. [Notes](#notes)
+5. [Seeder Scripts](#seeder-scripts)
+6. [Database and Collection Initialization](#database-and-collection-initialization)
+7. [Troubleshooting](#troubleshooting)
+8. [Notes](#notes)
 
 ## Project Structure
 
@@ -23,15 +24,21 @@ The project uses TypeScript along with `ts-node` to execute migration scripts se
 src/
 │
 ├── config/
-│   └── dbConfig.ts             # Database connection configuration
+│   └── dbConfig.ts                     # Database connection configuration
 │
 ├── migrations/
 │   ├── createDatabase.ts               # Script to create the database
-│   ├── createUsersCollection.ts        # Migration script for the users collection
 │   ├── createListingsCollection.ts     # Migration script for the listings collection
+│   ├── createPaymentsCollection.ts     # Migration script for the payments collection
 │   ├── createReservationsCollection.ts # Migration script for the reservations collection
 │   ├── createReviewsCollection.ts      # Migration script for the reviews collection
-│   └── createPaymentsCollection.ts     # Migration script for the payments collection
+│   └──createUsersCollection.ts         # Migration script for the users collection
+│
+├── seeders/
+│   ├── seedListings.ts             # Seed example listings
+│   ├── seedPayments.ts             # Seed example payments
+│   ├── seedReservations.ts         # Seed example reservations
+│   └── seedReviews.ts              # Seed example reviews
 │
 ├── package-lock.json
 ├── pacakge.json                 # Project dependencies and scripts
@@ -49,23 +56,23 @@ Ensure you have the following installed:
 
 ## Installation
 
-1. Clone the repository:
+### 1. Clone the repository:
 
 ```bash
-git clone <https://github.com/Tudor555/Rental-website-license-project.git>
+git clone https://github.com/tudor555/Rental-website-license-project.git
 cd db
 ```
 
-2. Install dependencies:
+### 2. Install dependencies:
 
 ```bash
 npm install
 ```
 
-3. Configure your environment:
+### 3. Configure your environment:
 
-Create a `db.env` file under `env/db_env/`. \
-Following the `db.env.example` for create the environment variables. \
+Create a `db.env` file under `env/db_env/`. <br>
+Following the `db.env.example` for create the environment variables. <br>
 Also you can remove the `.example` of `db.env.example` and update the values of variables.
 
 ## Migration Script
@@ -85,13 +92,36 @@ npm run migrate:all
 Run individual collection migrations:
 
 ```bash
-npm run migrate # Create database
-npm run migrate:users # Create users collection
-npm run migrate:listings # Create listings collection
-npm run migrate:reservations # Create reservations collection
-npm run migrate:reviews # Create reviews collection
-npm run migrate:payments # Create payments collection
+npm run migrate               # Create database
+npm run migrate:users         # Create users collection
+npm run migrate:listings      # Create listings collection
+npm run migrate:reservations  # Create reservations collection
+npm run migrate:reviews       # Create reviews collection
+npm run migrate:payments      # Create payments collection
 ```
+
+## Seeder Scripts
+
+### Run All Seeders
+
+You can populate your database with initial data using this:
+
+```bash
+npm run seed:all
+```
+
+### Run Specific Seeders
+
+Or can populate your database with data for a specific collections using this:
+
+```bash
+npm run seed:listings
+npm run seed:payments
+npm run seed:reservations
+npm run seed:reviews
+```
+
+**Note**: A default `user` is created when is create users collection. Therefore, no additional seeding is needed just to log in for testing.
 
 ## Database and Collection Initialization
 
