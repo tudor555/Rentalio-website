@@ -1,5 +1,3 @@
-<!-- TODO: Write documentation for API part -->
-
 # Rentalio - API Documentation
 
 This document provides an overview of the available **API** endpoints for the **Rentalio** backend service. The backend is built using **Node.js**, **Express**, and **MongoDB**, with **Mongoose** used for schema definitions and validation.
