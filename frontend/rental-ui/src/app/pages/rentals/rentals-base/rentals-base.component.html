@@ -1,0 +1,160 @@
+<div class="bg-secondary min-h-screen text-white pt-12 px-6 overflow-x-hidden">
+  <!-- Search Bar and List Property Button -->
+  <div class="top-0 bg-secondary z-50 py-4 px-6">
+    <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <!-- Search Bar + Search Button -->
+      <div class="flex-1 w-full md:w-auto flex items-center gap-2">
+        <input type="text" [(ngModel)]="searchTitle" (keyup.enter)="searchByTitle()" placeholder="Search rentals..."
+          class="w-full md:w-96 px-6 py-3 rounded-full bg-slate-500 text-black placeholder-white focus:outline-none focus:ring-2 focus:ring-accent transition" />
+        <button (click)="searchByTitle()"
+          class="bg-accent text-white px-6 py-3 rounded-full hover:bg-white hover:text-accent transition flex items-center gap-2">
+          <i class="fas fa-search"></i> Search
+        </button>
+      </div>
+
+      <!-- List Property Button -->
+      <ng-container *ngIf="isLoggedIn">
+        <button routerLink="/rental/list-property"
+          class="mt-4 md:mt-0 bg-accent text-white font-bold px-6 py-3 rounded-full hover:bg-white hover:text-accent transition flex items-center gap-2">
+          <i class="fas fa-plus-circle"></i> List Your Property
+        </button>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container mx-auto py-10 flex flex-col md:flex-row gap-6">
+    <div class="container mx-auto py-10 flex flex-col md:flex-row gap-6">
+      <!-- Sidebar (Desktop) -->
+      <aside class="w-full md:w-1/4 bg-primary shadow-md p-6 rounded-lg hidden md:block sticky top-24 h-fit">
+        <h3 class="text-xl font-bold text-accent mb-4">Sort & Filter</h3>
+
+        <!-- Sort Options -->
+        <div class="mb-4">
+          <label class="block mb-2"><i class="fa-solid fa-sort text-accent"></i> Sort by:</label>
+          <select [(ngModel)]="filter.sort" [ngClass]="{'text-white': !filter.sort, 'text-black': filter.sort}"
+            class="w-full p-2 rounded-lg bg-slate-500">
+            <option value="">Select</option>
+            <option value="price_asc">Low to High</option>
+            <option value="price_desc">High to Low</option>
+            <option value="createdAt_desc">Newest Listings</option>
+          </select>
+
+        </div>
+
+        <!-- Location Filter -->
+        <div class="mb-4">
+          <label class="block mb-2"><i class="fa-solid fa-location-dot text-accent"></i> Location:</label>
+          <input [(ngModel)]="filter.location" type="text" placeholder="Enter location..."
+            class="w-full p-2 rounded-lg bg-slate-500 placeholder-white text-black" />
+        </div>
+
+        <!-- Price Range Inputs -->
+        <div class="mb-4">
+          <label class="block mb-2"><i class="fa-solid fa-money-bill-wave text-accent"></i> Price Range ($):</label>
+          <div class="flex gap-2 items-center">
+            <input [(ngModel)]="filter.priceMin" type="number" placeholder="Min" min="0"
+              class="w-1/2 p-2 rounded-lg bg-slate-500 placeholder-white text-black" />
+            <span class="text-lg font-medium text-white">-</span>
+            <input [(ngModel)]="filter.priceMax" type="number" placeholder="Max" min="0"
+              class="w-1/2 p-2 rounded-lg bg-slate-500 placeholder-white text-black" />
+          </div>
+          <div *ngIf="priceError" class="text-red-500 text-sm mt-2">
+            {{ priceError }}
+          </div>
+        </div>
+
+        <!-- Property Type -->
+        <div class="mb-4">
+          <label class="block mb-2"><i class="fa-solid fa-filter text-accent"></i> Property Type:</label>
+          <select [(ngModel)]="filter.propertyType"
+            [ngClass]="{'text-white': !filter.propertyType, 'text-black': filter.propertyType}"
+            class="w-full p-2 rounded-lg bg-slate-500">
+            <option *ngFor="let type of propertyTypes" [value]="type.value">
+              {{ type.label }}
+            </option>
+          </select>
+
+        </div>
+
+        <button (click)="applyFilters()"
+          class="w-full bg-accent text-white py-2 rounded-lg hover:bg-white hover:text-accent transition">
+          Apply Filters
+        </button>
+      </aside>
+
+      <!-- Rental Listings -->
+      <div class="w-full md:w-3/4 px-2">
+        <h2 class="text-3xl font-bold mb-6">Available Rentals</h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- TODO: add pagination, maybe need some adjustments on api part -->
+          <ng-container *ngIf="rentals | async as rentals">
+            <a *ngFor="let rental of rentals" [routerLink]="['/rental', rental._id]"
+              class="bg-slate-500 p-4 rounded-lg shadow-lg block hover:shadow-xl transition">
+              <img [src]="
+                rental.images.length
+                  ? rental.images[0]
+                  : '/assets/images/rentals-defaults/livingroom-overview-default.jpeg'
+              " class="w-full h-48 rounded-lg object-cover pointer-events-none" alt="Rental Image" />
+              <div class="mt-4">
+                <h3 class="text-xl font-bold text-accent">{{ rental.title }}</h3>
+                <p class="text-black">
+                  <i class="fas fa-map-marker-alt text-accent"></i>
+                  {{ rental.location.city }}, {{ rental.location.country }}
+                </p>
+
+                <p class="text-black font-bold mt-2">
+                  ${{ getFinalPrice(rental.basePrice) }} / {{ rental?.priceType || 'day' }}
+                </p>
+                <button
+                  class="mt-4 bg-accent text-white px-4 py-2 rounded-lg hover:bg-white hover:text-accent transition"
+                  (click)="$event.preventDefault()">
+                  View Details
+                </button>
+              </div>
+            </a>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <!-- TODO: Made to work this on mobile view -->
+    <!-- Mobile Filter Modal (Hidden by Default) -->
+    <div id="mobile-filters" class="hidden fixed inset-0 bg-black bg-opacity-80 items-center justify-center z-50">
+      <div class="bg-white text-black w-4/5 p-6 rounded-lg shadow-lg">
+        <h3 class="text-xl font-bold mb-4">Sort & Filter</h3>
+
+        <label class="block mb-2">Sort by:</label>
+        <select class="w-full p-2 rounded-lg bg-gray-100 text-black">
+          <option>Price: Low to High</option>
+          <option>Price: High to Low</option>
+          <option>Newest Listings</option>
+        </select>
+
+        <label class="block mt-4 mb-2">Location:</label>
+        <input type="text" placeholder="Enter location..." class="w-full p-2 rounded-lg bg-gray-100 text-black" />
+
+        <label class="block mt-4 mb-2">Price Range ($):</label>
+        <div class="flex gap-2 items-center">
+          <input type="number" placeholder="Min" min="0" class="w-1/2 p-2 rounded-lg bg-gray-100 text-black" />
+          <span class="text-lg font-medium">-</span>
+          <input type="number" placeholder="Max" min="0" class="w-1/2 p-2 rounded-lg bg-gray-100 text-black" />
+        </div>
+
+        <label class="block mt-4 mb-2">Property Type:</label>
+        <select class="w-full p-2 rounded-lg bg-gray-100 text-black">
+          <option>Apartment</option>
+          <option>House</option>
+          <option>Office</option>
+        </select>
+
+        <div class="flex justify-between mt-6">
+          <button class="bg-red-500 text-white py-2 px-6 rounded-lg">
+            Close
+          </button>
+          <button class="bg-accent text-white py-2 px-6 rounded-lg">Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>

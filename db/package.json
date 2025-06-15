@@ -1,0 +1,33 @@
+{
+  "name": "db",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "migrate": "ts-node src/migrations/createDatabase.ts",
+    "migrate:users": "ts-node src/migrations/createUsersCollection.ts",
+    "migrate:listings": "ts-node src/migrations/createListingsCollection.ts",
+    "migrate:reservations": "ts-node src/migrations/createReservationsCollection.ts",
+    "migrate:reviews": "ts-node src/migrations/createReviewsCollection.ts",
+    "migrate:payments": "ts-node src/migrations/createPaymentsCollection.ts",
+    "migrate:all": "npm run migrate && npm run migrate:users && npm run migrate:listings && npm run migrate:reservations && npm run migrate:reviews && npm run migrate:payments",
+    "seed:listings": "ts-node src/seeders/seedListings.ts",
+    "seed:payments": "ts-node src/seeders/seedPayments.ts",
+    "seed:reservations": "ts-node src/seeders/seedReservations.ts",
+    "seed:reviews": "ts-node src/seeders/seedReviews.ts",
+    "seed:all": "npm run seed:listings && npm run seed:payments && npm run seed:reservations && npm run seed:reviews",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/node": "^22.10.3",
+    "dotenv": "^16.4.7",
+    "mongodb": "^6.12.0",
+    "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  }
+}

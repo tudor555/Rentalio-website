@@ -1,0 +1,113 @@
+<div class="bg-secondary min-h-screen flex flex-col items-center justify-center text-white py-12">
+  <div class="w-full max-w-7xl bg-primary p-12 rounded-xl shadow-2xl">
+
+    <!-- User Info -->
+    <div class="flex flex-col items-center bg-secondary p-6 rounded-xl shadow-lg">
+      <img [src]="profilePicture" alt="User Avatar" class="w-32 h-32 rounded-full border-4 border-accent shadow-lg" />
+      <h2 class="text-3xl font-bold mt-4">{{ user?.username || 'User' }}</h2>
+      <p class="text-gray-300">{{ user?.email || 'No email' }}</p>
+      <span class="bg-accent px-4 py-2 rounded-lg text-white mt-2">
+        {{ user?.role || 'User' | uppercase }}
+      </span>
+    </div>
+
+    <!-- Profile Sections -->
+    <div class="mt-10 space-y-10">
+
+      <!-- Account Details Section-->
+      <div class="bg-secondary p-6 rounded-lg shadow-lg">
+        <h3 class="text-3xl font-extrabold mb-4 border-b border-gray-600 pb-2">
+          <i class="fas fa-user-circle mr-2 text-accent"></i> Account Details
+        </h3>
+        <p class="text-gray-300">Update your personal info below:</p>
+
+        <div class="flex flex-col space-y-6 mt-4">
+          <div>
+            <label class="block mb-2">Full Name:</label>
+            <input type="text" [(ngModel)]="fullName" [placeholder]="user?.username || 'Full Name'"
+              class="w-full p-4 text-lg rounded-lg bg-white text-black" />
+          </div>
+          <div>
+            <label class="block mb-2">Email:</label>
+            <input type="email" [(ngModel)]="email" [placeholder]="user?.email || 'No email provided'"
+              class="w-full p-4 text-lg rounded-lg bg-white text-black" />
+          </div>
+          <div>
+            <label class="block mb-2">Phone:</label>
+            <input type="text" [(ngModel)]="phone" [placeholder]="user?.phone || 'No phone number'"
+              class="w-full p-4 text-lg rounded-lg bg-white text-black" />
+          </div>
+        </div>
+
+        <!-- Success/Error Message -->
+        <div *ngIf="message" [ngClass]="{ 'text-green-400': !isError, 'text-red-500': isError }"
+          class="mt-4 font-semibold text-lg">
+          {{ message }}
+        </div>
+
+        <!-- Save Changes Button -->
+        <button (click)="updateProfile()"
+          class="mt-6 bg-accent text-white py-3 px-6 rounded-lg hover:bg-orange-300 hover:text-white transition duration-300 shadow-md">
+          Save Changes
+        </button>
+      </div>
+
+
+      <!-- TODO: Finish implement this, need to made a call to a endpoint where select reservation that have _id of user -->
+      <!-- Recent Bookings Section -->
+      <div class="bg-secondary p-6 rounded-lg shadow-lg">
+        <h3 class="text-3xl font-extrabold mb-4 border-b border-gray-600 pb-2">
+          <i class="fas fa-receipt mr-2 text-accent"></i> Recent Bookings
+        </h3>
+        <p class="text-gray-300">View your latest rental bookings.</p>
+        <div class="mt-4">
+          <!-- Rental Booking -->
+          <div class="flex items-center bg-primary p-4 rounded-lg shadow-md">
+            <i class="fas fa-home text-3xl text-accent mr-4"></i>
+            <div class="flex-grow">
+              <p class="font-bold text-lg">Luxury Apartment, New York</p>
+              <p class="text-gray-300">Booking Date: March 5, 2025</p>
+            </div>
+            <button
+              class="bg-accent text-white px-4 py-2 rounded-lg hover:bg-orange-300 hover:text-white transition duration-300 shadow-md">
+              View
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Section -->
+      <div class="bg-secondary p-6 rounded-lg shadow-lg">
+        <h3 class="text-3xl font-extrabold mb-4 border-b border-gray-600 pb-2">
+          <i class="fas fa-cog mr-2 text-accent"></i> Settings
+        </h3>
+        <p class="text-gray-300">Adjust preferences and access security options.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+          <div>
+            <label class="block mb-2">Preferred Language:</label>
+            <select class="w-full p-4 text-lg rounded-lg bg-white text-black">
+              <option>English</option>
+              <option>French</option>
+              <option>Spanish</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block mb-2">Change Password:</label>
+            <a class="block text-center bg-accent text-white text-lg py-4 px-4 rounded-lg hover:bg-orange-300 transition duration-300 shadow-md"
+              routerLink="/change-password">
+              Go to Password Change
+            </a>
+          </div>
+        </div>
+
+        <button
+          class="mt-4 bg-accent text-white py-3 px-6 rounded-lg hover:bg-orange-300 hover:text-white transition duration-300 shadow-md">
+          Save Settings
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

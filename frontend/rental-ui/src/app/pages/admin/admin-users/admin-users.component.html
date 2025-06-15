@@ -1,0 +1,61 @@
+<div>
+    <h1 class="text-2xl font-bold text-white mb-6">Users Management</h1>
+
+    <!-- Search + Add User -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+        <input type="text" placeholder="Search users..."
+            class="w-full sm:w-64 px-4 py-2 rounded bg-white text-black focus:outline-none" />
+        <button class="bg-accent text-primary font-semibold px-5 py-2 rounded hover:bg-accent/80 transition">
+            + Add New User
+        </button>
+    </div>
+
+    <!-- Users Table -->
+    <div class="bg-white p-5 rounded shadow overflow-x-auto">
+        <table class="w-full border-collapse min-w-[600px]">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2 text-left">ID</th>
+                    <th class="p-2 text-left">Name</th>
+                    <th class="p-2 text-left">Email</th>
+                    <th class="p-2 text-left">Role</th>
+                    <th class="p-2 text-left">Status</th>
+                    <th class="p-2 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="border-t hover:bg-gray-100 transition">
+                    <td class="p-2">1</td>
+                    <td class="p-2">John Doe</td>
+                    <td class="p-2">john&#64;example.com</td>
+                    <td class="p-2">Owner</td>
+                    <td class="p-2 text-green-600 font-semibold">Active</td>
+                    <td class="p-2 space-x-2">
+                        <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                            Edit
+                        </button>
+                        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                            Remove
+                        </button>
+                    </td>
+                </tr>
+                <tr class="border-t hover:bg-gray-100 transition">
+                    <td class="p-2">2</td>
+                    <td class="p-2">Jane Smith</td>
+                    <td class="p-2">jane&#64;example.com</td>
+                    <td class="p-2">Visitor</td>
+                    <td class="p-2 text-yellow-500 font-semibold">Pending</td>
+                    <td class="p-2 space-x-2">
+                        <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                            Edit
+                        </button>
+                        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                            Remove
+                        </button>
+                    </td>
+                </tr>
+                <!-- More rows -->
+            </tbody>
+        </table>
+    </div>
+</div>

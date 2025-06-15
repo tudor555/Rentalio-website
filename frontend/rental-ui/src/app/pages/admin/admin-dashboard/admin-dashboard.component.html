@@ -1,0 +1,155 @@
+<div class="flex flex-col md:flex-row min-h-screen bg-secondary">
+  <main class="flex-1 p-4 md:p-10 bg-secondary">
+    <h1 class="text-2xl font-bold text-white mb-5">Admin Dashboard</h1>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+      <div class="bg-accent p-5 rounded shadow">
+        <h2 class="text-lg font-semibold text-primary">Total Properties</h2>
+        <p class="text-3xl font-bold mt-2 text-white">{{ totalListings }}</p>
+      </div>
+      <div class="bg-accent p-5 rounded shadow">
+        <h2 class="text-lg font-semibold text-primary">Total Users</h2>
+        <p class="text-3xl font-bold mt-2 text-white">{{ totalUsers }}</p>
+      </div>
+      <div class="bg-accent p-5 rounded shadow">
+        <h2 class="text-lg font-semibold text-primary">Total Reservations</h2>
+        <p class="text-3xl font-bold mt-2 text-white">
+          {{ totalReservations }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="mt-10">
+      <h2 class="text-xl font-bold text-white mb-3">Users Management</h2>
+      <div class="bg-white p-5 rounded shadow overflow-x-auto">
+        <table class="w-full border-collapse min-w-[600px]">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="p-2 text-left">ID</th>
+              <th class="p-2 text-left">Name</th>
+              <th class="p-2 text-left">Role</th>
+              <th class="p-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-t">
+              <td class="p-2">1</td>
+              <td class="p-2">John Doe</td>
+              <td class="p-2">Owner</td>
+              <td class="p-2">
+                <button
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              </td>
+            </tr>
+            <tr class="border-t">
+              <td class="p-2">2</td>
+              <td class="p-2">Jane Smith</td>
+              <td class="p-2">Visitor</td>
+              <td class="p-2">
+                <button
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Rentals Table -->
+    <div class="mt-10">
+      <h2 class="text-xl font-bold text-white mb-3">Rentals Management</h2>
+      <div class="bg-white p-5 rounded shadow overflow-x-auto">
+        <table class="w-full border-collapse min-w-[600px]">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="p-2 text-left">ID</th>
+              <th class="p-2 text-left">Title</th>
+              <th class="p-2 text-left">Owner</th>
+              <th class="p-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-t">
+              <td class="p-2">1</td>
+              <td class="p-2">Cozy Apartment</td>
+              <td class="p-2">John Doe</td>
+              <td class="p-2">
+                <button
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              </td>
+            </tr>
+            <tr class="border-t">
+              <td class="p-2">2</td>
+              <td class="p-2">Beach House</td>
+              <td class="p-2">Jane Smith</td>
+              <td class="p-2">
+                <button
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Reservations Table -->
+    <div class="mt-10">
+      <h2 class="text-xl font-bold text-white mb-3">Reservations Management</h2>
+      <div class="bg-white p-5 rounded shadow overflow-x-auto">
+        <table class="w-full border-collapse min-w-[600px]">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="p-2 text-left">ID</th>
+              <th class="p-2 text-left">Guest</th>
+              <th class="p-2 text-left">Rental</th>
+              <th class="p-2 text-left">Date</th>
+              <th class="p-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-t">
+              <td class="p-2">1</td>
+              <td class="p-2">Alice</td>
+              <td class="p-2">Cozy Apartment</td>
+              <td class="p-2">2024-06-12</td>
+              <td class="p-2">
+                <button
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                >
+                  Cancel
+                </button>
+              </td>
+            </tr>
+            <tr class="border-t">
+              <td class="p-2">2</td>
+              <td class="p-2">Bob</td>
+              <td class="p-2">Beach House</td>
+              <td class="p-2">2024-07-03</td>
+              <td class="p-2">
+                <button
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                >
+                  Cancel
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
