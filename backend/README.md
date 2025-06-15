@@ -161,7 +161,7 @@ rm -rf node_modules package-lock.json && npm install
 
 - A default **admin user** is created during the database migration process — no seeders needed for user setup initially.
 
-- API logic is modular and covered in detail in the [API Documentation](https://github.com/tudor555/Rental-website-license-project/tree/project-dev/backend/api#readme).
+- API logic is modular and covered in detail in the [API Documentation](./api/README.md).
 
 - All schema-level validation is handled via **Mongoose**.
 
