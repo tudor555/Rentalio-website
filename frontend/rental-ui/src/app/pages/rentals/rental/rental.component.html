@@ -1,0 +1,138 @@
+<div class="bg-secondary min-h-screen text-white pt-24 px-6">
+    <div class="container mx-auto max-w-7xl">
+
+        <!-- Back Link -->
+        <button [routerLink]="'/rentals'"
+            class="bg-accent text-white px-4 py-2 rounded-lg hover:bg-white hover:text-accent transition mb-6 flex items-center gap-2">
+            <i class="fas fa-arrow-left"></i>
+            Back to rentals
+        </button>
+
+        <!-- Featured Image -->
+        <div class="relative rounded-lg overflow-hidden shadow-lg mb-6 aspect-video">
+            <img [src]="rental?.images?.[currentImageIndex] || 'assets/images/rentals-defaults/livingroom-overview-default.jpeg'" alt="Rental Image"
+                class="w-full h-full object-cover transition duration-500 ease-in-out" />
+            <!-- Left Arrow -->
+            <button (click)="prevImage()"
+                class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black bg-opacity-60 text-white rounded-full p-3 hover:bg-accent hover:bg-opacity-90 hover:scale-110 transition-all duration-300"
+                *ngIf="rental?.images?.length > 1">
+                <i class="fas fa-chevron-left text-xl"></i>
+            </button>
+
+            <!-- Right Arrow -->
+            <button (click)="nextImage()"
+                class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black bg-opacity-60 text-white rounded-full p-3 hover:bg-accent hover:bg-opacity-90 hover:scale-110 transition-all duration-300"
+                *ngIf="rental?.images?.length > 1">
+                <i class="fas fa-chevron-right text-xl"></i>
+            </button>
+
+
+            <!-- Dots -->
+            <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2"
+                *ngIf="rental?.images?.length > 1">
+                <button *ngFor="let img of rental.images; let i = index" (click)="goToImage(i)"
+                    class="w-4 h-4 rounded-full" [ngClass]="{
+                        'bg-white': i === currentImageIndex,
+                        'bg-white/30': i !== currentImageIndex
+                    }">
+                </button>
+            </div>
+        </div>
+
+
+        <!-- Title & Info -->
+        <div class="flex flex-col md:flex-row md:justify-between gap-4 mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-accent mb-2">{{ rental?.title }}</h1>
+
+                <!-- Location -->
+                <p class="text-lg flex items-center gap-2">
+                    <i class="fas fa-map-marker-alt text-accent"></i>
+                    {{ rental?.location.city }}, {{ rental?.location.country }}
+                </p>
+
+                <!-- Property Type -->
+                <p class="text-md mt-1 text-gray-300" *ngIf="rental?.propertyType">
+                    <i class="fas fa-home mr-2"></i>{{ rental?.propertyType }}
+                </p>
+
+                <!-- Address (optional) -->
+                <p class="text-sm text-gray-400 mt-1" *ngIf="rental?.location?.address">
+                    <i class="fas fa-location-arrow mr-2"></i>{{ rental.location.address }}
+                </p>
+
+                <!-- Rating (optional) -->
+                <p class="text-sm mt-2 text-yellow-400 flex items-center gap-1" *ngIf="rental?.reviewCount > 0">
+                    <i class="fas fa-star"></i>
+                    {{ rental?.averageRating.toFixed(1) }} ({{ rental?.reviewCount }} review{{ rental?.reviewCount === 1
+                    ? '' : 's' }})
+                </p>
+            </div>
+
+            <div class="text-right">
+                <p class="text-2xl font-bold">${{ getFinalPrice(rental?.basePrice) }} / {{ rental?.priceType || 'day' }}
+                </p>
+                <a [routerLink]="['/rental', rental._id, 'reserve']"
+                    class="mt-4 bg-accent text-white px-6 py-3 rounded-lg hover:bg-white hover:text-accent transition inline-block">
+                    Book Now
+                </a>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-6">
+            <h2 class="text-2xl font-semibold mb-2">Description</h2>
+            <p class="text-white/90">{{ rental?.description || 'No description provided.' }}</p>
+        </div>
+
+        <!-- Additional Details -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Amenities -->
+            <div>
+                <h3 class="text-xl font-semibold mb-2">Amenities</h3>
+                <ul class="list-disc pl-5 space-y-1 text-white/90" *ngIf="rental?.amenities?.length > 0">
+                    <li *ngFor="let amenity of rental?.amenities">
+                        <i class="fas fa-check text-accent mr-2"></i>{{ capitalizeWords(amenity) }}
+                    </li>
+                </ul>
+                <p *ngIf="!rental?.amenities?.length" class="text-gray-400">No amenities listed.</p>
+            </div>
+
+            <!-- Property Details -->
+            <div>
+                <h3 class="text-xl font-semibold mb-2">Details</h3>
+
+                <p *ngIf="rental?.category">
+                    <i class="fas fa-tag text-accent mr-2"></i>
+                    <strong>Category:</strong> {{ capitalizeWords(rental.category) }}
+                </p>
+
+                <p *ngIf="rental?.status">
+                    <i class="fas fa-info-circle text-accent mr-2"></i>
+                    <strong>Status:</strong> {{ capitalizeWords(rental.status) }}
+                </p>
+
+                <p *ngIf="rental?.bookingsCount > 0">
+                    <i class="fas fa-calendar-check text-accent mr-2"></i>
+                    <strong>Bookings:</strong> {{ rental.bookingsCount }}
+                </p>
+
+                <p *ngIf="rental?.tags?.length">
+                    <i class="fas fa-tags text-accent mr-2"></i>
+                    <strong>Tags:</strong>
+                    <span *ngFor="let tag of rental.tags; let last = last">
+                        {{ capitalizeWords(tag) }}<span *ngIf="!last">, </span>
+                    </span>
+                </p>
+
+                <p *ngIf="rental?.createdAt">
+                    <i class="fas fa-clock text-accent mr-2"></i>
+                    <strong>Listed:</strong> {{ rental.createdAt | date:'mediumDate' }}
+                </p>
+            </div>
+        </div>
+
+        <!-- TODO: Maybe show reviews for listing, think need a endpoint on api to select for a certain listing -->
+
+    </div>
+</div>

@@ -1,0 +1,107 @@
+<div class="bg-primary min-h-screen py-10 px-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Hero Section -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-accent mb-4">
+                Become a Property Owner
+            </h1>
+            <p class="text-lg text-white">
+                Share your space, earn income, and join a trusted rental community.
+            </p>
+        </div>
+
+        <!-- Benefits Section -->
+        <div class="grid md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-secondary p-6 rounded-xl shadow text-white">
+                <h3 class="text-xl font-semibold mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-coins text-accent"></i> Earn Passive Income
+                </h3>
+                <p>List your property and earn money while maintaining full control.</p>
+            </div>
+            <div class="bg-secondary p-6 rounded-xl shadow text-white">
+                <h3 class="text-xl font-semibold mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-gear text-accent"></i> Full Control
+                </h3>
+                <p>
+                    Customize pricing, availability, and house rules to fit your needs.
+                </p>
+            </div>
+            <div class="bg-secondary p-6 rounded-xl shadow text-white">
+                <h3 class="text-xl font-semibold mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-accent"></i> Secure & Trusted
+                </h3>
+                <p>We screen guests and protect your earnings with platform support.</p>
+            </div>
+        </div>
+
+        <!-- Responsibilities Section -->
+        <div class="bg-secondary p-6 rounded-xl shadow mb-12 text-white">
+            <h2 class="text-2xl font-semibold mb-4 text-accent">
+                Your Responsibilities
+            </h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Keep your property clean, safe, and accurately described.</li>
+                <li>Respond to booking requests and messages in a timely manner.</li>
+                <li>Follow local rental laws, tax rules, and housing regulations.</li>
+                <li>Respect guests privacy and handle concerns with care.</li>
+                <li>Keep listing details updated: photos, prices, availability.</li>
+            </ul>
+        </div>
+
+        <!-- Agreement Section -->
+        <div class="bg-secondary p-6 rounded-xl shadow mb-8 text-white">
+            <h2 class="text-xl font-semibold mb-4 text-accent">Agree to the Terms</h2>
+            <ul class="list-disc list-inside mb-4 space-y-2">
+                <li>I have the right to list this property (owner or authorized).</li>
+                <li>I will provide accurate, honest information in my listing.</li>
+                <li>I will follow all applicable safety, legal, and tax policies.</li>
+                <li>I understand violations can lead to account suspension.</li>
+            </ul>
+            <label class="inline-flex items-start space-x-2 mt-4">
+                <input type="checkbox" class="mt-1 form-checkbox text-accent" [(ngModel)]="agreeToTerms" />
+                <span class="text-m text-accent">I have read and agree to the responsibilities and terms above.</span>
+            </label>
+            <p *ngIf="showError" class="text-red-500 text-sm mt-2">
+                You must agree to the terms before continuing.
+            </p>
+        </div>
+
+        <!-- Continue Button -->
+        <div class="text-center mt-6">
+            <button
+                class="bg-accent hover:bg-accent-dark text-white px-6 py-3 rounded-xl font-semibold transition disabled:opacity-50"
+                (click)="submitBecomeOwner()">
+                Continue to List Your Property
+            </button>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="mt-16">
+            <h3 class="text-xl font-semibold mb-4 text-accent">
+                Frequently Asked Questions
+            </h3>
+            <div class="space-y-4 text-white">
+                <div>
+                    <h4 class="font-medium text-black">Do I need to own the property?</h4>
+                    <p class="text-sm">
+                        Yes, or have written permission from the rightful owner.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-medium text-black">Are there any fees?</h4>
+                    <p class="text-sm">
+                        We only take a service fee when you receive a confirmed booking.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-medium text-black">
+                        Can I pause or unlist my property?
+                    </h4>
+                    <p class="text-sm">
+                        Yes, you can manage availability or deactivate at any time.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

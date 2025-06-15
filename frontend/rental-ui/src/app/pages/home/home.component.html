@@ -1,0 +1,229 @@
+<div class="bg-primary text-slate-50">
+  <!-- Hero Section -->
+  <div class="relative h-[85dvh]">
+    <div class="absolute inset-0 bg-black opacity-60 z-10"></div>
+    <div class="absolute inset-0 z-0">
+      <img class="w-full h-full object-cover" src="/assets/images/hero-section/hero-background-oradea.jpeg"
+        alt="background homepage image" />
+    </div>
+
+    <div
+      class="absolute inset-0 flex flex-col justify-center items-start z-30 px-6 sm:px-10 md:px-24 gap-6 sm:gap-8 md:gap-12">
+      <h1 class="text-white text-3xl sm:text-4xl lg:text-5xl tracking-wide leading-snug">
+        Find Your Dream Rental <br />
+        <span class="block mt-2">with <span class="font-bold">Rentalio</span></span>
+      </h1>
+      <button
+        class="text-accentText text-lg sm:text-xl bg-accent py-2 sm:py-3 px-4 sm:px-6 rounded-3xl tracking-wide transition-all duration-300 hover:scale-105"
+        (click)="scrollToChoose()">
+        Get started
+      </button>
+    </div>
+  </div>
+
+  <!-- Choose Section -->
+  <div class="w-full py-14 flex flex-col items-center justify-center px-4 sm:px-10" #choose>
+    <h2 class="text-2xl sm:text-3xl tracking-wide mb-2 text-center text-accent">
+      Choose the best option for you
+    </h2>
+    <div class="h-0.5 w-1/2 bg-primary mb-2"></div>
+    <h6 class="text-lg sm:text-xl mt-2 tracking-wide text-center">
+      We have a wide range of options for you to choose from
+    </h6>
+    <div class="p-6 flex flex-col lg:flex-row flex-wrap items-center justify-center gap-8 mt-6">
+      <ng-container *ngFor="let listing of listings">
+        <a [routerLink]="['/rental', listing._id]"
+          class="relative flex flex-col items-center justify-between gap-2 max-w-sm p-4 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow duration-300 bg-slate-500">
+          <!-- Listing Image -->
+          <img [src]="listing.images?.[0] || '/assets/images/rentals-defaults/livingroom-overview-default.jpeg'"
+            class="h-72 w-64 object-cover rounded-xl mb-4 brightness-90 hover:brightness-100 hover:scale-105 transition-all duration-300"
+            [alt]="listing.title" />
+
+          <!-- Title -->
+          <h3 class="tracking-wide text-xl text-center text-accent">
+            {{ listing.title }}
+          </h3>
+
+          <!-- Location -->
+          <p class="text-sm text-center text-black">
+            <i class="fas fa-map-marker-alt text-accent"></i>
+            {{ listing.location?.city }}, {{ listing.location?.country }}
+          </p>
+
+          <!-- Price and CTA -->
+          <p class="text-black font-bold mt-2">
+            ${{ getFinalPrice(listing.basePrice) }} / {{ listing?.priceType || 'day' }}
+          </p>
+          <div
+            class="bg-secondary py-3 px-6 border border-slate-300 rounded-xl transition-transform duration-300 hover:bg-accent hover:-translate-y-1 cursor-pointer">
+            View Details
+          </div>
+        </a>
+      </ng-container>
+    </div>
+
+    <!-- Discover More Button -->
+    <a routerLink="/rentals"
+      class="mt-8 bg-accent text-white px-6 py-3 rounded-lg text-lg hover:bg-opacity-80 transition">
+      Discover More
+    </a>
+  </div>
+
+  <!-- Travel Booking -->
+  <div class="flex flex-col px-6 sm:px-10 py-10 bg-secondary text-white">
+    <h1 class="text-2xl sm:text-3xl text-center tracking-widest mb-4">
+      Say <span class="text-accent font-semibold capitalize">yes</span> to the
+      world!
+    </h1>
+    <p class="text-slate-300 tracking-wide text-center max-w-3xl mx-auto text-base sm:text-lg mb-6">
+      Your next adventure is just a few clicks away! Whether you're dreaming of
+      a tropical beach, a bustling city, or a quiet mountain retreat, now is the
+      time to explore. Book your tickets today and create unforgettable
+      memories.
+    </p>
+
+    <!-- Flights form -->
+    <form #ticketForm="ngForm" (ngSubmit)="onBuyTickets()" class="flex flex-wrap gap-4 justify-center">
+      <!-- Departure -->
+      <div class="flex flex-col w-full sm:w-60">
+        <input type="text" name="departure" required [(ngModel)]="departure" #departureInput="ngModel"
+          placeholder="Departure airport"
+          class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent placeholder-gray-500 text-black" />
+        <p *ngIf="departureInput.invalid && departureInput.touched" class="text-red-500 text-sm mt-1">
+          *Departure is required.
+        </p>
+      </div>
+
+      <!-- Destination -->
+      <div class="flex flex-col w-full sm:w-60">
+        <input type="text" name="destination" required [(ngModel)]="destination" #destinationInput="ngModel"
+          placeholder="Destination airport"
+          class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent placeholder-gray-500 text-black" />
+        <p *ngIf="destinationInput.invalid && destinationInput.touched" class="text-red-500 text-sm mt-1">
+          *Destination is required.
+        </p>
+      </div>
+
+      <!-- Date -->
+      <div class="flex flex-col w-full sm:w-60">
+        <input type="date" name="departureDate" required [(ngModel)]="departureDate" [min]="currentDate"
+          (ngModelChange)="validateDate()" #departureDateInput="ngModel"
+          class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent text-black" />
+        <p class="text-red-500 text-sm mt-1" *ngIf="departureDateInput.invalid && departureDateInput.touched">
+          *Departure date is required.
+        </p>
+        <p class="text-red-500 text-sm mt-1" *ngIf="departureDateInvalid">
+          *Departure date cannot be in the past.
+        </p>
+      </div>
+
+      <!-- TODO: Made a method to call api for flights and redirect to another page '/flights/list' -->
+      <!-- Submit -->
+      <button type="submit" [disabled]="ticketForm.invalid"
+        class="h-12 w-40 bg-accent text-white px-6 py-2 rounded-lg hover:bg-accent-dark transition hover:brightness-125 disabled:opacity-50">
+        Buy Tickets
+      </button>
+    </form>
+
+    <!-- Gallery Section -->
+    <div class="py-10">
+      <h2 class="text-2xl text-center mb-4">
+        Discover breathtaking destinations:
+      </h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <ng-container *ngFor="let img of imageUrls">
+          <img
+            class="h-72 w-full object-cover rounded-xl brightness-90 hover:brightness-100 transition-all duration-300 hover:scale-105 md:hover:scale-100"
+            [src]="img" alt="destination image" />
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <!-- What We Do Section -->
+  <div class="w-full py-10 px-6 sm:px-10">
+    <div class="max-w-7xl mx-auto flex flex-col gap-8">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-lg text-orange-400">Welcome to Rentalio</h2>
+          <h2 class="text-2xl text-slate-400">What We Offer</h2>
+          <h6 class="text-lg tracking-wide text-slate-300">
+            Rent spaces, book flights, and simplify travel — all in one place.
+          </h6>
+        </div>
+        <button class="text-lg py-3 px-5 bg-accent rounded-full text-accentText" [routerLink]="'/contact-us'">
+          Get in Touch
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- List property -->
+        <div class="p-6 rounded-xl bg-accent text-accentText">
+          <div class="h-12 w-12 bg-orange-200 rounded-full flex items-center justify-center text-gray-700 mb-4">
+            <i class="fas fa-home text-lg"></i>
+          </div>
+          <h3 class="text-xl tracking-wide">List Your Space</h3>
+          <p class="text-md tracking-wide">
+            Got a property to rent? Reach travelers from all over the world with ease.
+          </p>
+        </div>
+
+        <!-- Find a stay -->
+        <div class="p-6 rounded-xl bg-orange-50 text-slate-700">
+          <div class="h-12 w-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-500 mb-4">
+            <i class="fas fa-map-marker-alt text-lg"></i>
+          </div>
+          <h3 class="text-xl tracking-wide">Find Your Stay</h3>
+          <p class="text-md tracking-wide">
+            From cozy homes to luxurious villas — browse stays that match your vibe.
+          </p>
+        </div>
+
+        <!-- Flights section -->
+        <div class="p-6 rounded-xl bg-accent text-accentText">
+          <div class="h-12 w-12 bg-orange-200 rounded-full flex items-center justify-center text-gray-700 mb-4">
+            <i class="fas fa-plane-departure text-lg"></i>
+          </div>
+          <h3 class="text-xl tracking-wide">Book Flights</h3>
+          <p class="text-md tracking-wide">
+            Secure the best deals on flights to your dream destinations, fast and easy.
+          </p>
+        </div>
+
+        <!-- Support section -->
+        <div class="p-6 rounded-xl bg-orange-50 text-slate-700">
+          <div class="h-12 w-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-500 mb-4">
+            <i class="fas fa-headset text-lg"></i>
+          </div>
+          <h3 class="text-xl tracking-wide">Support Anytime</h3>
+          <p class="text-md tracking-wide">
+            Our team is here 24/7 to help you with bookings, listings, or questions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA Section -->
+  <div class="bg-primary p-10 text-center rounded-lg shadow-lg mx-6 sm:mx-10 mt-10">
+    <h2 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+      Ready to unlock unforgettable experiences?
+    </h2>
+    <p class="mt-4 text-lg text-white">
+      Whether you're listing your property or booking the perfect getaway — start with Rentalio.
+    </p>
+    <div class="mt-6 flex flex-col sm:flex-row justify-center gap-4">
+      <a href="/rental/list-property"
+        class="flex items-center justify-center gap-2 px-8 py-3 bg-accent text-white font-semibold rounded-lg shadow-md hover:brightness-110 transition-all duration-300 text-center">
+        <i class="fas fa-plus-circle"></i>
+        List Your Property
+      </a>
+      <a href="/rentals"
+        class="flex items-center justify-center gap-2 px-8 py-3 bg-secondary text-white font-semibold rounded-lg shadow-md hover:brightness-110 transition-all duration-300 text-center">
+        <i class="fas fa-search-location"></i>
+        Explore Now
+      </a>
+    </div>
+  </div>
+
+</div>

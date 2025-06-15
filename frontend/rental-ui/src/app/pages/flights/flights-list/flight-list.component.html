@@ -1,0 +1,88 @@
+<!-- Loading Spinner -->
+<div *ngIf="loading" class="flex justify-center items-center min-h-screen bg-primary">
+  <div class="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-accent"></div>
+</div>
+
+<div class="bg-primary text-secondary min-h-screen p-6">
+  <!-- Page Header -->
+  <div class="text-center mb-10">
+    <h1 class="text-4xl font-bold mb-2 flex items-center justify-center gap-2 text-accent">
+      <i class="fas fa-plane-departure"></i>
+      Explore Your Next Flight
+    </h1>
+    <p class="text-lg text-white">
+      Find the best deals from trusted airlines with just one click.
+    </p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="text-center text-red-500 font-bold text-lg">
+    {{ error }}
+  </div>
+
+  <!-- Flight Cards -->
+  <div *ngIf="!loading && !error" class="space-y-6 max-w-7xl mx-auto">
+    <div *ngFor="let flight of flights">
+      <a href="{{ flight.flights[0].airline_logo }}"
+        class="block rounded-xl shadow-xl bg-slate-500 border border-gray-200 p-5 hover:shadow-2xl transition-shadow">
+        <div class="flex justify-between items-center space-x-6">
+          <!-- Left: Flight Info -->
+          <div class="flex items-start space-x-4 flex-1">
+            <img [src]="flight.flights[0].airline_logo" alt="Airline Logo" class="w-14 h-14 rounded" />
+            <div>
+              <h3 class="text-xl font-semibold text-accent">
+                {{ flight.flights[0].airline }} Flight
+                {{ flight.flights[0].flight_number }}
+              </h3>
+              <p class="text-sm text-white">
+                <i class="fas fa-route text-accent mr-1"></i>
+                {{ flight.flights[0].departure_airport.name }} →
+                {{
+                flight.flights[flight.flights.length - 1].arrival_airport.name
+                }}
+              </p>
+              <div class="mt-2 grid gap-1 text-sm text-black">
+                <p>
+                  <i class="fas fa-clock text-accent mr-1"></i> Departure:
+                  {{ flight.flights[0].departure_airport.time }}
+                </p>
+                <p>
+                  <i class="fas fa-clock text-accent mr-1"></i> Arrival:
+                  {{
+                  flight.flights[flight.flights.length - 1].arrival_airport
+                  .time
+                  }}
+                </p>
+                <p>
+                  <i class="fas fa-hourglass-half text-accent mr-1"></i>
+                  Duration:
+                  {{ flight.flights[0].duration / 60 | number : "1.0-0" }}h
+                  {{ flight.flights[0].duration % 60 | number : "1.0-0" }}m
+                </p>
+                <p>
+                  <i class="fas fa-chair text-accent mr-1"></i> Class:
+                  {{ flight.flights[0].travel_class }}
+                </p>
+                <p>
+                  <i class="fas fa-plane text-accent mr-1"></i> Aircraft:
+                  {{ flight.flights[0].airplane }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Price + Button -->
+          <div class="flex flex-col items-end justify-center space-y-3 min-w-[140px]">
+            <div class="text-accent text-2xl font-bold">
+              ${{ flight.price }}
+            </div>
+            <button
+              class="bg-accent text-white px-5 py-2 text-base rounded-lg font-semibold hover:bg-accent/80 transition">
+              <i class="fas fa-ticket-alt mr-2"></i>Buy Tickets
+            </button>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
