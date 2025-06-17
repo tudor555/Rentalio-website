@@ -2,6 +2,7 @@ import express from "express";
 import {
   getAllReservations,
   getReservation,
+  getReservationsByUser,
   addReservation,
   updateReservation,
   deleteReservation,
@@ -30,6 +31,20 @@ export default (router: express.Router) => {
     async (req, res, next) => {
       try {
         await getReservation(req, res);
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
+
+  // GET all reservations for a user
+  router.get(
+    "/reservations/user/:userId",
+    validateObjectId("userId"),
+    isAuthenticated,
+    async (req, res, next) => {
+      try {
+        await getReservationsByUser(req, res);
       } catch (error) {
         next(error);
       }
