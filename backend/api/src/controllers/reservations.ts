@@ -53,7 +53,16 @@ export const getReservationsByUser = async (
   try {
     const { userId } = req.params;
 
-    const reservations = await ReservationModel.find({ userId });
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+    const skip = (page - 1) * limit;
+
+    const total = await ReservationModel.countDocuments({ userId });
+
+    const reservations = await ReservationModel.find({ userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     if (!reservations || reservations.length === 0) {
       return res
@@ -62,7 +71,13 @@ export const getReservationsByUser = async (
     }
 
     console.log(`Successfully retrieved reservations for user: ${userId}`);
-    return res.status(200).json(reservations);
+    return res.status(200).json({
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+      results: reservations,
+    });
   } catch (error) {
     console.error("Error fetching user reservations:", error);
     return res.status(500).json({ message: "Internal server error" });
