@@ -21,6 +21,10 @@ export class RentalsComponent {
 
   priceError: string = '';
 
+  page: number = 1;
+  pageSize: number = 6;
+  totalPages: number = 1;
+
   filter = {
     sort: '',
     location: '',
@@ -47,7 +51,19 @@ export class RentalsComponent {
   }
 
   fetchRentals(): void {
-    this.rentals = this.apiService.get<any>('listings');
+    const params = new URLSearchParams();
+    params.set('page', this.page.toString());
+    params.set('pageSize', this.pageSize.toString());
+
+    this.apiService.get<any>(`listings/search?${params.toString()}`).subscribe({
+      next: (response) => {
+        this.rentals = of(response.data);
+        this.totalPages = response.totalPages;
+      },
+      error: (err) => {
+        console.error('Error fetching rentals:', err);
+      },
+    });
   }
 
   getFinalPrice(basePrice: number): number {
@@ -56,27 +72,28 @@ export class RentalsComponent {
   }
 
   searchByTitle() {
-    const trimmedTitle = this.searchTitle.trim();
-
-    if (!trimmedTitle) {
-      // If empty, fetch all listings
-      this.fetchRentals();
-      return;
+    this.page = 1;
+    const params = new URLSearchParams();
+    if (this.searchTitle.trim()) {
+      params.set('title', this.searchTitle.trim());
     }
+    params.set('page', this.page.toString());
+    params.set('pageSize', this.pageSize.toString());
 
-    this.apiService
-      .get<any>(`listings/search?title=${trimmedTitle}`)
-      .subscribe({
-        next: (data) => {
-          this.rentals = of(data);
-        },
-        error: (err) => {
-          console.error('Error fetching rental details:', err);
-        },
-      });
+    this.apiService.get<any>(`listings/search?${params.toString()}`).subscribe({
+      next: (response) => {
+        this.rentals = of(response.data);
+        this.totalPages = response.totalPages;
+      },
+      error: (err) => {
+        console.error('Error fetching rental details:', err);
+      },
+    });
   }
 
-  applyFilters(): void {
+  applyFilters(resetPage: boolean = true): void {
+    if (resetPage) this.page = 1;
+
     if (
       this.filter.priceMin !== null &&
       this.filter.priceMax !== null &&
@@ -89,7 +106,6 @@ export class RentalsComponent {
     }
 
     const params = new URLSearchParams();
-
     if (this.searchTitle.trim()) {
       params.append('title', this.searchTitle.trim());
     }
@@ -108,16 +124,36 @@ export class RentalsComponent {
     if (this.filter.sort) {
       params.append('sort', this.filter.sort);
     }
+    params.set('page', this.page.toString());
+    params.set('pageSize', this.pageSize.toString());
 
-    const query = params.toString();
-
-    this.apiService.get<any>(`listings/search?${query}`).subscribe({
-      next: (data) => {
-        this.rentals = of(data);
+    this.apiService.get<any>(`listings/search?${params.toString()}`).subscribe({
+      next: (response) => {
+        this.rentals = of(response.data);
+        this.totalPages = response.totalPages;
       },
       error: (err) => {
         console.error('Error fetching filtered rentals:', err);
       },
     });
+  }
+
+  changePage(newPage: number): void {
+    if (newPage < 1 || newPage > this.totalPages) return;
+    this.page = newPage;
+
+    const hasFilters =
+      this.searchTitle.trim() ||
+      this.filter.location ||
+      this.filter.priceMin !== null ||
+      this.filter.priceMax !== null ||
+      this.filter.propertyType ||
+      this.filter.sort;
+
+    if (hasFilters) {
+      this.applyFilters(false); // don't reset page
+    } else {
+      this.fetchRentals();
+    }
   }
 }
