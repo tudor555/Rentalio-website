@@ -88,8 +88,14 @@
         <h2 class="text-3xl font-bold mb-6">Available Rentals</h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- TODO: add pagination, maybe need some adjustments on api part -->
           <ng-container *ngIf="rentals | async as rentals">
+
+            <div *ngIf="rentals.length === 0" class="flex justify-center items-center h-96 col-span-full">
+              <p class="text-white text-2xl font-semibold text-center">
+                <i class="fas fa-info-circle text-accent mr-2"></i> No rentals found.
+              </p>
+            </div>
+
             <a *ngFor="let rental of rentals" [routerLink]="['/rental', rental._id]"
               class="bg-slate-500 p-4 rounded-lg shadow-lg block hover:shadow-xl transition">
               <img [src]="
@@ -116,7 +122,28 @@
             </a>
           </ng-container>
         </div>
+
+        <!-- Pagination Controls -->
+        <div class="mt-8 flex justify-end" *ngIf="totalPages > 1">
+          <div class="flex items-center space-x-4 text-white">
+            <button (click)="changePage(page - 1)" [disabled]="page === 1"
+              class="px-4 py-2 bg-accent text-white hover:bg-white hover:text-accent rounded disabled:opacity-50 flex items-center gap-1">
+              <i class="fas fa-arrow-left"></i> Prev
+            </button>
+
+            <span class="font-bold">
+              Page {{ page }} of {{ totalPages }}
+            </span>
+
+            <button (click)="changePage(page + 1)" [disabled]="page === totalPages"
+              class="px-4 py-2 bg-accent text-white hover:bg-white hover:text-accent rounded disabled:opacity-50 flex items-center gap-1">
+              Next <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
       </div>
+
     </div>
 
     <!-- TODO: Made to work this on mobile view -->

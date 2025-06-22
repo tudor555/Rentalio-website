@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { UserSessionService } from '../../services/user-session.service';
 
@@ -19,6 +20,11 @@ export class ProfileComponent {
   message: string = '';
   isError: boolean = false;
 
+  reservations: any[] = [];
+  page: number = 1;
+  limit: number = 4;
+  totalPages: number = 1;
+
   constructor(private api: ApiService, private router: Router) {}
 
   ngOnInit(): void {
@@ -34,6 +40,7 @@ export class ProfileComponent {
     this.api.get<any>(`users/${userData._id}`, true).subscribe({
       next: (data) => {
         this.user = data;
+        this.loadReservations();
       },
       error: (err) => {
         console.error('Error fetching user details:', err);
@@ -88,6 +95,64 @@ export class ProfileComponent {
         }, 3000);
       },
     });
+  }
+
+  loadReservations(page: number = 1) {
+    this.api
+      .get<any>(
+        `reservations/user/${this.user._id}?page=${page}&limit=${this.limit}`,
+        true
+      )
+      .subscribe({
+        next: async (data) => {
+          this.page = data.page;
+          this.totalPages = data.pages;
+
+          const enrichedReservations = await Promise.all(
+            data.results.map((res: any) => this.fetchListingForReservation(res))
+          );
+          this.reservations = enrichedReservations;
+        },
+        error: (err) => {
+          if (err?.status === 404) {
+            this.reservations = [];
+          } else {
+            console.error('Error loading reservations:', err);
+          }
+        },
+      });
+  }
+
+  async fetchListingForReservation(reservation: any): Promise<any> {
+    try {
+      const listing = await firstValueFrom(
+        this.api.get<any>(`listings/${reservation.listingId}`)
+      );
+      return {
+        ...reservation,
+        listingTitle: listing.title,
+        listingImage:
+          listing.images?.[0] ||
+          '/assets/images/rentals-defaults/livingroom-overview-default.jpeg',
+        listingLocation: listing.location?.city || 'Unknown',
+      };
+    } catch (error) {
+      console.error(
+        'Failed to fetch listing for reservation:',
+        reservation._id
+      );
+      return {
+        ...reservation,
+        listingTitle: 'Unknown Listing',
+        listingImage:
+          '/assets/images/rentals-defaults/livingroom-overview-default.jpeg',
+        listingLocation: 'Unknown',
+      };
+    }
+  }
+
+  goToListing(listingId: string): void {
+    this.router.navigate(['/rental', listingId]);
   }
 
   get profilePicture(): string {

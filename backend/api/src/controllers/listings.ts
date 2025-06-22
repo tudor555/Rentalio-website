@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getListingsCount,
   getListings,
   getListingById,
   createListing,
@@ -13,7 +14,7 @@ export const getAllListings = async (
   res: express.Response
 ) => {
   try {
-    const listings = await getListings();
+    const listings = await getListings({});
 
     console.log(`Succesfully get all listings.`);
     return res.status(200).json(listings);
@@ -62,9 +63,15 @@ export const searchListings = async (
       from,
       to,
       sort,
-      limit,
       priceType,
     } = req.query;
+
+    const page = parseInt(req.query.page as string) || 1;
+    const pageSize =
+      parseInt(req.query.limit as string) ||
+      parseInt(req.query.pageSize as string) ||
+      9;
+    const skip = (page - 1) * pageSize;
 
     const filter: any = {};
 
@@ -100,18 +107,21 @@ export const searchListings = async (
       title_desc: { title: -1 },
     };
 
-    const sortQuery = sortOptions[sort as string] || {};
+    const sortQuery = sortOptions[sort as string] || { createdAt: -1 };
 
-    const limitNumber = limit ? parseInt(limit as string, 10) : undefined;
-
-    const listings = await getListings({
-      filter,
-      sort: sortQuery,
-      limit: limitNumber,
-    });
+    const [listings, total] = await Promise.all([
+      getListings({ filter, sort: sortQuery, skip, limit: pageSize }),
+      getListingsCount(filter),
+    ]);
 
     console.log("Filtered listings search performed");
-    return res.status(200).json(listings);
+    return res.status(200).json({
+      data: listings,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    });
   } catch (error) {
     console.error("Error searching listings:", error);
     return res.status(500).json({ error: "Internal server error" });

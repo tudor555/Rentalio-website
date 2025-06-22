@@ -46,6 +46,44 @@ export const getReservation = async (
   }
 };
 
+export const getReservationsByUser = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { userId } = req.params;
+
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+    const skip = (page - 1) * limit;
+
+    const total = await ReservationModel.countDocuments({ userId });
+
+    const reservations = await ReservationModel.find({ userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    if (!reservations || reservations.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No reservations found for this user." });
+    }
+
+    console.log(`Successfully retrieved reservations for user: ${userId}`);
+    return res.status(200).json({
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+      results: reservations,
+    });
+  } catch (error) {
+    console.error("Error fetching user reservations:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const addReservation = async (
   req: express.Request,
   res: express.Response
@@ -126,11 +164,9 @@ export const addReservation = async (
       }
     } else {
       if (!endDate) {
-        return res
-          .status(400)
-          .json({
-            message: "End date is required for non-hourly reservations",
-          });
+        return res.status(400).json({
+          message: "End date is required for non-hourly reservations",
+        });
       }
 
       endData = new Date(endDate);

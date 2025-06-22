@@ -4,6 +4,7 @@ interface GetListingsOptions {
   filter?: Record<string, any>;
   sort?: Record<string, 1 | -1>;
   limit?: number;
+  skip?: number;
 }
 
 const ListingSchema = new mongoose.Schema({
@@ -22,11 +23,11 @@ const ListingSchema = new mongoose.Schema({
     required: true,
   },
   basePrice: { type: Number, required: true }, // Owner's price
-  priceType: { 
-    type: String, 
-    enum: ["hour", "day", "week", "month", "year"], 
+  priceType: {
+    type: String,
+    enum: ["hour", "day", "week", "month", "year"],
     required: true,
-    default: "day"
+    default: "day",
   },
   images: [{ type: String }],
   location: {
@@ -62,7 +63,6 @@ const ListingSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-
 export const ListingModel = mongoose.model(
   "Listing",
   ListingSchema,
@@ -71,17 +71,25 @@ export const ListingModel = mongoose.model(
 
 // CRUD Operations
 
+// Get number of listings
+export const getListingsCount = async (filter: any = {}) => {
+  return ListingModel.countDocuments(filter);
+};
+
 // Get all listings
-export const getListings = ({
+export const getListings = async ({
   filter = {},
   sort = {},
   limit,
-}: GetListingsOptions = {}) => {
-  const query = ListingModel.find(filter).sort(sort);
+  skip = 0,
+}: GetListingsOptions) => {
+  const query = ListingModel.find(filter).sort(sort).skip(skip);
+
   if (limit) {
     query.limit(limit);
   }
-  return query;
+
+  return query.exec();
 };
 
 // Get listing by ID
