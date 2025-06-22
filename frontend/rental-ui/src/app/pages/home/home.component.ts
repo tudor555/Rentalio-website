@@ -55,7 +55,7 @@ export class HomeComponent {
       .get<any>(`listings/search?sort=createdAt_desc&limit=4`)
       .subscribe({
         next: (data) => {
-          this.listings = data;
+          this.listings = data.data;
         },
         error: (err) => {
           console.error('Error fetching last 4 listings:', err);
