@@ -97,7 +97,7 @@ Fetch listings for a specific criteria
 
 Available options:
 
-```json
+```arduino
    - ?limit=number
    - ?city=string
    - ?priceType=day ("hour", "day", "week", "month", "year")
@@ -343,8 +343,8 @@ Body example:
   "childrens": 1
 }
 ```
-This is a read-only request. Flights are fetched externally, not stored in your database.
 
+This is a read-only request. Flights are fetched externally, not stored in your database.
 
 ## Payments
 
