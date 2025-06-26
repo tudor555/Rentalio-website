@@ -29,7 +29,15 @@
 
     <!-- Users Table -->
     <div class="mt-10">
-      <h2 class="text-xl font-bold text-white mb-3">Users Management</h2>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xl font-bold text-white">Users Management</h2>
+        <a routerLink="/admin/users"
+          class="inline-flex items-center gap-2 bg-accent text-white px-4 py-2 rounded hover:bg-white hover:text-accent transition text-sm">
+          <i class="fas fa-users"></i>
+          View All Users
+        </a>
+      </div>
+
       <div class="bg-secondaryLighter p-5 rounded shadow overflow-x-auto">
         <table class="w-full border-collapse min-w-[600px]">
           <thead>
@@ -41,7 +49,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr class="border-t border-gray-500 hover:bg-gray-300 transition" *ngFor="let user of users">
+            <tr class="border-t border-gray-500 hover:bg-gray-300 transition" *ngFor="let user of users.slice(0, 5)">
               <td class="p-2">{{ user._id }}</td>
               <td class="p-2 text-accent">{{ user.username || "N/A" }}</td>
               <td class="p-2">
@@ -67,7 +75,17 @@
 
     <!-- Rentals Table -->
     <div class="mt-10">
-      <h2 class="text-xl font-bold text-white mb-3">Rentals Management</h2>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xl font-bold text-white mb-3">Rentals Management</h2>
+        <div class="text-right mt-2">
+          <a routerLink="/admin/rentals"
+            class="inline-flex items-center gap-2 bg-accent text-white px-4 py-2 rounded hover:bg-white hover:text-accent transition text-sm">
+            <i class="fas fa-home"></i>
+            View All Listings
+          </a>
+        </div>
+      </div>
+
       <div class="bg-secondaryLighter p-5 rounded shadow overflow-x-auto">
         <table class="w-full border-collapse min-w-[600px]">
           <thead>
@@ -79,10 +97,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr class="border-t border-gray-500 hover:bg-gray-300 transition" *ngFor="let listing of listings">
+            <tr class="border-t border-gray-500 hover:bg-gray-300 transition"
+              *ngFor="let listing of listings.slice(0, 5)">
               <td class="p-2">{{ listing._id }}</td>
               <td class="p-2 text-accent">{{ listing.title }}</td>
-              <td class="p-2">{{ listing.ownerId }}</td>
+              <td class="p-2">{{ listing.ownerName }}</td>
               <td class="p-2">
                 <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 flex items-center gap-1">
                   <i class="fas fa-trash-alt"></i> <span>Remove</span>
@@ -96,7 +115,17 @@
 
     <!-- Reservations Table -->
     <div class="mt-10">
-      <h2 class="text-xl font-bold text-white mb-3">Reservations Management</h2>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xl font-bold text-white mb-3">Reservations Management</h2>
+        <div class="text-right mt-4">
+          <a routerLink="/admin/reservations"
+            class="inline-flex items-center gap-2 bg-accent text-white px-4 py-2 rounded hover:bg-white hover:text-accent transition text-sm">
+            <i class="fas fa-calendar-check"></i>
+            View All Reservations
+          </a>
+        </div>
+      </div>
+
       <div class="bg-secondaryLighter p-5 rounded shadow overflow-x-auto">
         <table class="w-full border-collapse min-w-[600px]">
           <thead>
@@ -109,13 +138,14 @@
             </tr>
           </thead>
           <tbody>
-            <tr class="border-t border-gray-500 hover:bg-gray-300 transition" *ngFor="let res of reservations">
-              <td class="p-2">{{ res._id }}</td>
-              <td class="p-2">{{ res.fullName || "Guest" }}</td>
-              <td class="p-2">{{ res.listingId }}</td>
+            <tr class="border-t border-gray-500 hover:bg-gray-300 transition"
+              *ngFor="let reservation of reservations.slice(0, 5)">
+              <td class="p-2">{{ reservation._id }}</td>
+              <td class="p-2">{{ reservation.fullName || "Guest" }}</td>
+              <td class="p-2 text-accent">{{ reservation.listingTitle }}</td>
               <td class="p-2">
                 <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                  {{ res.startDate }}
+                  {{ reservation.startDate }}
                 </span>
               </td>
               <td class="p-2">

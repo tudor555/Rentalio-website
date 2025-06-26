@@ -1,13 +1,14 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ApiService } from '../../../services/api.service';
 import { NgClass, NgFor } from '@angular/common';
+import { ApiService } from '../../../services/api.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-admin-dashboard',
   imports: [RouterModule, NgFor, NgClass],
   templateUrl: './admin-dashboard.component.html',
-  styleUrl: './admin-dashboard.component.scss'
+  styleUrl: './admin-dashboard.component.scss',
 })
 export class AdminDashboardComponent implements OnInit {
   private apiService = inject(ApiService);
@@ -25,15 +26,58 @@ export class AdminDashboardComponent implements OnInit {
       this.totalUsers = users.length;
     });
 
-    this.apiService.get<any>('listings/search?sort=createdAt_desc').subscribe((listings) => {
-      this.listings = listings.data || [];
-      console.log(listings);
-      this.totalListings = listings.total;
-    });
+    this.apiService
+      .get<any>('listings/search?sort=createdAt_desc')
+      .subscribe(async (listings) => {
+        this.totalListings = listings.total;
+
+        const listingsData = Array.isArray(listings.data) ? listings.data : [];
+
+        const enrichedListings = await Promise.all(
+          listingsData.map(async (listing: any) => {
+            try {
+              const owner = await firstValueFrom(
+                this.apiService.get<any>(`users/${listing.ownerId}`, true)
+              );
+              return {
+                ...listing,
+                ownerName: owner.username || owner.email || listing.ownerId,
+              };
+            } catch {
+              return {
+                ...listing,
+                ownerName: listing.ownerId,
+              };
+            }
+          })
+        );
+
+        this.listings = enrichedListings;
+      });
 
     this.apiService.get<any[]>('reservations').subscribe((reservations) => {
-      this.reservations = reservations;
       this.totalReservations = reservations.length;
+
+      const fetchRentals = reservations.map(async (res: any) => {
+        try {
+          const listing = await this.apiService
+            .get<any>(`listings/${res.listingId}`, true)
+            .toPromise();
+          return {
+            ...res,
+            listingTitle: listing.title,
+          };
+        } catch {
+          return {
+            ...res,
+            listingTitle: res.listingId,
+          };
+        }
+      });
+
+      Promise.all(fetchRentals).then((results) => {
+        this.reservations = results;
+      });
     });
   }
 }
