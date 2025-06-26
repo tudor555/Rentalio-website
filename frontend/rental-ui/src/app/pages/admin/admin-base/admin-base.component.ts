@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { NgIf } from '@angular/common';
 import { UserSessionService } from '../../../services/user-session.service';
 import { CookieUtil } from '../../../services/cookie.service';
+import { ConfirmationModalComponent } from "../../../components/confirmation-modal/confirmation-modal.component";
 
 @Component({
   selector: 'app-admin',
-  imports: [RouterModule, NgIf],
+  imports: [RouterModule, ConfirmationModalComponent],
   templateUrl: './admin-base.component.html',
   styleUrl: './admin-base.component.scss',
 })
