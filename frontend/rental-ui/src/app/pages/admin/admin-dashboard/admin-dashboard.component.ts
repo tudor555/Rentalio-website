@@ -3,10 +3,11 @@ import { RouterModule } from '@angular/router';
 import { NgClass, NgFor } from '@angular/common';
 import { ApiService } from '../../../services/api.service';
 import { firstValueFrom } from 'rxjs';
+import { ConfirmationModalComponent } from '../../../components/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [RouterModule, NgFor, NgClass],
+  imports: [RouterModule, NgFor, NgClass, ConfirmationModalComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.scss',
 })
@@ -19,6 +20,11 @@ export class AdminDashboardComponent implements OnInit {
   users: any[] = [];
   listings: any[] = [];
   reservations: any[] = [];
+
+  showConfirmModal = false;
+  modalTitle = '';
+  modalMessage = '';
+  modalAction: () => void = () => {};
 
   ngOnInit(): void {
     this.apiService.get<any[]>('users', true).subscribe((users) => {
@@ -79,5 +85,50 @@ export class AdminDashboardComponent implements OnInit {
         this.reservations = results;
       });
     });
+  }
+
+  openUserRemoveModal(userId: string) {
+    this.modalTitle = 'Remove User';
+    this.modalMessage = `Are you sure you want to remove user with ID: ${userId}?`;
+    this.modalAction = () => this.removeUser(userId);
+    this.showConfirmModal = true;
+  }
+
+  openListingRemoveModal(listingId: string) {
+    this.modalTitle = 'Remove Listing';
+    this.modalMessage = `Are you sure you want to remove listing with ID: ${listingId}?`;
+    this.modalAction = () => this.removeListing(listingId);
+    this.showConfirmModal = true;
+  }
+
+  openReservationCancelModal(reservationId: string) {
+    this.modalTitle = 'Cancel Reservation';
+    this.modalMessage = `Are you sure you want to cancel reservation ${reservationId}?`;
+    this.modalAction = () => this.cancelReservation(reservationId);
+    this.showConfirmModal = true;
+  }
+
+  confirmModalAction() {
+    this.modalAction();
+    this.showConfirmModal = false;
+  }
+
+  cancelModal() {
+    this.showConfirmModal = false;
+  }
+
+  // TODO: Implement the remove, cancel option
+
+  removeUser(userId: string) {
+    console.log('Removing user:', userId);
+    // this.apiService.delete(`users/${userId}`).subscribe(...)
+  }
+
+  removeListing(listingId: string) {
+    console.log('Removing listing:', listingId);
+  }
+
+  cancelReservation(resId: string) {
+    console.log('Cancelling reservation:', resId);
   }
 }

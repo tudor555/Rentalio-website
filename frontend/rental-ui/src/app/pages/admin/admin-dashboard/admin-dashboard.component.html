@@ -63,10 +63,12 @@
               </td>
 
               <td class="p-2">
-                <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 flex items-center gap-1">
+                <button (click)="openUserRemoveModal(user._id)"
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 flex items-center gap-1">
                   <i class="fas fa-trash-alt"></i> <span>Remove</span>
                 </button>
               </td>
+
             </tr>
           </tbody>
         </table>
@@ -102,11 +104,14 @@
               <td class="p-2">{{ listing._id }}</td>
               <td class="p-2 text-accent">{{ listing.title }}</td>
               <td class="p-2">{{ listing.ownerName }}</td>
+
               <td class="p-2">
-                <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 flex items-center gap-1">
+                <button (click)="openListingRemoveModal(listing._id)"
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 flex items-center gap-1">
                   <i class="fas fa-trash-alt"></i> <span>Remove</span>
                 </button>
               </td>
+
             </tr>
           </tbody>
         </table>
@@ -147,16 +152,23 @@
                 <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
                   {{ reservation.startDate }}
                 </span>
+
               </td>
               <td class="p-2">
-                <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 flex items-center gap-1">
+                <button (click)="openReservationCancelModal(reservation._id)"
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 flex items-center gap-1">
                   <i class="fas fa-xmark"></i> <span>Cancel</span>
                 </button>
               </td>
+
             </tr>
           </tbody>
         </table>
       </div>
     </div>
+
+    <app-confirmation-modal [show]="showConfirmModal" [title]="modalTitle" [message]="modalMessage"
+      (confirm)="confirmModalAction()" (cancel)="cancelModal()" />
+
   </main>
 </div>
