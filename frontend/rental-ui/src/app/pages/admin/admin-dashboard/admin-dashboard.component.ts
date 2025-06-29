@@ -27,11 +27,21 @@ export class AdminDashboardComponent implements OnInit {
   modalAction: () => void = () => {};
 
   ngOnInit(): void {
+    this.fetchUsers();
+
+    this.fetchListings();
+
+    this.fetchReservations();
+  }
+
+  fetchUsers() {
     this.apiService.get<any[]>('users', true).subscribe((users) => {
       this.users = users;
       this.totalUsers = users.length;
     });
+  }
 
+  fetchListings() {
     this.apiService
       .get<any>('listings/search?sort=createdAt_desc')
       .subscribe(async (listings) => {
@@ -60,15 +70,17 @@ export class AdminDashboardComponent implements OnInit {
 
         this.listings = enrichedListings;
       });
+  }
 
+  fetchReservations() {
     this.apiService.get<any[]>('reservations').subscribe((reservations) => {
       this.totalReservations = reservations.length;
 
       const fetchRentals = reservations.map(async (res: any) => {
         try {
-          const listing = await this.apiService
-            .get<any>(`listings/${res.listingId}`, true)
-            .toPromise();
+          const listing = await firstValueFrom(
+            this.apiService.get<any>(`listings/${res.listingId}`, true)
+          );
           return {
             ...res,
             listingTitle: listing.title,
@@ -94,6 +106,18 @@ export class AdminDashboardComponent implements OnInit {
     this.showConfirmModal = true;
   }
 
+  removeUser(userId: string) {
+    this.apiService.delete(`users/${userId}`, true).subscribe({
+      next: () => {
+        this.showConfirmModal = false;
+        this.fetchUsers();
+      },
+      error: (err) => {
+        console.error('Failed to delete user:', err);
+      },
+    });
+  }
+
   openListingRemoveModal(listingId: string) {
     this.modalTitle = 'Remove Listing';
     this.modalMessage = `Are you sure you want to remove listing with ID: ${listingId}?`;
@@ -101,11 +125,35 @@ export class AdminDashboardComponent implements OnInit {
     this.showConfirmModal = true;
   }
 
+  removeListing(listingId: string) {
+    this.apiService.delete(`listings/${listingId}`, true).subscribe({
+      next: () => {
+        this.showConfirmModal = false;
+        this.fetchListings();
+      },
+      error: (err) => {
+        console.error('Failed to delete reservation:', err);
+      },
+    });
+  }
+
   openReservationCancelModal(reservationId: string) {
     this.modalTitle = 'Cancel Reservation';
     this.modalMessage = `Are you sure you want to cancel reservation ${reservationId}?`;
-    this.modalAction = () => this.cancelReservation(reservationId);
+    this.modalAction = () => this.removeReservation(reservationId);
     this.showConfirmModal = true;
+  }
+
+  removeReservation(reservationId: string) {
+    this.apiService.delete(`reservations/${reservationId}`, true).subscribe({
+      next: () => {
+        this.showConfirmModal = false;
+        this.fetchReservations();
+      },
+      error: (err) => {
+        console.error('Failed to delete reservation:', err);
+      },
+    });
   }
 
   confirmModalAction() {
@@ -115,20 +163,5 @@ export class AdminDashboardComponent implements OnInit {
 
   cancelModal() {
     this.showConfirmModal = false;
-  }
-
-  // TODO: Implement the remove, cancel option
-
-  removeUser(userId: string) {
-    console.log('Removing user:', userId);
-    // this.apiService.delete(`users/${userId}`).subscribe(...)
-  }
-
-  removeListing(listingId: string) {
-    console.log('Removing listing:', listingId);
-  }
-
-  cancelReservation(resId: string) {
-    console.log('Cancelling reservation:', resId);
   }
 }
