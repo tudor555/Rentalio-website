@@ -1,70 +1,111 @@
-<div>
-    <h1 class="text-2xl font-bold text-white mb-6">Rentals Management</h1>
-  
-    <!-- Search + Add Rental -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-      <input
-        type="text"
+<div class="text-white">
+  <h1 class="text-2xl font-bold mb-6">Rentals Management</h1>
+
+  <!-- Search + Add Rental -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+    <!-- Search Input + Button -->
+    <div class="flex-1 flex items-center gap-3">
+      <input type="text" [(ngModel)]="searchTitle" type="text" (keyup.enter)="searchByTitle()"
         placeholder="Search rentals..."
-        class="w-full sm:w-64 px-4 py-2 rounded bg-white text-black focus:outline-none"
-      />
-      <button
-        class="bg-accent text-primary font-semibold px-5 py-2 rounded hover:bg-accent/80 transition"
-      >
-        + Add New Rental
+        class="w-full md:w-96 px-5 py-3 rounded-lg bg-slate-500 text-black placeholder-white focus:outline-none focus:ring-2 focus:ring-accent transition" />
+      <button (click)="searchByTitle()"
+        class="flex items-center gap-2 px-5 py-3 bg-accent text-white rounded-lg hover:bg-white hover:text-accent transition shadow">
+        <i class="fas fa-search"></i>
+        Search
       </button>
     </div>
-  
-    <!-- Rentals Table -->
-    <div class="bg-white p-5 rounded shadow overflow-x-auto">
-      <table class="w-full border-collapse min-w-[700px]">
-        <thead>
-          <tr class="bg-gray-200">
-            <th class="p-2 text-left">ID</th>
-            <th class="p-2 text-left">Title</th>
-            <th class="p-2 text-left">Owner</th>
-            <th class="p-2 text-left">Location</th>
-            <th class="p-2 text-left">Price</th>
-            <th class="p-2 text-left">Status</th>
-            <th class="p-2 text-left">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-t hover:bg-gray-100 transition">
-            <td class="p-2">1</td>
-            <td class="p-2">Cozy Apartment</td>
-            <td class="p-2">John Doe</td>
-            <td class="p-2">New York</td>
-            <td class="p-2">$120/night</td>
-            <td class="p-2 text-green-600 font-semibold">Available</td>
-            <td class="p-2 space-x-2">
-              <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                Edit
-              </button>
-              <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                Remove
-              </button>
-            </td>
-          </tr>
-          <tr class="border-t hover:bg-gray-100 transition">
-            <td class="p-2">2</td>
-            <td class="p-2">Beach House</td>
-            <td class="p-2">Jane Smith</td>
-            <td class="p-2">Miami</td>
-            <td class="p-2">$250/night</td>
-            <td class="p-2 text-red-500 font-semibold">Unavailable</td>
-            <td class="p-2 space-x-2">
-              <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                Edit
-              </button>
-              <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                Remove
-              </button>
-            </td>
-          </tr>
-          <!-- More rows -->
-        </tbody>
-      </table>
-    </div>
+
+    <!-- Add New Rental -->
+    <a routerLink="/rental/list-property"
+      class="flex items-center gap-2 px-5 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-white hover:text-accent transition shadow">
+      <i class="fas fa-plus-circle"></i> Add New Rental
+    </a>
   </div>
-  
+
+  <!-- Rentals Table -->
+  <div class="bg-secondaryLighter p-5 rounded-xl shadow-md overflow-x-auto">
+    <table class="w-full min-w-[700px] border-collapse">
+      <thead>
+        <tr class="bg-gray-500 text-sm uppercase tracking-wide text-white">
+          <th class="p-3 text-left">ID</th>
+          <th class="p-3 text-left">Title</th>
+          <th class="p-3 text-left">Owner</th>
+          <th class="p-3 text-left">Location</th>
+          <th class="p-3 text-left">Price</th>
+          <th class="p-3 text-left">Status</th>
+          <th class="p-3 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let listing of listings" class="border-t border-gray-500 hover:bg-gray-300 transition">
+          <td class="p-3 text-m text-white truncate max-w-[200px]">
+            {{ listing._id }}
+          </td>
+          <td class="p-3 text-m text-accent font-semibold">{{ listing.title }}</td>
+          <td class="p-3 text-m">{{ listing.ownerName }}</td>
+
+          <td class="p-3 text-accent">
+            <i class="fa-solid fa-location-dot text-accent"></i>
+            {{ listing.location.city }} /
+            <span class="text-m text-white">{{ listing.location.country }}</span>
+          </td>
+
+          <td class="p-2">
+            <div class="text-m leading-5 space-y-1">
+              <div class="text-white">
+                <strong>Base:</strong> ${{ listing.basePrice }}
+              </div>
+              <div class="text-yellow-300">
+                <strong>Fee:</strong> ${{ listing.pricing.siteFee }}
+              </div>
+              <div class="text-green-400">
+                <strong>Total:</strong> ${{ listing.pricing.totalAmount }}
+              </div>
+            </div>
+          </td>
+
+          <td class="p-3">
+            <span class="px-2 py-1 rounded-full text-m font-medium" [ngClass]="{
+                'bg-green-200 text-green-800': listing.status === 'active',
+                'bg-red-200 text-red-700': listing.status === 'inactive',
+                'bg-gray-300 text-gray-800': listing.status === 'archived'
+              }">
+              {{ listing.status }}
+            </span>
+          </td>
+
+          <td class="p-6 flex gap-2">
+            <button class="bg-blue-500 hover:bg-blue-600 text-white text-m px-3 py-1 rounded flex items-center gap-1"
+              [routerLink]="['/rental/edit', listing._id]">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="bg-red-500 hover:bg-red-600 text-white text-m px-3 py-1 rounded flex items-center gap-1"
+              (click)="openRemoveModal(listing)">
+              <i class="fas fa-trash-alt"></i> Remove
+            </button>
+          </td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="mt-6 flex justify-end items-center gap-4 text-white">
+    <button (click)="changePage(page - 1)" [disabled]="page === 1"
+      class="px-4 py-2 bg-accent hover:bg-white hover:text-accent rounded disabled:opacity-50">
+      <i class="fas fa-arrow-left"></i> Prev
+    </button>
+
+    <span>Page {{ page }} of {{ totalPages }}</span>
+
+    <button (click)="changePage(page + 1)" [disabled]="page === totalPages"
+      class="px-4 py-2 bg-accent hover:bg-white hover:text-accent rounded disabled:opacity-50">
+      Next <i class="fas fa-arrow-right"></i>
+    </button>
+  </div>
+
+  <app-confirmation-modal [show]="showConfirmModal" [title]="modalTitle" [message]="confirmMessage"
+    (confirm)="confirmRemove()" (cancel)="cancelRemove()" />
+
+</div>
