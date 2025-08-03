@@ -4,6 +4,7 @@ import {
   getUserById,
   deleteUserById,
   updateUserById,
+  getUsersCount,
 } from "../models/users";
 import {
   random,
@@ -17,7 +18,7 @@ export const getAllUsers = async (
   res: express.Response
 ) => {
   try {
-    const users = await getUsers();
+    const users = await getUsers({});
 
     console.log(`Succesfully get all users.`);
     return res.status(200).json(users);
@@ -45,6 +46,59 @@ export const getUser = async (req: express.Request, res: express.Response) => {
     return res.status(200).json(user);
   } catch (error) {
     console.error("Error fetching user:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const searchUsers = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { username, email, role, sort } = req.query;
+
+    const page = parseInt(req.query.page as string) || 1;
+    const pageSize =
+      parseInt(req.query.limit as string) ||
+      parseInt(req.query.pageSize as string) ||
+      10;
+    const skip = (page - 1) * pageSize;
+
+    const filter: any = {};
+
+    if (username)
+      filter.username = { $regex: username as string, $options: "i" };
+
+    if (email) filter.email = { $regex: email as string, $options: "i" };
+
+    if (role) filter.role = role;
+
+    // Sorting options
+    const sortOptions: Record<string, any> = {
+      createdAt_desc: { createdAt: -1 },
+      createdAt_asc: { createdAt: 1 },
+      username_asc: { username: 1 },
+      username_desc: { username: -1 },
+    };
+
+    const sortQuery = sortOptions[sort as string] || { createdAt: -1 };
+
+    // Fetch users
+    const [users, total] = await Promise.all([
+      getUsers({ filter, sort: sortQuery, skip, limit: pageSize }),
+      getUsersCount(filter),
+    ]);
+
+    console.log("Filtered users search performed");
+    return res.status(200).json({
+      data: users,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    });
+  } catch (error) {
+    console.error("Error searching users:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
