@@ -26,7 +26,7 @@
   <div class="bg-secondaryLighter p-5 rounded-xl shadow-md overflow-x-auto">
     <table class="w-full min-w-[700px] border-collapse">
       <thead>
-        <tr class="bg-gray-500 text-sm uppercase tracking-wide text-white">
+        <tr class="bg-gray-500 text-m uppercase tracking-wide text-white">
           <th class="p-3 text-left">ID</th>
           <th class="p-3 text-left">Title</th>
           <th class="p-3 text-left">Owner</th>
@@ -37,7 +37,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let listing of listings" class="border-t border-gray-500 hover:bg-gray-300 transition">
+        <tr *ngFor="let listing of listings" class="border-t border-gray-500 hover:bg-gray-300/50 transition">
           <td class="p-3 text-m text-white truncate max-w-[200px]">
             {{ listing._id }}
           </td>
