@@ -1,4 +1,5 @@
 import express from "express";
+import { get } from "lodash";
 import { getUserById } from "../../models/users";
 
 export const checkRoleChange: express.RequestHandler = async (
@@ -8,9 +9,9 @@ export const checkRoleChange: express.RequestHandler = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const { role } = req.body;
+    const requestedRole = req.body.role;
 
-    if (!role) {
+    if (!requestedRole) {
       return next();
     }
 
@@ -20,20 +21,23 @@ export const checkRoleChange: express.RequestHandler = async (
       return;
     }
 
+    const currentRole = user.role;
     const allowedRoles = ["owner", "visitor", "admin"];
 
-    if (!allowedRoles.includes(role)) {
+    if (!allowedRoles.includes(requestedRole)) {
       res.status(400).json({ message: "Invalid role" });
       return;
     }
 
+    const requesterRole = get(req, "identity.role");
+
     // Allow admins to change roles freely
-    if (user.role === "admin") {
+    if (requesterRole === "admin") {
       return next();
     }
 
     // Allow upgrading from "visitor" to "owner"
-    if (user.role === "visitor" && role === "owner") {
+    if (currentRole === "visitor" && requestedRole === "owner") {
       return next();
     }
 
