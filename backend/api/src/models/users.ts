@@ -23,7 +23,6 @@ const UserSchema = new mongoose.Schema({
 
 export const UserModel = mongoose.model("User", UserSchema, "users");
 
-// export const getUsers = () => UserModel.find();
 export const getUsers = async ({
   filter = {},
   sort = {},
