@@ -3,6 +3,7 @@ import {
   getAllReservations,
   getReservation,
   getReservationsByUser,
+  searchReservations,
   addReservation,
   updateReservation,
   deleteReservation,
@@ -23,6 +24,32 @@ export default (router: express.Router) => {
       next(error);
     }
   });
+
+  // GET reservations with certain parameters
+  // Example usage of /reservations/search with query parameters:
+  // - ?searchTerm=string
+  // - ?fullName=string
+  // - ?email=string
+  // - ?status=string
+  // - ?dateFrom=ISODate
+  // - ?dateTo=ISODate
+  // - ?pageSize=number
+  // - ?page=number
+  // - ?sort=startate_asc (options: createdAt_asc, createdAt_desc, startDate_asc, startDate_desc)
+  // All query parameters are optional and can be combined
+  // Returns filtered and sorted reservations based on query
+  router.get(
+    "/reservations/search",
+    isAuthenticated,
+    isAdmin,
+    async (req, res, next) => {
+      try {
+        await searchReservations(req, res);
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
 
   // GET reservation by id
   router.get(
