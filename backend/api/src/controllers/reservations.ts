@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getReservationsCount,
   getReservations,
   getReservationById,
   createReservation,
@@ -15,7 +16,7 @@ export const getAllReservations = async (
   res: express.Response
 ) => {
   try {
-    const reservations = await getReservations();
+    const reservations = await getReservations({});
 
     console.log(`Succesfully get all reservations.`);
     return res.status(200).json(reservations);
@@ -81,6 +82,95 @@ export const getReservationsByUser = async (
   } catch (error) {
     console.error("Error fetching user reservations:", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const searchReservations = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const {
+      searchTerm,   // free text: fullName/email
+      fullName,
+      email,
+      status,       // "pending" | "confirmed" | "canceled"
+      dateFrom,     // ISO date string (filter by startDate >= dateFrom)
+      dateTo,       // ISO date string (filter by endDate <= dateTo)
+      sort,         // createdAt_desc|createdAt_asc|startDate_desc|startDate_asc
+    } = req.query;
+
+    const page = parseInt(req.query.page as string) || 1;
+    const pageSize =
+      parseInt(req.query.limit as string) ||
+      parseInt(req.query.pageSize as string) ||
+      10;
+    const skip = (page - 1) * pageSize;
+
+    const filter: any = {};
+
+    // Status (strict)
+    const allowedStatuses = ["pending", "confirmed", "canceled"];
+    if (status && allowedStatuses.includes(String(status))) {
+      filter.status = status;
+    }
+
+    // Field-specific search
+    if (fullName) {
+      filter.fullName = { $regex: String(fullName), $options: "i" };
+    }
+    if (email) {
+      filter.email = { $regex: String(email), $options: "i" };
+    }
+
+    // Free text search across name/email
+    if (searchTerm && !fullName && !email) {
+      const needle = String(searchTerm);
+      filter.$or = [
+        { fullName: { $regex: needle, $options: "i" } },
+        { email: { $regex: needle, $options: "i" } },
+      ];
+    }
+
+    // Date window
+    if (dateFrom) {
+      filter.startDate = {
+        ...(filter.startDate || {}),
+        $gte: new Date(String(dateFrom)),
+      };
+    }
+    if (dateTo) {
+      // endDate can be null for hourly bookings
+      filter.endDate = {
+        ...(filter.endDate || {}),
+        $lte: new Date(String(dateTo)),
+      };
+    }
+
+    const sortOptions: Record<string, any> = {
+      createdAt_desc: { createdAt: -1 },
+      createdAt_asc: { createdAt: 1 },
+      startDate_desc: { startDate: -1 },
+      startDate_asc: { startDate: 1 },
+    };
+    const sortQuery = sortOptions[String(sort)] || { createdAt: -1 };
+
+    const [reservations, total] = await Promise.all([
+      getReservations({ filter, sort: sortQuery, skip, limit: pageSize }),
+      getReservationsCount(filter),
+    ]);
+
+    console.log("Filtered reservations search performed");
+    return res.status(200).json({
+      data: reservations,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    });
+  } catch (error) {
+    console.error("Error searching reservations:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
