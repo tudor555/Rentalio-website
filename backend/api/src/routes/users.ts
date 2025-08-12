@@ -35,7 +35,7 @@ export default (router: express.Router) => {
   // - ?page=number
   // - ?sort=price_asc (options: createdAt_asc, createdAt_desc, username_asc, username_desc)
   // All query parameters are optional and can be combined
-  // Returns filtered and sorted listings based on query
+  // Returns filtered and sorted users based on query
   router.get(
     "/users/search",
     isAuthenticated,
