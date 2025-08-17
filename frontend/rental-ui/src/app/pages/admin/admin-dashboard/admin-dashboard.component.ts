@@ -73,30 +73,36 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   fetchReservations() {
-    this.apiService.get<any[]>('reservations').subscribe((reservations) => {
-      this.totalReservations = reservations.length;
+    this.apiService
+      .get<any>('reservations/search?sort=createdAt_desc', true)
+      .subscribe(async (reservations) => {
+        this.totalReservations = reservations.total;
 
-      const fetchRentals = reservations.map(async (res: any) => {
-        try {
-          const listing = await firstValueFrom(
-            this.apiService.get<any>(`listings/${res.listingId}`, true)
-          );
-          return {
-            ...res,
-            listingTitle: listing.title,
-          };
-        } catch {
-          return {
-            ...res,
-            listingTitle: res.listingId,
-          };
-        }
-      });
+        const reservationsData = Array.isArray(reservations.data)
+          ? reservations.data
+          : [];
 
-      Promise.all(fetchRentals).then((results) => {
-        this.reservations = results;
+        const fetchRentals = reservationsData.map(async (res: any) => {
+          try {
+            const listing = await firstValueFrom(
+              this.apiService.get<any>(`listings/${res.listingId}`, true)
+            );
+            return {
+              ...res,
+              listingTitle: listing.title,
+            };
+          } catch {
+            return {
+              ...res,
+              listingTitle: res.listingId,
+            };
+          }
+        });
+
+        Promise.all(fetchRentals).then((results) => {
+          this.reservations = results;
+        });
       });
-    });
   }
 
   openUserRemoveModal(userId: string) {
