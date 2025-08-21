@@ -24,6 +24,54 @@
         </select>
     </div>
 
+    <!-- Reservation Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-6">
+        <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+            <i class="fas fa-list-check text-4xl text-primary"></i>
+            <div>
+                <h2 class="text-lg font-semibold text-primary">Total Reservations</h2>
+                <p class="text-3xl font-bold text-white mt-1">
+                    <ng-container *ngIf="!statsLoading; else loadingDots">{{ stats.total }}</ng-container>
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+            <i class="fas fa-check-circle text-4xl text-primary"></i>
+            <div>
+                <h2 class="text-lg font-semibold text-primary">Confirmed</h2>
+                <p class="text-3xl font-bold text-white mt-1">
+                    <ng-container *ngIf="!statsLoading; else loadingDots">{{ stats.confirmed }}</ng-container>
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+            <i class="fas fa-hourglass-half text-4xl text-primary"></i>
+            <div>
+                <h2 class="text-lg font-semibold text-primary">Pending</h2>
+                <p class="text-3xl font-bold text-white mt-1">
+                    <ng-container *ngIf="!statsLoading; else loadingDots">{{ stats.pending }}</ng-container>
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+            <i class="fas fa-ban text-4xl text-primary"></i>
+            <div>
+                <h2 class="text-lg font-semibold text-primary">Canceled</h2>
+                <p class="text-3xl font-bold text-white mt-1">
+                    <ng-container *ngIf="!statsLoading; else loadingDots">{{ stats.canceled }}</ng-container>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #loadingDots>
+        <span class="opacity-70">...</span>
+    </ng-template>
+
+
     <!-- TODO: Finish implement UI -->
     <!-- Reservations Table -->
     <div class="bg-secondaryLighter p-6 rounded shadow overflow-x-auto mt-6">
