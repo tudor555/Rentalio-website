@@ -85,19 +85,70 @@ export const getReservationsByUser = async (
   }
 };
 
+export const getReservationsStats = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { searchTerm, status } = req.query;
+
+    // Build filter for aggregation
+    const filter: any = {};
+    if (status) {
+      filter.status = status;
+    }
+
+    if (searchTerm && String(searchTerm).trim()) {
+      const term = String(searchTerm).trim();
+      filter.$or = [
+        { fullName: { $regex: term, $options: "i" } },
+        { email: { $regex: term, $options: "i" } },
+      ];
+    }
+
+    // Group counts by status for the (possibly) filtered set
+    const grouped = await ReservationModel.aggregate([
+      { $match: filter },
+      { $group: { _id: "$status", count: { $sum: 1 } } },
+    ]);
+
+    // Total for the filtered set
+    const total = grouped.reduce((sum, g) => sum + g.count, 0);
+
+    const stats = {
+      total,
+      confirmed: 0,
+      pending: 0,
+      canceled: 0,
+    };
+
+    for (const row of grouped) {
+      if (row._id === "confirmed") stats.confirmed = row.count;
+      if (row._id === "pending") stats.pending = row.count;
+      if (row._id === "canceled") stats.canceled = row.count;
+    }
+
+    console.log(`Successfully get reservations stats.`);
+    return res.status(200).json(stats);
+  } catch (err) {
+    console.error("Error getting reservations stats:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const searchReservations = async (
   req: express.Request,
   res: express.Response
 ) => {
   try {
     const {
-      searchTerm,   // free text: fullName/email
+      searchTerm, // free text: fullName/email
       fullName,
       email,
-      status,       // "pending" | "confirmed" | "canceled"
-      dateFrom,     // ISO date string (filter by startDate >= dateFrom)
-      dateTo,       // ISO date string (filter by endDate <= dateTo)
-      sort,         // createdAt_desc|createdAt_asc|startDate_desc|startDate_asc
+      status, // "pending" | "confirmed" | "canceled"
+      dateFrom, // ISO date string (filter by startDate >= dateFrom)
+      dateTo, // ISO date string (filter by endDate <= dateTo)
+      sort, // createdAt_desc|createdAt_asc|startDate_desc|startDate_asc
     } = req.query;
 
     const page = parseInt(req.query.page as string) || 1;
