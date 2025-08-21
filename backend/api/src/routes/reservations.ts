@@ -3,6 +3,7 @@ import {
   getAllReservations,
   getReservation,
   getReservationsByUser,
+  getReservationsStats,
   searchReservations,
   addReservation,
   updateReservation,
@@ -45,6 +46,23 @@ export default (router: express.Router) => {
     async (req, res, next) => {
       try {
         await searchReservations(req, res);
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
+
+  // GET reservations stats
+  // Optional query params:
+  // - searchTerm: string   (matches fullName OR email, case-insensitive)
+  // - status:     string   ('confirmed' | 'pending' | 'canceled')
+  router.get(
+    "/reservations/stats",
+    isAuthenticated,
+    isAdmin,
+    async (req, res, next) => {
+      try {
+        await getReservationsStats(req, res);
       } catch (error) {
         next(error);
       }
