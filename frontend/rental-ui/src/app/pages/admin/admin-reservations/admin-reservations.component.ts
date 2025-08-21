@@ -22,12 +22,21 @@ export class AdminReservationsComponent {
   searchTerm = '';
   statusFilter: '' | 'pending' | 'confirmed' | 'canceled' = '';
 
+  stats = {
+    total: 0,
+    confirmed: 0,
+    pending: 0,
+    canceled: 0,
+  };
+
   loading = false;
+  statsLoading = false;
 
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.fetchReservations();
+    this.fetchStats();
   }
 
   fetchReservations(): void {
@@ -72,12 +81,43 @@ export class AdminReservationsComponent {
           this.totalItems = res.total ?? rows.length;
           this.totalPages = res.totalPages ?? 1;
           this.loading = false;
+
+          this.fetchStats();
         },
         error: () => {
           this.reservations = [];
           this.totalItems = 0;
           this.totalPages = 1;
           this.loading = false;
+
+          this.fetchStats();
+        },
+      });
+  }
+
+  fetchStats(): void {
+    this.statsLoading = true;
+
+    const params = new URLSearchParams();
+    if (this.searchTerm.trim())
+      params.set('searchTerm', this.searchTerm.trim());
+    if (this.statusFilter) params.set('status', this.statusFilter);
+
+    this.apiService
+      .get<any>(`reservations/stats?${params.toString()}`, true)
+      .subscribe({
+        next: (res) => {
+          this.stats = res || {
+            total: 0,
+            confirmed: 0,
+            pending: 0,
+            canceled: 0,
+          };
+          this.statsLoading = false;
+        },
+        error: () => {
+          this.stats = { total: 0, confirmed: 0, pending: 0, canceled: 0 };
+          this.statsLoading = false;
         },
       });
   }
