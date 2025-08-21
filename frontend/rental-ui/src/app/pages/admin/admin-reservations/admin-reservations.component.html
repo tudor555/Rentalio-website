@@ -200,4 +200,8 @@
         </button>
     </div>
 
+
+    <app-confirmation-modal [show]="showCancelModal" title="Remove Reservation" [message]="modalMessage"
+        (confirm)="confirmRemove()" (cancel)="cancelCancelModal()">
+    </app-confirmation-modal>
 </div>
