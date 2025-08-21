@@ -4,10 +4,19 @@ import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../../services/api.service';
 import { RouterModule } from '@angular/router';
+import { ConfirmationModalComponent } from '../../../components/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-admin-reservations',
-  imports: [RouterModule, DatePipe, NgClass, NgIf, NgFor, FormsModule],
+  imports: [
+    RouterModule,
+    DatePipe,
+    NgClass,
+    NgIf,
+    NgFor,
+    FormsModule,
+    ConfirmationModalComponent,
+  ],
   templateUrl: './admin-reservations.component.html',
   styleUrl: './admin-reservations.component.scss',
 })
@@ -31,6 +40,10 @@ export class AdminReservationsComponent {
 
   loading = false;
   statsLoading = false;
+
+  showCancelModal = false;
+  selectedReservation: any = null;
+  modalMessage = '';
 
   constructor(private apiService: ApiService) {}
 
@@ -137,5 +150,32 @@ export class AdminReservationsComponent {
     this.fetchReservations();
   }
 
-  openCancelModal(test: any) {}
+  openCancelModal(reservation: any) {
+    this.selectedReservation = reservation;
+    this.modalMessage = `Are you sure you want to remove the reservation for "${reservation.fullName}" at "${reservation.listingTitle}"?`;
+    this.showCancelModal = true;
+  }
+
+  cancelCancelModal() {
+    this.showCancelModal = false;
+    this.selectedReservation = null;
+  }
+
+  confirmRemove() {
+    if (!this.selectedReservation) return;
+
+    this.apiService
+      .delete<any>(`reservations/${this.selectedReservation._id}`, true)
+      .subscribe({
+        next: () => {
+          this.fetchReservations();
+          this.showCancelModal = false;
+          this.selectedReservation = null;
+        },
+        error: (err) => {
+          console.error('Failed to cancel reservation', err);
+          this.showCancelModal = false;
+        },
+      });
+  }
 }
