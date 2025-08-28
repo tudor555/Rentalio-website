@@ -71,8 +71,6 @@
         <span class="opacity-70">...</span>
     </ng-template>
 
-
-    <!-- TODO: Finish implement UI -->
     <!-- Reservations Table -->
     <div class="bg-secondaryLighter p-6 rounded shadow overflow-x-auto mt-6">
 
@@ -131,7 +129,9 @@
                             </span>
                             <span class="text-accent">{{ reservation.startDate | date: 'yyyy-MM-dd' }}</span>
                         </div>
-                        <div>
+
+                        <!-- For daily/weekly/monthly -->
+                        <div *ngIf="reservation.priceType !== 'hour'; else hourlyInfo">
                             <span class="text-white font-medium">
                                 <i class="fas fa-sign-out-alt mr-1"></i>Check-out:
                             </span>
@@ -139,6 +139,14 @@
                                 {{ reservation.endDate ? (reservation.endDate | date: 'yyyy-MM-dd') : 'N/A' }}
                             </span>
                         </div>
+
+                        <!-- For hourly -->
+                        <ng-template #hourlyInfo>
+                            <span class="text-white font-medium">
+                                <i class="fas fa-clock mr-1"></i>Hours:
+                            </span>
+                            <span class="text-accent">{{ reservation.numberOfHours }}</span>
+                        </ng-template>
                     </td>
 
                     <!-- Earnings -->
@@ -159,7 +167,7 @@
                         <span [ngClass]="{
                                 'bg-green-100 text-green-800': reservation.status === 'confirmed',
                                 'bg-yellow-100 text-yellow-800': reservation.status === 'pending',
-                                'bg-red-100 text-red-800': reservation.status === 'canceled'
+                                'bg-red-100 text-red-800': reservation.status === 'cancelled'
                             }" class="px-3 py-1 rounded-full text-m font-semibold capitalize"> {{ reservation.status }}
                         </span>
                     </td>
@@ -168,7 +176,8 @@
                     <td class="p-3 align-middle">
                         <div class="flex flex-col sm:flex-row justify-center gap-2">
                             <button
-                                class="bg-blue-500 hover:bg-blue-600 text-white text-m px-3 py-1 rounded flex items-center gap-1">
+                                class="bg-blue-500 hover:bg-blue-600 text-white text-m px-3 py-1 rounded flex items-center gap-1"
+                                (click)="openEditModal(reservation)">
                                 <i class="fas fa-edit"></i> Edit
                             </button>
                             <button
@@ -204,4 +213,105 @@
     <app-confirmation-modal [show]="showCancelModal" title="Remove Reservation" [message]="modalMessage"
         (confirm)="confirmRemove()" (cancel)="cancelCancelModal()">
     </app-confirmation-modal>
+
+    <!-- Edit reservation modal -->
+    <div *ngIf="showEditModal" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
+        (click)="closeEditModal()">
+        <div class="bg-secondary text-white p-6 rounded-xl w-full max-w-lg relative shadow-lg"
+            (click)="$event.stopPropagation()">
+            <h2 class="text-2xl font-bold text-white mb-6">Edit Reservation</h2>
+
+            <!-- Guest & Rental Info (Read-only) -->
+            <div class="mb-6">
+                <div class="text-lg font-semibold text-accent">{{ editReservation.fullName }}</div>
+                <div class="text-lg text-gray-300">{{ editReservation.email }}</div>
+                <div class="text-lg text-gray-300 italic mt-1">
+                    Rental: {{ editReservation.listingTitle }}
+                </div>
+            </div>
+
+            <!-- Dates -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+                <!-- If rental is per day/week/month/year -->
+                <ng-container *ngIf="editReservation.priceType !== 'hour'; else hourlyRental">
+                    <!-- Check-in -->
+                    <div>
+                        <label class="block text-sm font-semibold text-accent mb-1">Check-in</label>
+                        <input type="date" (keydown)="preventTyping($event)" [(ngModel)]="editReservation.startDate"
+                            [min]="today" (change)="recalculatePrice()"
+                            class="w-full px-4 py-2 rounded bg-slate-500 text-black border border-gray-300" />
+                    </div>
+
+                    <!-- Check-out -->
+                    <div>
+                        <label class="block text-sm font-semibold text-accent mb-1">Check-out</label>
+                        <input type="date" (keydown)="preventTyping($event)" [(ngModel)]="editReservation.endDate"
+                            [min]="editReservation.startDate || today" (change)="recalculatePrice()"
+                            class="w-full px-4 py-2 rounded bg-slate-500 text-black border border-gray-300" />
+                    </div>
+                </ng-container>
+
+                <!-- Hourly rental -->
+                <ng-template #hourlyRental>
+                    <!-- Start Date -->
+                    <div>
+                        <label class="block text-sm font-semibold text-accent mb-1">Date</label>
+                        <input type="date" (keydown)="preventTyping($event)" [(ngModel)]="editReservation.startDate"
+                            [min]="today" (change)="recalculatePrice()"
+                            class="w-full px-4 py-2 rounded bg-slate-500 text-black border border-gray-300" />
+                    </div>
+
+                    <!-- Number of hours -->
+                    <div>
+                        <label class="block text-sm font-semibold text-accent mb-1">Number of Hours</label>
+                        <input type="number" [(ngModel)]="editReservation.numberOfHours" min="1"
+                            (input)="recalculatePrice()"
+                            class="w-full px-4 py-2 rounded bg-slate-500 text-black border border-gray-300" />
+                    </div>
+                </ng-template>
+            </div>
+
+            <!-- Status -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold text-accent mb-1">Status</label>
+                <select [(ngModel)]="editReservation.status"
+                    class="w-full px-4 py-2 rounded bg-slate-500 text-black border border-gray-300">
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="cancelled">Canceled</option>
+                </select>
+            </div>
+
+            <!-- Updated price -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-accent mb-2">Updated Pricing</h3>
+                <div class="space-y-1 text-sm">
+                    <div class="text-green-400">
+                        <i class="fas fa-hand-holding-usd"></i> Owner: ${{ editReservation.ownerAmount }}
+                    </div>
+                    <div class="text-red-400">
+                        <i class="fas fa-money-bill-wave"></i> Fee: ${{ editReservation.siteFee }}
+                    </div>
+                    <div class="text-white font-bold">
+                        <i class="fas fa-wallet"></i> Total: ${{ editReservation.totalAmount }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="errorMessage" class="text-red-500 text-m mb-3">
+                <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end gap-3">
+                <button class="px-5 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded"
+                    (click)="closeEditModal()">Cancel</button>
+                <button class="px-5 py-2 bg-accent text-white hover:bg-white hover:text-accent rounded"
+                    (click)="saveReservation()">Save</button>
+            </div>
+        </div>
+    </div>
+
 </div>
