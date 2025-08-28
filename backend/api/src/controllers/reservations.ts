@@ -125,7 +125,7 @@ export const getReservationsStats = async (
     for (const row of grouped) {
       if (row._id === "confirmed") stats.confirmed = row.count;
       if (row._id === "pending") stats.pending = row.count;
-      if (row._id === "canceled") stats.canceled = row.count;
+      if (row._id === "cancelled") stats.canceled = row.count;
     }
 
     console.log(`Successfully get reservations stats.`);
@@ -379,9 +379,6 @@ export const updateReservation = async (
     const restrictedFields: string[] = [
       "userId",
       "ownerId",
-      "totalAmount",
-      "ownerAmount",
-      "siteFee",
       "createdAt",
     ];
 
