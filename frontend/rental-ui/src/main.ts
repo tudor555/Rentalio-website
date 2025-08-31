@@ -5,6 +5,9 @@ import { routes } from './app/app.routes';
 import { importProvidersFrom } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 bootstrapApplication(AppComponent, {
   providers: [
