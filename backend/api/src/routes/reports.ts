@@ -1,19 +1,16 @@
 import express from "express";
-import {
-  isAuthenticated,
-  isAdmin,
-  isOwnerOrAdmin,
-  validateObjectId,
-} from "../middlewares";
+import { isAuthenticated, isAdmin, validateObjectId } from "../middlewares";
+import { getKpis } from "../controllers/reports";
 
 export default (router: express.Router) => {
-  // GET reports Key Performance Status
+  // GET reports Key Performance Indicator(KPI)
   router.get(
     "/reports/kpis",
     isAuthenticated,
     isAdmin,
     async (req, res, next) => {
       try {
+        await getKpis(req, res);
       } catch (error) {
         next(error);
       }
