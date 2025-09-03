@@ -1,6 +1,7 @@
 import express from "express";
-import { ReservationModel } from "../models/reservations";
 import { UserModel } from "../models/users";
+import { ListingModel } from "../models/listings";
+import { ReservationModel } from "../models/reservations";
 
 export const getKpis = async (req: express.Request, res: express.Response) => {
   try {
@@ -127,5 +128,82 @@ export const getMonthlyRevenue = async (
     return res
       .status(500)
       .json({ message: "Internal server error while fetching revenue" });
+  }
+};
+
+export const getTopRentals = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { startDate, endDate, limit = 5 } = req.query;
+
+    let fromDate: Date | null = null;
+    let toDate: Date | null = null;
+
+    if (startDate) {
+      fromDate = new Date(startDate as string);
+      if (isNaN(fromDate.getTime())) {
+        return res.status(400).json({ message: "Invalid startDate parameter" });
+      }
+    }
+
+    if (endDate) {
+      toDate = new Date(endDate as string);
+      if (isNaN(toDate.getTime())) {
+        return res.status(400).json({ message: "Invalid endDate parameter" });
+      }
+    }
+
+    if (fromDate && toDate && fromDate > toDate) {
+      return res
+        .status(400)
+        .json({ message: "startDate must be before or equal to endDate" });
+    }
+
+    const match: any = {};
+    if (fromDate || toDate) {
+      match.createdAt = {};
+      if (fromDate) match.createdAt.$gte = fromDate;
+      if (toDate) match.createdAt.$lte = toDate;
+    }
+
+    const results = await ReservationModel.aggregate([
+      { $match: match },
+      {
+        $group: {
+          _id: "$listingId",
+          reservationCount: { $sum: 1 },
+          totalRevenue: { $sum: "$siteFee" },
+          ownerId: { $first: "$ownerId" },
+        },
+      },
+      { $sort: { totalRevenue: -1 } },
+      { $limit: Number(limit) },
+    ]);
+
+    // Enrich with rental + owner names
+    const enriched = await Promise.all(
+      results.map(async (r) => {
+        const listing = await ListingModel.findById(r._id).select("title");
+        const owner = await UserModel.findById(r.ownerId).select(
+          "username email"
+        );
+        return {
+          rentalId: r._id,
+          rentalTitle: listing?.title || "Unknown",
+          owner: owner?.username || "Unknown",
+          reservations: r.reservationCount,
+          siteRevenue: r.totalRevenue,
+        };
+      })
+    );
+
+    return res.status(200).json({ data: enriched });
+  } catch (error) {
+    console.error("Error fetching top rentals:", error);
+    return res
+      .status(500)
+      .json({ message: "Internal server error while fetching top rentals" });
   }
 };

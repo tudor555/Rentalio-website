@@ -1,6 +1,10 @@
 import express from "express";
-import { isAuthenticated, isAdmin, validateObjectId } from "../middlewares";
-import { getKpis, getMonthlyRevenue } from "../controllers/reports";
+import { isAuthenticated, isAdmin } from "../middlewares";
+import {
+  getKpis,
+  getMonthlyRevenue,
+  getTopRentals,
+} from "../controllers/reports";
 
 export default (router: express.Router) => {
   // GET reports Key Performance Indicator(KPI)
@@ -38,6 +42,7 @@ export default (router: express.Router) => {
     isAdmin,
     async (req, res, next) => {
       try {
+        getTopRentals(req, res);
       } catch (error) {
         next(error);
       }
