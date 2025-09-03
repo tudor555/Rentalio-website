@@ -52,7 +52,7 @@ export const getKpis = async (req: express.Request, res: express.Response) => {
         ReservationModel.countDocuments(dateFilter),
 
         // Cancellations
-        ReservationModel.countDocuments({ ...dateFilter, status: "canceled" }),
+        ReservationModel.countDocuments({ ...dateFilter, status: "cancelled" }),
 
         // New Users
         UserModel.countDocuments(dateFilter),
