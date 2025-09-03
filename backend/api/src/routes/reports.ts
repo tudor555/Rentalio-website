@@ -3,6 +3,7 @@ import { isAuthenticated, isAdmin } from "../middlewares";
 import {
   getKpis,
   getMonthlyRevenue,
+  getReservationsByStatus,
   getTopRentals,
 } from "../controllers/reports";
 
@@ -56,6 +57,7 @@ export default (router: express.Router) => {
     isAdmin,
     async (req, res, next) => {
       try {
+        getReservationsByStatus(req, res);
       } catch (error) {
         next(error);
       }
