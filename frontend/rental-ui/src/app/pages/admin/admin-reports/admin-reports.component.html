@@ -1,80 +1,123 @@
 <div>
-    <h1 class="text-2xl font-bold text-white mb-6">Reports & Insights</h1>
-  
-    <!-- Date Filter + Download -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-      <div class="flex gap-2">
-        <input
-          type="date"
-          class="px-4 py-2 rounded bg-primary text-white focus:outline-none focus:ring-2 focus:ring-accent"
-        />
-        <input
-          type="date"
-          class="px-4 py-2 rounded bg-primary text-white focus:outline-none focus:ring-2 focus:ring-accent"
-        />
-      </div>
-      <button class="bg-accent text-primary font-semibold px-5 py-2 rounded hover:bg-accent/80 transition">
-        Download Report
+  <h1 class="text-2xl font-bold text-white mb-6">Reports & Insights</h1>
+
+  <!-- Date Filters + Report Controls -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+    <!-- Date range -->
+    <div class="flex gap-2">
+      <input type="date" [(ngModel)]="startDate" (keydown)="preventTyping($event)" (keyup.enter)="applyFilters()"
+        class="px-4 py-2 rounded bg-primary text-white focus:outline-none focus:ring-2 focus:ring-accent" />
+      <input type="date" [(ngModel)]="endDate" (keydown)="preventTyping($event)" (keyup.enter)="applyFilters()"
+        class="px-4 py-2 rounded bg-primary text-white focus:outline-none focus:ring-2 focus:ring-accent" />
+
+      <button (click)="applyFilters()"
+        class="bg-accent text-white font-semibold px-5 py-2 rounded hover:bg-white hover:text-accent transition">
+        Apply Filters
       </button>
     </div>
-  
-    <!-- KPI Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-      <div class="bg-accent p-5 rounded shadow">
+
+    <!-- Download report -->
+    <button (click)="downloadReport()"
+      class="bg-accent text-white font-semibold px-4 py-2 rounded hover:bg-white hover:text-accent transition">
+      <i class="fas fa-file-download"></i> Download Report
+    </button>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+    <!-- Site Revenue -->
+    <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+      <i class="fas fa-dollar-sign text-4xl text-primary"></i>
+      <div>
         <h2 class="text-lg font-semibold text-primary">Site Revenue</h2>
-        <p class="text-3xl font-bold mt-2 text-white">$12,450</p>
+        <p class="text-3xl font-bold text-white mt-1">
+          ${{ kpis.siteRevenue | number}}
+        </p>
       </div>
-      <div class="bg-accent p-5 rounded shadow">
+    </div>
+
+    <!-- New Users -->
+    <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+      <i class="fas fa-user-plus text-4xl text-primary"></i>
+      <div>
         <h2 class="text-lg font-semibold text-primary">New Users</h2>
-        <p class="text-3xl font-bold mt-2 text-white">128</p>
+        <p class="text-3xl font-bold text-white mt-1">
+          {{ kpis.newUsers | number }}
+        </p>
       </div>
-      <div class="bg-accent p-5 rounded shadow">
+    </div>
+
+    <!-- Reservations -->
+    <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+      <i class="fas fa-calendar-check text-4xl text-primary"></i>
+      <div>
         <h2 class="text-lg font-semibold text-primary">Reservations</h2>
-        <p class="text-3xl font-bold mt-2 text-white">342</p>
+        <p class="text-3xl font-bold text-white mt-1">
+          {{ kpis.reservations | number }}
+        </p>
       </div>
-      <div class="bg-accent p-5 rounded shadow">
+    </div>
+
+    <!-- Cancellations -->
+    <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+      <i class="fas fa-ban text-4xl text-primary"></i>
+      <div>
         <h2 class="text-lg font-semibold text-primary">Cancellations</h2>
-        <p class="text-3xl font-bold mt-2 text-white">16</p>
+        <p class="text-3xl font-bold text-white mt-1">
+          {{ kpis.cancellations | number}}
+        </p>
       </div>
-    </div>
-  
-    <!-- Placeholder for future charts -->
-    <div class="bg-white p-5 rounded shadow mb-8">
-      <h2 class="text-lg font-semibold mb-4 text-primary">Monthly Revenue Overview</h2>
-      <div class="h-64 flex items-center justify-center text-gray-400">
-        <!-- You can plug in Chart.js, ngx-charts, etc. here -->
-        [Chart Placeholder]
-      </div>
-    </div>
-  
-    <!-- Table: Top Rentals -->
-    <div class="bg-white p-5 rounded shadow">
-      <h2 class="text-lg font-semibold mb-4 text-primary">Top Performing Rentals</h2>
-      <table class="w-full border-collapse min-w-[600px]">
-        <thead>
-          <tr class="bg-gray-200">
-            <th class="p-2 text-left">Rental</th>
-            <th class="p-2 text-left">Owner</th>
-            <th class="p-2 text-left">Reservations</th>
-            <th class="p-2 text-left">Site Revenue</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-t hover:bg-gray-100 transition">
-            <td class="p-2">Cozy Apartment</td>
-            <td class="p-2">John Doe</td>
-            <td class="p-2">28</td>
-            <td class="p-2">$3,100</td>
-          </tr>
-          <tr class="border-t hover:bg-gray-100 transition">
-            <td class="p-2">Beach House</td>
-            <td class="p-2">Jane Smith</td>
-            <td class="p-2">20</td>
-            <td class="p-2">$5,200</td>
-          </tr>
-          <!-- More rows -->
-        </tbody>
-      </table>
     </div>
   </div>
-  
+
+  <!-- Monthly Revenue Chart -->
+  <div class="bg-secondaryLighter p-5 rounded shadow mb-8">
+    <h2 class="text-lg font-semibold mb-4 text-white">Monthly Revenue Overview</h2>
+
+    <canvas baseChart [data]="chartData" [options]="chartOptions" [type]="'bar'">
+    </canvas>
+  </div>
+
+  <!-- Table: Top Rentals -->
+  <div class="bg-secondaryLighter p-5 rounded shadow">
+    <h2 class="text-lg font-semibold mb-4 text-accent flex items-center gap-2">
+      <i class="fas fa-star text-accent"></i>
+      Top Performing Rentals
+    </h2>
+
+    <table class="w-full border-collapse min-w-[600px]">
+      <thead>
+        <tr class="bg-gray-200 text-gray-700 uppercase text-sm">
+          <th class="p-3 text-left">Rental</th>
+          <th class="p-3 text-left">Owner</th>
+          <th class="p-3 text-center">Reservations</th>
+          <th class="p-3 text-right">Site Revenue</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let rental of topRentals" class="border-t hover:bg-gray-100 transition">
+          <td class="p-3 font-semibold text-primary">{{ rental.title }}</td>
+          <td class="p-3 text-gray-600">{{ rental.owner }}</td>
+          <td class="p-3 text-center font-medium">{{ rental.reservations }}</td>
+          <td class="p-3 text-right font-bold text-green-600">
+            ${{ rental.revenue | number: '1.0-0' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Reservation Status Distribution -->
+  <div class="bg-secondaryLighter p-5 rounded shadow mt-8">
+    <h2 class="text-lg font-semibold mb-4 text-primary">
+      Reservation Status Distribution
+    </h2>
+
+    <div class="h-64 flex items-center justify-center">
+      <canvas baseChart [data]="statusChartData" [options]="statusChartOptions" [type]="'doughnut'">
+      </canvas>
+    </div>
+  </div>
+
+
+</div>
