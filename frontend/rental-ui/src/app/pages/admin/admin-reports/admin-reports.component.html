@@ -25,57 +25,82 @@
 
   <!-- KPI Cards -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-    <!-- Site Revenue -->
-    <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
-      <i class="fas fa-dollar-sign text-4xl text-primary"></i>
-      <div>
-        <h2 class="text-lg font-semibold text-primary">Site Revenue</h2>
-        <p class="text-3xl font-bold text-white mt-1">
-          ${{ kpis.siteRevenue | number}}
-        </p>
-      </div>
-    </div>
 
-    <!-- New Users -->
-    <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
-      <i class="fas fa-user-plus text-4xl text-primary"></i>
-      <div>
-        <h2 class="text-lg font-semibold text-primary">New Users</h2>
-        <p class="text-3xl font-bold text-white mt-1">
-          {{ kpis.newUsers | number }}
-        </p>
-      </div>
-    </div>
+    <ng-container *ngIf="!loading; else kpiSkeletons">
 
-    <!-- Reservations -->
-    <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
-      <i class="fas fa-calendar-check text-4xl text-primary"></i>
-      <div>
-        <h2 class="text-lg font-semibold text-primary">Reservations</h2>
-        <p class="text-3xl font-bold text-white mt-1">
-          {{ kpis.reservations | number }}
-        </p>
+      <!-- Site Revenue -->
+      <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+        <i class="fas fa-dollar-sign text-4xl text-primary"></i>
+        <div>
+          <h2 class="text-lg font-semibold text-primary">Site Revenue</h2>
+          <p class="text-3xl font-bold text-white mt-1">
+            ${{ kpis.siteRevenue | number}}
+          </p>
+        </div>
       </div>
-    </div>
 
-    <!-- Cancellations -->
-    <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
-      <i class="fas fa-ban text-4xl text-primary"></i>
-      <div>
-        <h2 class="text-lg font-semibold text-primary">Cancellations</h2>
-        <p class="text-3xl font-bold text-white mt-1">
-          {{ kpis.cancellations | number}}
-        </p>
+      <!-- New Users -->
+      <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+        <i class="fas fa-user-plus text-4xl text-primary"></i>
+        <div>
+          <h2 class="text-lg font-semibold text-primary">New Users</h2>
+          <p class="text-3xl font-bold text-white mt-1">
+            {{ kpis.newUsers | number }}
+          </p>
+        </div>
       </div>
-    </div>
+
+      <!-- Reservations -->
+      <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+        <i class="fas fa-calendar-check text-4xl text-primary"></i>
+        <div>
+          <h2 class="text-lg font-semibold text-primary">Reservations</h2>
+          <p class="text-3xl font-bold text-white mt-1">
+            {{ kpis.reservations | number }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Cancellations -->
+      <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+        <i class="fas fa-ban text-4xl text-primary"></i>
+        <div>
+          <h2 class="text-lg font-semibold text-primary">Cancellations</h2>
+          <p class="text-3xl font-bold text-white mt-1">
+            {{ kpis.cancellations | number}}
+          </p>
+        </div>
+      </div>
+
+    </ng-container>
+
+    <!-- Skeleton loader -->
+    <ng-template #kpiSkeletons>
+      <div *ngFor="let i of [1,2,3,4]" class="bg-gray-700 p-5 rounded shadow flex items-center gap-4 animate-pulse">
+        <div class="h-10 w-10 bg-gray-600 rounded"></div>
+        <div class="flex-1">
+          <div class="h-4 w-1/2 bg-gray-600 rounded mb-3"></div>
+          <div class="h-8 w-2/3 bg-gray-600 rounded"></div>
+        </div>
+      </div>
+    </ng-template>
+
   </div>
 
   <!-- Monthly Revenue Chart -->
   <div class="bg-secondaryLighter p-5 rounded shadow mb-8">
     <h2 class="text-lg font-semibold mb-4 text-white">Monthly Revenue Overview</h2>
 
-    <canvas baseChart [data]="revenueChartData" [options]="revenueChartOptions" [type]="'bar'">
-    </canvas>
+    <ng-container *ngIf="!loading; else chartSkeleton">
+      <canvas baseChart [data]="revenueChartData" [options]="revenueChartOptions" [type]="'bar'">
+      </canvas>
+    </ng-container>
+
+    <ng-template #chartSkeleton>
+      <div class="h-64 w-full flex items-end gap-2 animate-pulse">
+        <div *ngFor="let bar of [1,2,3,4,5,6]" class="flex-1 bg-gray-600 rounded" [style.height.%]="15 + bar*10"></div>
+      </div>
+    </ng-template>
   </div>
 
   <!-- Table: Top Rentals -->
@@ -85,43 +110,83 @@
       Top Performing Rentals
     </h2>
 
-    <table class="w-full border-collapse min-w-[600px]">
-      <thead>
-        <tr class="bg-gray-500 text-m font-semibold text-white uppercase">
-          <th class="p-3 text-left">ID</th>
-          <th class="p-3 text-left">Rental</th>
-          <th class="p-3 text-left">Owner</th>
-          <th class="p-3 text-center">Reservations</th>
-          <th class="p-3 text-right">Site Revenue</th>
-        </tr>
-      </thead>
+    <ng-container *ngIf="!loading; else tableSkeleton">
 
-      <tbody>
-        <tr *ngFor="let rental of topRentals; let i = index"
-          class="border-t border-gray-500 hover:bg-gray-300/50 transition">
-          <td class="p-3 font-semibold text-white text-lg">
-            {{ rental.rentalId }}
-          </td>
-          <td class="p-3 font-semibold text-lg">
-            <a [routerLink]="['/rental', rental.rentalId]" class="text-accent hover:underline flex items-center gap-2">
-              {{ rental.rentalTitle }}<i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </td>
-          <td class="p-3 text-gray-200 flex items-center gap-2 text-lg">
-            <i class="fas fa-user-circle text-accent"></i>
-            {{ rental.owner }}
-          </td>
-          <td class="p-3 text-center font-medium text-black text-lg">
-            {{ rental.reservations }}
-          </td>
-          <td class="p-3 text-right font-bold text-green-700 text-lg">
-            <i class="fas fa-dollar-sign"></i>
-            {{ rental.siteRevenue | number: '1.0-0' }}
-          </td>
-        </tr>
-      </tbody>
+      <table class="w-full border-collapse min-w-[600px]">
+        <thead>
+          <tr class="bg-gray-500 text-m font-semibold text-white uppercase">
+            <th class="p-3 text-left">ID</th>
+            <th class="p-3 text-left">Rental</th>
+            <th class="p-3 text-left">Owner</th>
+            <th class="p-3 text-center">Reservations</th>
+            <th class="p-3 text-right">Site Revenue</th>
+          </tr>
+        </thead>
 
-    </table>
+        <tbody>
+          <tr *ngFor="let rental of topRentals; let i = index"
+            class="border-t border-gray-500 hover:bg-gray-300/50 transition">
+            <td class="p-3 font-semibold text-white text-lg">
+              {{ rental.rentalId }}
+            </td>
+            <td class="p-3 font-semibold text-lg">
+              <a [routerLink]="['/rental', rental.rentalId]"
+                class="text-accent hover:underline flex items-center gap-2">
+                {{ rental.rentalTitle }}<i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </td>
+            <td class="p-3 text-gray-200 flex items-center gap-2 text-lg">
+              <i class="fas fa-user-circle text-accent"></i>
+              {{ rental.owner }}
+            </td>
+            <td class="p-3 text-center font-medium text-black text-lg">
+              {{ rental.reservations }}
+            </td>
+            <td class="p-3 text-right font-bold text-green-700 text-lg">
+              <i class="fas fa-dollar-sign"></i>
+              {{ rental.siteRevenue | number: '1.0-0' }}
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </ng-container>
+
+    <!-- Skeleton loader -->
+    <ng-template #tableSkeleton>
+      <table class="w-full border-collapse min-w-[600px] animate-pulse">
+        <thead>
+          <tr class="bg-gray-500 text-m font-semibold text-white uppercase">
+            <th class="p-3 text-left">ID</th>
+            <th class="p-3 text-left">Rental</th>
+            <th class="p-3 text-left">Owner</th>
+            <th class="p-3 text-center">Reservations</th>
+            <th class="p-3 text-right">Site Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of [1,2,3,4]" class="border-t border-gray-500">
+            <td class="p-3">
+              <div class="h-4 w-20 bg-gray-600 rounded"></div>
+            </td>
+            <td class="p-3">
+              <div class="h-4 w-32 bg-gray-600 rounded"></div>
+            </td>
+            <td class="p-3">
+              <div class="h-4 w-24 bg-gray-600 rounded"></div>
+            </td>
+            <td class="p-3 text-center">
+              <div class="h-4 w-12 bg-gray-600 rounded mx-auto"></div>
+            </td>
+            <td class="p-3 text-right">
+              <div class="h-4 w-16 bg-gray-600 rounded ml-auto"></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-template>
+
   </div>
 
   <!-- Reservation Status Distribution -->
@@ -130,12 +195,21 @@
       Reservation Status Distribution
     </h2>
 
-    <div class="h-64 flex items-center justify-center">
-      <canvas baseChart [data]="reservationStatusChartData" [options]="reservationsStatusChartOptions"
-        [type]="'doughnut'">
-      </canvas>
-    </div>
-  </div>
+    <ng-container *ngIf="!loading; else doughnutSkeleton">
+      <div class="h-64 flex items-center justify-center">
+        <canvas baseChart [data]="reservationStatusChartData" [options]="reservationsStatusChartOptions"
+          [type]="'doughnut'">
+        </canvas>
+      </div>
+    </ng-container>
 
+    <!-- Skeleton Loader -->
+    <ng-template #doughnutSkeleton>
+      <div class="h-64 w-full flex items-center justify-center">
+        <div class="w-48 h-48 rounded-full border-[20px] border-gray-700 border-t-accent animate-spin">
+        </div>
+      </div>
+    </ng-template>
+  </div>
 
 </div>

@@ -1,4 +1,4 @@
-import { DecimalPipe, NgFor } from '@angular/common';
+import { DecimalPipe, NgFor, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +8,14 @@ import { ApiService } from '../../../services/api.service';
 
 @Component({
   selector: 'app-admin-reports',
-  imports: [RouterModule, FormsModule, BaseChartDirective, DecimalPipe, NgFor],
+  imports: [
+    RouterModule,
+    FormsModule,
+    BaseChartDirective,
+    DecimalPipe,
+    NgFor,
+    NgIf,
+  ],
   templateUrl: './admin-reports.component.html',
   styleUrl: './admin-reports.component.scss',
 })
@@ -110,17 +117,17 @@ export class AdminReportsComponent {
 
   reservationsStatusChartOptions: ChartOptions<'doughnut'> = {
     responsive: true,
-    aspectRatio: 2, 
+    aspectRatio: 2,
     layout: {
       padding: 20, // space around chart
     },
     plugins: {
       legend: {
-        position: 'left', 
+        position: 'left',
         labels: {
           color: '#fff',
           font: { size: 16, weight: 'bold' },
-          padding: 25, 
+          padding: 25,
           generateLabels: (chart) => {
             const data = chart.data.datasets[0].data as number[];
             const total = data.reduce((a, b) => a + (b || 0), 0);
