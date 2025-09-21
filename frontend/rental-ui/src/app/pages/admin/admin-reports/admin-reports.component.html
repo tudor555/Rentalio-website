@@ -25,58 +25,71 @@
 
   <!-- KPI Cards -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-
     <ng-container *ngIf="!loading; else kpiSkeletons">
-
-      <!-- Site Revenue -->
-      <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
-        <i class="fas fa-dollar-sign text-4xl text-primary"></i>
-        <div>
-          <h2 class="text-lg font-semibold text-primary">Site Revenue</h2>
-          <p class="text-3xl font-bold text-white mt-1">
-            ${{ kpis.siteRevenue | number}}
-          </p>
+      <!-- Empty state -->
+      <ng-container *ngIf="
+          kpis.siteRevenue === 0 &&
+            kpis.newUsers === 0 &&
+            kpis.reservations === 0 &&
+            kpis.cancellations === 0;
+          else kpiCardsData
+        ">
+        <div class="col-span-4 text-center text-gray-400 py-6">
+          <i class="fas fa-info-circle text-accent text-2xl mb-2"></i>
+          <p>No KPI data available for the selected range.</p>
         </div>
-      </div>
+      </ng-container>
 
-      <!-- New Users -->
-      <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
-        <i class="fas fa-user-plus text-4xl text-primary"></i>
-        <div>
-          <h2 class="text-lg font-semibold text-primary">New Users</h2>
-          <p class="text-3xl font-bold text-white mt-1">
-            {{ kpis.newUsers | number }}
-          </p>
+      <ng-template #kpiCardsData>
+        <!-- Site Revenue -->
+        <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+          <i class="fas fa-dollar-sign text-4xl text-primary"></i>
+          <div>
+            <h2 class="text-lg font-semibold text-primary">Site Revenue</h2>
+            <p class="text-3xl font-bold text-white mt-1">
+              ${{ kpis.siteRevenue | number }}
+            </p>
+          </div>
         </div>
-      </div>
 
-      <!-- Reservations -->
-      <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
-        <i class="fas fa-calendar-check text-4xl text-primary"></i>
-        <div>
-          <h2 class="text-lg font-semibold text-primary">Reservations</h2>
-          <p class="text-3xl font-bold text-white mt-1">
-            {{ kpis.reservations | number }}
-          </p>
+        <!-- New Users -->
+        <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+          <i class="fas fa-user-plus text-4xl text-primary"></i>
+          <div>
+            <h2 class="text-lg font-semibold text-primary">New Users</h2>
+            <p class="text-3xl font-bold text-white mt-1">
+              {{ kpis.newUsers | number }}
+            </p>
+          </div>
         </div>
-      </div>
 
-      <!-- Cancellations -->
-      <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
-        <i class="fas fa-ban text-4xl text-primary"></i>
-        <div>
-          <h2 class="text-lg font-semibold text-primary">Cancellations</h2>
-          <p class="text-3xl font-bold text-white mt-1">
-            {{ kpis.cancellations | number}}
-          </p>
+        <!-- Reservations -->
+        <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+          <i class="fas fa-calendar-check text-4xl text-primary"></i>
+          <div>
+            <h2 class="text-lg font-semibold text-primary">Reservations</h2>
+            <p class="text-3xl font-bold text-white mt-1">
+              {{ kpis.reservations | number }}
+            </p>
+          </div>
         </div>
-      </div>
 
+        <!-- Cancellations -->
+        <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+          <i class="fas fa-ban text-4xl text-primary"></i>
+          <div>
+            <h2 class="text-lg font-semibold text-primary">Cancellations</h2>
+            <p class="text-3xl font-bold text-white mt-1">
+              {{ kpis.cancellations | number }}
+            </p>
+          </div>
+        </div>
+      </ng-template>
     </ng-container>
 
     <!-- Skeleton loader -->
     <ng-template #kpiSkeletons>
-      <div *ngFor="let i of [1,2,3,4]" class="bg-gray-700 p-5 rounded shadow flex items-center gap-4 animate-pulse">
+      <div *ngFor="let i of [1, 2, 3, 4]" class="bg-gray-700 p-5 rounded shadow flex items-center gap-4 animate-pulse">
         <div class="h-10 w-10 bg-gray-600 rounded"></div>
         <div class="flex-1">
           <div class="h-4 w-1/2 bg-gray-600 rounded mb-3"></div>
@@ -84,21 +97,33 @@
         </div>
       </div>
     </ng-template>
-
   </div>
 
   <!-- Monthly Revenue Chart -->
   <div class="bg-secondaryLighter p-5 rounded shadow mb-8">
-    <h2 class="text-lg font-semibold mb-4 text-white">Monthly Revenue Overview</h2>
+    <h2 class="text-lg font-semibold mb-4 text-white">
+      Monthly Revenue Overview
+    </h2>
 
     <ng-container *ngIf="!loading; else chartSkeleton">
-      <canvas baseChart [data]="revenueChartData" [options]="revenueChartOptions" [type]="'bar'">
-      </canvas>
+      <!-- Empty state -->
+      <ng-container *ngIf="!revenueChartData.labels?.length; else revenueData">
+        <div class="h-64 flex items-center justify-center text-gray-400">
+          <i class="fas fa-chart-bar text-2xl mr-2"></i>
+          No revenue data available
+        </div>
+      </ng-container>
+
+      <ng-template #revenueData>
+        <canvas baseChart [data]="revenueChartData" [options]="revenueChartOptions" [type]="'bar'">
+        </canvas>
+      </ng-template>
     </ng-container>
 
     <ng-template #chartSkeleton>
       <div class="h-64 w-full flex items-end gap-2 animate-pulse">
-        <div *ngFor="let bar of [1,2,3,4,5,6]" class="flex-1 bg-gray-600 rounded" [style.height.%]="15 + bar*10"></div>
+        <div *ngFor="let bar of [1, 2, 3, 4, 5, 6]" class="flex-1 bg-gray-600 rounded" [style.height.%]="15 + bar * 10">
+        </div>
       </div>
     </ng-template>
   </div>
@@ -111,46 +136,54 @@
     </h2>
 
     <ng-container *ngIf="!loading; else tableSkeleton">
+      <!-- Empty state -->
+      <ng-container *ngIf="!topRentals.length; else topRentalsData">
+        <div class="text-center text-gray-400 py-6">
+          <i class="fas fa-home text-2xl"></i>
+          <p>No rentals available for the selected range.</p>
+        </div>
+      </ng-container>
 
-      <table class="w-full border-collapse min-w-[600px]">
-        <thead>
-          <tr class="bg-gray-500 text-m font-semibold text-white uppercase">
-            <th class="p-3 text-left">ID</th>
-            <th class="p-3 text-left">Rental</th>
-            <th class="p-3 text-left">Owner</th>
-            <th class="p-3 text-center">Reservations</th>
-            <th class="p-3 text-right">Site Revenue</th>
-          </tr>
-        </thead>
+      <ng-template #topRentalsData>
+        <table class="w-full border-collapse min-w-[600px]">
+          <thead>
+            <tr class="bg-gray-500 text-m font-semibold text-white uppercase">
+              <th class="p-3 text-left">ID</th>
+              <th class="p-3 text-left">Rental</th>
+              <th class="p-3 text-left">Owner</th>
+              <th class="p-3 text-center">Reservations</th>
+              <th class="p-3 text-right">Site Revenue</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          <tr *ngFor="let rental of topRentals; let i = index"
-            class="border-t border-gray-500 hover:bg-gray-300/50 transition">
-            <td class="p-3 font-semibold text-white text-lg">
-              {{ rental.rentalId }}
-            </td>
-            <td class="p-3 font-semibold text-lg">
-              <a [routerLink]="['/rental', rental.rentalId]"
-                class="text-accent hover:underline flex items-center gap-2">
-                {{ rental.rentalTitle }}<i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </td>
-            <td class="p-3 text-gray-200 flex items-center gap-2 text-lg">
-              <i class="fas fa-user-circle text-accent"></i>
-              {{ rental.owner }}
-            </td>
-            <td class="p-3 text-center font-medium text-black text-lg">
-              {{ rental.reservations }}
-            </td>
-            <td class="p-3 text-right font-bold text-green-700 text-lg">
-              <i class="fas fa-dollar-sign"></i>
-              {{ rental.siteRevenue | number: '1.0-0' }}
-            </td>
-          </tr>
-        </tbody>
-
-      </table>
-
+          <tbody>
+            <tr *ngFor="let rental of topRentals; let i = index"
+              class="border-t border-gray-500 hover:bg-gray-300/50 transition">
+              <td class="p-3 font-semibold text-white text-lg">
+                {{ rental.rentalId }}
+              </td>
+              <td class="p-3 font-semibold text-lg">
+                <a [routerLink]="['/rental', rental.rentalId]"
+                  class="text-accent hover:underline flex items-center gap-2">
+                  {{ rental.rentalTitle
+                  }}<i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </td>
+              <td class="p-3 text-gray-200 flex items-center gap-2 text-lg">
+                <i class="fas fa-user-circle text-accent"></i>
+                {{ rental.owner }}
+              </td>
+              <td class="p-3 text-center font-medium text-black text-lg">
+                {{ rental.reservations }}
+              </td>
+              <td class="p-3 text-right font-bold text-green-700 text-lg">
+                <i class="fas fa-dollar-sign"></i>
+                {{ rental.siteRevenue | number : "1.0-0" }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-template>
     </ng-container>
 
     <!-- Skeleton loader -->
@@ -166,7 +199,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let row of [1,2,3,4]" class="border-t border-gray-500">
+          <tr *ngFor="let row of [1, 2, 3, 4]" class="border-t border-gray-500">
             <td class="p-3">
               <div class="h-4 w-20 bg-gray-600 rounded"></div>
             </td>
@@ -186,30 +219,37 @@
         </tbody>
       </table>
     </ng-template>
-
   </div>
 
   <!-- Reservation Status Distribution -->
   <div class="bg-secondaryLighter p-5 rounded shadow mt-8">
     <h2 class="text-lg font-semibold mb-4 text-white">
-      Reservation Status Distribution
+      Reservations Status Distribution
     </h2>
 
     <ng-container *ngIf="!loading; else doughnutSkeleton">
-      <div class="h-64 flex items-center justify-center">
-        <canvas baseChart [data]="reservationStatusChartData" [options]="reservationsStatusChartOptions"
-          [type]="'doughnut'">
-        </canvas>
-      </div>
+      <!-- Empty state -->
+      <ng-container *ngIf="!reservationStatusTotal; else reservationsStatusData">
+        <div class="h-64 flex items-center justify-center text-gray-400">
+          <i class="fas fa-pie-chart text-2xl mr-2"></i>
+          No reservations status data available
+        </div>
+      </ng-container>
+
+      <ng-template #reservationsStatusData>
+        <div class="h-64 flex items-center justify-center">
+          <canvas baseChart [data]="reservationsStatusChartData" [options]="reservationsStatusChartOptions"
+            [type]="'doughnut'">
+          </canvas>
+        </div>
+      </ng-template>
     </ng-container>
 
     <!-- Skeleton Loader -->
     <ng-template #doughnutSkeleton>
       <div class="h-64 w-full flex items-center justify-center">
-        <div class="w-48 h-48 rounded-full border-[20px] border-gray-700 border-t-accent animate-spin">
-        </div>
+        <div class="w-48 h-48 rounded-full border-[20px] border-gray-700 border-t-accent animate-spin"></div>
       </div>
     </ng-template>
   </div>
-
 </div>

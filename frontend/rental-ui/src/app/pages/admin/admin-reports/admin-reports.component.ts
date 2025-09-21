@@ -102,7 +102,7 @@ export class AdminReportsComponent {
   }[] = [];
 
   // Reservation status distribution
-  reservationStatusChartData: ChartData<'doughnut'> = {
+  reservationsStatusChartData: ChartData<'doughnut'> = {
     labels: [],
     datasets: [
       {
@@ -114,6 +114,7 @@ export class AdminReportsComponent {
       },
     ],
   };
+  reservationStatusTotal: boolean = false;
 
   reservationsStatusChartOptions: ChartOptions<'doughnut'> = {
     responsive: true,
@@ -175,7 +176,7 @@ export class AdminReportsComponent {
     this.fetchKpis();
     this.fetchMonthlyRevenue();
     this.fetchTopRentals();
-    this.fetchReservationStatus();
+    this.fetchReservationsStatus();
   }
 
   // Fetch KPI cards data
@@ -257,7 +258,7 @@ export class AdminReportsComponent {
   }
 
   // Fetch reservations status
-  fetchReservationStatus(): void {
+  fetchReservationsStatus(): void {
     const params = new URLSearchParams();
     if (this.startDate) params.set('startDate', this.startDate);
     if (this.endDate) params.set('endDate', this.endDate);
@@ -266,7 +267,13 @@ export class AdminReportsComponent {
       .get<any>(`reports/reservations/status?${params.toString()}`, true)
       .subscribe({
         next: (res) => {
-          this.reservationStatusChartData = {
+          this.reservationStatusTotal = [
+            res.confirmed,
+            res.pending,
+            res.cancelled,
+          ].reduce((a, b) => a + b, 0);
+
+          this.reservationsStatusChartData = {
             labels: ['Confirmed', 'Pending', 'Cancelled'],
             datasets: [
               {
@@ -288,7 +295,7 @@ export class AdminReportsComponent {
     this.fetchKpis();
     this.fetchMonthlyRevenue();
     this.fetchTopRentals();
-    this.fetchReservationStatus();
+    this.fetchReservationsStatus();
   }
 
   private formatMonthLabel(month: string): string {
