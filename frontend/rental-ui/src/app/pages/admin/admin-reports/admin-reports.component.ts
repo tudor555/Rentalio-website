@@ -305,7 +305,117 @@ export class AdminReportsComponent {
   }
 
   downloadReport() {
-    console.log('Download report for range:', this.startDate, this.endDate);
-    // TODO: implement CSV/PDF download
+    // Delimiter Excel
+    const DELIMITER = ';';
+
+    // Escape only text (leave numbers bare so Excel treats them as numbers)
+    const escapeCSV = (value: any): string => {
+      if (value === null || value === undefined) return '';
+      if (typeof value === 'number') return String(value);
+      const str = String(value).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const rows: string[] = [];
+
+    // KPIs
+    rows.push('KPIs');
+    rows.push(
+      ['Site Revenue', 'New Users', 'Reservations', 'Cancellations']
+        .map(escapeCSV)
+        .join(DELIMITER)
+    );
+    rows.push(
+      [
+        this.kpis.siteRevenue,
+        this.kpis.newUsers,
+        this.kpis.reservations,
+        this.kpis.cancellations,
+      ]
+        .map(escapeCSV)
+        .join(DELIMITER)
+    );
+    rows.push('');
+
+    // Monthly Revenue
+    if (this.revenueChartData.labels?.length) {
+      rows.push('Monthly Revenue');
+      rows.push(
+        ['Month', 'Revenue', 'Cancellations'].map(escapeCSV).join(DELIMITER)
+      );
+
+      this.revenueChartData.labels.forEach((label, i) => {
+        const revenue =
+          (this.revenueChartData.datasets[0].data[i] as number) || 0;
+        const cancellations =
+          (this.revenueChartData.datasets[1].data[i] as number) || 0;
+
+        rows.push(
+          [label, revenue, cancellations].map(escapeCSV).join(DELIMITER)
+        );
+      });
+      rows.push('');
+    }
+
+    // Top Rentals
+    if (this.topRentals.length) {
+      rows.push('Top Rentals');
+      rows.push(
+        ['ID', 'Title', 'Owner', 'Reservations', 'Revenue']
+          .map(escapeCSV)
+          .join(DELIMITER)
+      );
+
+      this.topRentals.forEach((r) => {
+        rows.push(
+          [r.rentalId, r.rentalTitle, r.owner, r.reservations, r.siteRevenue]
+            .map(escapeCSV)
+            .join(DELIMITER)
+        );
+      });
+      rows.push('');
+    }
+
+    // Reservation Status
+    const labels = this.reservationsStatusChartData.labels || [];
+    const data =
+      (this.reservationsStatusChartData.datasets[0]?.data as number[]) || [];
+
+    if (data.some((v) => v > 0)) {
+      rows.push('Reservation Status');
+      rows.push(['Status', 'Count'].map(escapeCSV).join(DELIMITER));
+
+      labels.forEach((label, i) => {
+        rows.push([label, data[i] || 0].map(escapeCSV).join(DELIMITER));
+      });
+    }
+
+    // Build CSV with CRLF and a UTF-8 BOM
+    const csvBody = rows.join('\r\n');
+    const BOM = '\uFEFF';
+    const blob = new Blob([BOM + csvBody], {
+      type: 'text/csv;charset=utf-8;',
+    });
+
+    // Filename
+    const formatDate = (d: string) => d.replace(/-/g, '');
+    let filename = 'report-all-time.csv';
+    if (this.startDate && this.endDate) {
+      filename = `report-${formatDate(this.startDate)}-${formatDate(
+        this.endDate
+      )}.csv`;
+    } else if (this.startDate) {
+      filename = `report-from-${formatDate(this.startDate)}.csv`;
+    } else if (this.endDate) {
+      filename = `report-until-${formatDate(this.endDate)}.csv`;
+    }
+
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 }
