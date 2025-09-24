@@ -17,8 +17,18 @@
     </div>
 
     <!-- Download report -->
-    <button (click)="downloadReport()"
-      class="bg-accent text-white font-semibold px-4 py-2 rounded hover:bg-white hover:text-accent transition">
+    <button (click)="downloadReport()" [disabled]="
+        !(
+          (kpis.siteRevenue || 0) > 0 ||
+          (kpis.newUsers || 0) > 0 ||
+          (kpis.reservations || 0) > 0 ||
+          (kpis.cancellations || 0) > 0 ||
+          (revenueChartData.labels?.length || 0) > 0 ||
+          (topRentals.length || 0) > 0 ||
+          reservationStatusTotal
+        )
+      " class="bg-accent text-white font-semibold px-4 py-2 rounded hover:bg-white hover:text-accent transition 
+        disabled:opacity-50 disabled:cursor-not-allowed">
       <i class="fas fa-file-download"></i> Download Report
     </button>
   </div>
