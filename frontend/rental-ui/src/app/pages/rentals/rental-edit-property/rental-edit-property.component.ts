@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,20 +12,20 @@ import { UserSessionService } from '../../../services/user-session.service';
   styleUrl: './rental-edit-property.component.scss',
 })
 export class RentalEditPropertyComponent {
-  @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
+  // UI State
+  today: string = new Date().toISOString().split('T')[0];
   acceptedFormats = ['image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'];
   previewImages: string[] = [];
-  today: string = new Date().toISOString().split('T')[0];
+  successMessage = '';
+  errorMessage = '';
+  amenitiesString = '';
 
-  // messages
-  successMessage: string = '';
-  errorMessage: string = '';
-
-  amenitiesString: string = '';
-
-  // current listing id
+  // route id
   private listingId: string | null = null;
 
+  private originalProperty: any | null = null;
+
+  // Form Model
   property = {
     title: '',
     description: '',
@@ -41,7 +41,7 @@ export class RentalEditPropertyComponent {
     },
     amenities: [] as string[],
     availability: {
-      from: this.today,
+      from: '',
       to: '',
       minStay: null as number | null,
       maxStay: null as number | null,
@@ -49,6 +49,7 @@ export class RentalEditPropertyComponent {
     tags: [] as string[],
   };
 
+  // Select Options
   propertyTypes = [
     { value: '', label: 'Select a category' },
     { value: 'apartment', label: 'Apartment' },
@@ -68,6 +69,7 @@ export class RentalEditPropertyComponent {
     { value: 'year', label: 'Per Year' },
   ];
 
+  // Lifecycle
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
@@ -75,7 +77,6 @@ export class RentalEditPropertyComponent {
   ) {}
 
   ngOnInit(): void {
-    // same access gate as List Property
     if (!UserSessionService.isLoggedIn()) {
       this.router.navigateByUrl('/auth/login');
       return;
@@ -86,11 +87,10 @@ export class RentalEditPropertyComponent {
     }
 
     this.listingId = this.route.snapshot.paramMap.get('id');
-    if (this.listingId) {
-      this.fetchRentalDetails(this.listingId);
-    }
+    if (this.listingId) this.fetchRentalDetails(this.listingId);
   }
 
+  // Data Load
   fetchRentalDetails(id: string): void {
     this.apiService.get<any>(`listings/${id}`).subscribe({
       next: (l) => {
@@ -114,7 +114,7 @@ export class RentalEditPropertyComponent {
           },
           amenities: Array.isArray(l?.amenities) ? l.amenities : [],
           availability: {
-            from: (l?.availability?.from ?? this.today).slice(0, 10),
+            from: (l?.availability?.from ?? '').slice(0, 10),
             to: (l?.availability?.to ?? '').slice(0, 10),
             minStay: l?.availability?.minStay ?? null,
             maxStay: l?.availability?.maxStay ?? null,
@@ -122,9 +122,11 @@ export class RentalEditPropertyComponent {
           tags: Array.isArray(l?.tags) ? l.tags : [],
         };
 
-        // seed amenities input and image previews
         this.amenitiesString = this.property.amenities.join(', ');
         this.previewImages = [...this.property.images];
+
+        // After fetchRentalDetails success
+        this.originalProperty = JSON.parse(JSON.stringify(this.property));
       },
       error: (err) => {
         console.error('Error fetching rental details:', err);
@@ -133,83 +135,202 @@ export class RentalEditPropertyComponent {
     });
   }
 
-  isAvailableFromValidation(): boolean {
-    if (!this.property.availability.from) return false;
-    const selectedDate = new Date(this.property.availability.from);
-    const todayDate = new Date(this.today);
-    return selectedDate < todayDate;
+  // Form Helpers
+  preventTyping(event: KeyboardEvent): void {
+    event.preventDefault();
   }
 
-  /** Trigger hidden input (16 images cap) */
-  triggerFileInput() {
+  // Available To must be >= today if provided
+  availableToInvalid(): boolean {
+    const to = this.property.availability.to;
+    if (!to) return false;
+    return to < this.today;
+  }
+
+  triggerFileInput(): void {
     if (this.previewImages.length >= 16) return;
-    this.fileInputRef?.nativeElement.click();
+    const fileInput = document.getElementById(
+      'fileInput'
+    ) as HTMLInputElement | null;
+    if (fileInput) fileInput.click();
   }
 
-  /** Local previews; same rules: accepted formats + 5MB + cap 16 */
-  onImageUpload(event: Event) {
-    const files = (event.target as HTMLInputElement).files;
-    if (!files || !files.length) return;
+  // Handle file selection and create previews (max 16, 5MB, mime check)
+  onImageUpload(event: Event): void {
+    const files = (event.target as HTMLInputElement).files as FileList | null;
+    if (!files || files.length === 0) return;
 
     const newPreviews: string[] = [];
     for (let i = 0; i < files.length; i++) {
-      const file = files.item(i)!;
+      const file = files[i];
 
+      // MIME type check
       if (!this.acceptedFormats.includes(file.type)) continue;
-      if (file.size > 5 * 1024 * 1024) continue; // 5MB
 
+      // 5MB cap
+      if (file.size > 5 * 1024 * 1024) continue;
+
+      // Total cap 16
       if (this.previewImages.length + newPreviews.length >= 16) break;
 
-      // Use object URL like List Property
+      // Create object URL for preview
       newPreviews.push(URL.createObjectURL(file));
     }
 
     this.previewImages.push(...newPreviews);
+
+    // Allow re-selecting the same files later
     (event.target as HTMLInputElement).value = '';
   }
 
-  removeImage(index: number) {
+  // Remove preview (revoke the object URL to free memory)
+  removeImage(index: number): void {
+    const url = this.previewImages[index];
+    if (url?.startsWith('blob:')) {
+      try {
+        URL.revokeObjectURL(url);
+      } catch {}
+    }
     this.previewImages.splice(index, 1);
   }
 
-  /** Save button from the form (UI-first). Wire API later if you want. */
-  saveChanges(form: NgForm) {
+  // Submit
+  saveChanges(form: NgForm): void {
     this.errorMessage = '';
     this.successMessage = '';
 
-    if (form.invalid || this.isAvailableFromValidation()) {
+    // Basic validation: template-driven required fields + "Available To" rule
+    if (form.invalid || this.availableToInvalid()) {
       this.errorMessage = 'Please fill out all required fields correctly.';
       return;
     }
 
-    // Convert amenities string to array (same as Add page)
-    const cleanedAmenities = this.amenitiesString
+    if (!this.listingId || !this.originalProperty) {
+      this.errorMessage = 'Missing rental data.';
+      return;
+    }
+
+    // Normalize amenities from comma-separated string
+    const cleanedAmenities: string[] = this.amenitiesString
       .split(',')
       .map((s) => s.trim())
       .filter((s) => s !== '');
 
-    // Build an update-friendly payload; for now we just log it.
-    const payload = {
+    // Current state used for comparison
+    const currentState = {
       ...this.property,
       amenities: cleanedAmenities,
-      images: this.previewImages,
     };
 
-    console.log('EDIT payload (ready for PATCH/PUT):', payload);
+    // Build minimal payload: only include fields that changed
+    const payload: any = {};
 
-    // if (!this.listingId) return;
-    // this.apiService.patch<any>(`listings/${this.listingId}`, payload, true).subscribe({
-    //   next: () => this.successMessage = 'Changes saved!',
-    //   error: (err) => {
-    //     this.errorMessage = err?.error?.message || 'Failed to save changes.';
-    //     console.error('Error updating listing:', err);
-    //   }
-    // });
+    // Primitive/top-level fields
+    if (currentState.title !== this.originalProperty.title) {
+      payload.title = currentState.title;
+    }
+    if (currentState.description !== this.originalProperty.description) {
+      payload.description = currentState.description;
+    }
+    if (currentState.category !== this.originalProperty.category) {
+      payload.category = currentState.category;
+    }
+    if (currentState.basePrice !== this.originalProperty.basePrice) {
+      payload.basePrice = currentState.basePrice;
+    }
+    if (currentState.priceType !== this.originalProperty.priceType) {
+      payload.priceType = currentState.priceType;
+    }
 
-    this.successMessage = 'Changes prepared (API wiring pending).';
+    // Location: if any nested field changed, send the FULL location object
+    const location = currentState.location;
+    const originalLocation = this.originalProperty.location;
+
+    const locationChanged =
+      location.country !== originalLocation.country ||
+      location.city !== originalLocation.city ||
+      location.address !== originalLocation.address ||
+      location.coordinates.lat !== originalLocation.coordinates.lat ||
+      location.coordinates.lng !== originalLocation.coordinates.lng;
+
+    if (locationChanged) {
+      payload.location = {
+        country: location.country,
+        city: location.city,
+        address: location.address,
+        coordinates: {
+          lat: location.coordinates.lat,
+          lng: location.coordinates.lng,
+        },
+      };
+    }
+
+    // Amenities: compare arrays; if changed, send full array
+    const amenitiesChanged =
+      JSON.stringify(currentState.amenities) !==
+      JSON.stringify(this.originalProperty.amenities);
+
+    if (amenitiesChanged) {
+      payload.amenities = currentState.amenities;
+    }
+
+    // Availability: if any nested field changed, send the FULL availability object
+    const availability = currentState.availability;
+    const originalAvailability = this.originalProperty.availability;
+
+    const availabilityChanged =
+      availability.from !== originalAvailability.from ||
+      availability.to !== originalAvailability.to ||
+      availability.minStay !== originalAvailability.minStay ||
+      availability.maxStay !== originalAvailability.maxStay;
+
+    if (availabilityChanged) {
+      payload.availability = {
+        from: availability.from,
+        to: availability.to,
+        minStay: availability.minStay,
+        maxStay: availability.maxStay,
+      };
+    }
+
+    // Tags: compare arrays; if changed, send full array
+    const tagsChanged =
+      JSON.stringify(currentState.tags) !==
+      JSON.stringify(this.originalProperty.tags);
+
+    if (tagsChanged) {
+      payload.tags = currentState.tags;
+    }
+
+    // Nothing changed
+    if (Object.keys(payload).length === 0) {
+      this.successMessage = 'Nothing to save — no changes detected.';
+      return;
+    }
+
+    // PATCH only changed fields (images intentionally excluded for now)
+    this.apiService
+      .patch<any>(`listings/${this.listingId}`, payload, true)
+      .subscribe({
+        next: () => {
+          this.successMessage = 'Changes saved!';
+          this.errorMessage = '';
+          // Refresh local snapshot to the new "saved" state
+          this.originalProperty = JSON.parse(JSON.stringify(currentState));
+        },
+        error: (err) => {
+          this.errorMessage = err?.error?.message || 'Failed to save changes.';
+          console.error('Error updating listing:', err);
+        },
+      });
   }
 
   cancel() {
     this.router.navigateByUrl('/rentals');
+  }
+
+  goToListing(): void {
+    if (!this.listingId) return;
+    this.router.navigate(['/rental', this.listingId]);
   }
 }
