@@ -19,9 +19,16 @@ export class RentalEditPropertyComponent {
   successMessage = '';
   errorMessage = '';
   amenitiesString = '';
+  canViewPage = false;
+  isLoading = true;
 
   // route id
   private listingId: string | null = null;
+
+  // --- Role & Ownership ---
+  currentUser = UserSessionService.loadUser();
+  isAdmin = UserSessionService.isAdmin();
+  isOwner = false;
 
   private originalProperty: any | null = null;
 
@@ -77,6 +84,9 @@ export class RentalEditPropertyComponent {
   ) {}
 
   ngOnInit(): void {
+    this.canViewPage = false;
+    this.isLoading = true;
+
     if (!UserSessionService.isLoggedIn()) {
       this.router.navigateByUrl('/auth/login');
       return;
@@ -87,7 +97,11 @@ export class RentalEditPropertyComponent {
     }
 
     this.listingId = this.route.snapshot.paramMap.get('id');
-    if (this.listingId) this.fetchRentalDetails(this.listingId);
+    if (this.listingId) {
+      this.fetchRentalDetails(this.listingId);
+    } else {
+      this.router.navigateByUrl('/not-found');
+    }
   }
 
   // Data Load
@@ -122,8 +136,17 @@ export class RentalEditPropertyComponent {
           tags: Array.isArray(l?.tags) ? l.tags : [],
         };
 
-        this.amenitiesString = this.property.amenities.join(', ');
-        this.previewImages = [...this.property.images];
+        // Determine if current user is owner of this listing
+        this.isOwner = this.currentUser?._id === l.ownerId;
+
+        if (!this.isOwner && !this.isAdmin) {
+          this.router.navigateByUrl('/rentals');
+          return;
+        }
+
+        // allowed → render the page
+        this.canViewPage = true;
+        this.isLoading = false;
 
         // After fetchRentalDetails success
         this.originalProperty = JSON.parse(JSON.stringify(this.property));
@@ -131,6 +154,7 @@ export class RentalEditPropertyComponent {
       error: (err) => {
         console.error('Error fetching rental details:', err);
         this.errorMessage = 'Failed to load listing details.';
+        this.router.navigateByUrl('/not-found');
       },
     });
   }
