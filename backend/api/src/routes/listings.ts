@@ -28,6 +28,7 @@ export default (router: express.Router) => {
   // - ?limit=number
   // - ?pageSize=number
   // - ?page=number
+  // - ?ownerId=string
   // - ?city=Oradea
   // - ?priceType=day ("hour", "day", "week", "month", "year")
   // - ?category=apartment&country=Romania
