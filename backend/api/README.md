@@ -15,8 +15,9 @@ This **API** is consumed by the frontend client for listing, reservation, review
 7. [Reviews](#reviews)
 8. [Flights](#flights)
 9. [Payments](#payments)
-10. [Error Handling](#error-handling)
-11. [Status Codes](#status-codes)
+10. [Reports](#reports)
+11. [Error Handling](#error-handling)
+12. [Status Codes](#status-codes)
 
 ## API Overview
 
@@ -151,6 +152,34 @@ Return all reservations.
 
 Return reservation by ID.
 
+### `GET /reservations/user/:userId`
+
+Return reservations for a specific user (the signed-in user).
+
+### `GET /reservations/search?`
+
+Admin-only, filtered list of reservations with pagination & sorting.
+
+Available options:
+
+```arduino
+  // - ?searchTerm=string
+  // - ?fullName=string
+  // - ?email=string
+  // - ?status=string
+  // - ?dateFrom=ISODate
+  // - ?dateTo=ISODate
+  // - ?pageSize=number
+  // - ?page=number
+  // - ?sort=startate_asc (options: createdAt_asc, createdAt_desc, startDate_asc, startDate_desc)
+  // All query parameters are optional and can be combined
+  // Returns filtered and sorted reservations based on query
+```
+
+### `GET /reservations/stats`
+
+Admin-only, summarized counts/metrics.
+
 ### `POST /reservations/add`
 
 Create a reservation.
@@ -213,11 +242,28 @@ Deletes a reservation by ID. (Admin only)
 
 Get all users. (Admin use)
 
-### `GET /api/users/:id`
+### `GET /users/:id`
 
 Fetch a user profile by ID.
 
-### `PATCH /users`
+### `GET /users/search?`
+
+Admin-only, filtered list of users with pagination & sorting.
+
+Available options:
+
+```arduino
+  // - ?username=string
+  // - ?email=string
+  // - ?role=string
+  // - ?pageSize=number
+  // - ?page=number
+  // - ?sort=price_asc (options: createdAt_asc, createdAt_desc, username_asc, username_desc)
+  // All query parameters are optional and can be combined
+  // Returns filtered and sorted users based on query
+```
+
+### `PATCH /users/:id`
 
 Update user essential data like:
 
@@ -349,6 +395,34 @@ This is a read-only request. Flights are fetched externally, not stored in your 
 ## Payments
 
 Not fully implemented. Currently, the payment details are captured at the reservation level (paymentMethod).
+
+## Reports
+
+Used by the **Admin Dashboard** to display aggregated statistics and performance metrics.
+
+All endpoints are **Admin-only**.
+
+### `GET /reports/kpis`
+
+Returns key performance indicators (KPIs) such as:
+
+- Total users
+- Total listings
+- Total reservations
+- Total revenue <br>
+  Useful for dashboard summary cards.
+
+### `GET /reports/revenue/monthly`
+
+Returns monthly revenue statistics for chart visualization.
+
+### `GET /reports/top-rentals`
+
+Returns top-performing rentals based on confirmed reservations or total earnings.
+
+### `GET /reports/reservations/status`
+
+Returns aggregated reservations counts by status for chart usage.
 
 ## Error Handling
 
