@@ -1,61 +1,162 @@
 <div>
-    <h1 class="text-2xl font-bold text-white mb-6">Users Management</h1>
+  <h1 class="text-2xl font-bold text-white mb-6">Users Management</h1>
 
-    <!-- Search + Add User -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-        <input type="text" placeholder="Search users..."
-            class="w-full sm:w-64 px-4 py-2 rounded bg-white text-black focus:outline-none" />
-        <button class="bg-accent text-primary font-semibold px-5 py-2 rounded hover:bg-accent/80 transition">
-            + Add New User
+  <!-- Search & Add User -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+    <!-- Search Section -->
+    <div class="flex-1 w-full md:w-auto flex items-center gap-2">
+      <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="searchByTitle()" placeholder="Search users..."
+        class="w-full md:w-96 px-6 py-3 rounded-full bg-slate-500 text-black placeholder-white focus:outline-none focus:ring-2 focus:ring-accent transition" />
+      <button (click)="searchByTitle()"
+        class="bg-accent text-white px-6 py-3 rounded-full hover:bg-white hover:text-accent transition flex items-center gap-2">
+        <i class="fas fa-search"></i> Search
+      </button>
+    </div>
+
+    <!-- Add user section -->
+    <a routerLink="/auth/signup"
+      class="bg-accent text-white font-semibold px-5 py-2 rounded hover:bg-white hover:text-accent transition flex items-center gap-2">
+      <i class="fas fa-user-plus"></i>
+      Add New User
+    </a>
+  </div>
+
+  <!-- Users Table -->
+  <div class="mt-10">
+    <div class="bg-secondaryLighter p-5 rounded shadow overflow-x-auto">
+      <table class="w-full border-collapse min-w-[600px]">
+        <thead>
+          <tr class="bg-gray-500 text-m uppercase tracking-wide text-white">
+            <th class="px-4 py-3 text-left">ID</th>
+            <th class="px-4 py-3 text-center">Profile</th>
+            <th class="px-4 py-3 text-left">Name</th>
+            <th class="px-4 py-3 text-left">Email</th>
+            <th class="px-4 py-3 text-left">Role</th>
+            <th class="px-4 py-3 text-left">Created</th>
+            <th class="px-4 py-3 text-left">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let user of users"
+            class="border-t border-gray-600 hover:bg-gray-300/50 transition text-white text-xl">
+            <td class="px-4 py-3 truncate max-w-[200px]">{{ user._id }}</td>
+
+            <td class="px-4 py-3 text-center">
+              <img [src]="profilePicture(user.profilePicture)" alt="User Avatar"
+                class="w-10 h-10 rounded-full border-2 border-accent shadow-md mx-auto" />
+            </td>
+
+            <td class="px-4 py-3 text-accent font-semibold">
+              {{ user.username || "N/A" }}
+            </td>
+            <td class="px-4 py-3 text-white">{{ user.email || "N/A" }}</td>
+
+            <td class="px-4 py-3">
+              <span class="px-3 py-1 rounded-full text-m font-medium" [ngClass]="{
+                                    'bg-red-200 text-red-700': user.role === 'admin',
+                                    'bg-green-200 text-green-800': user.role === 'owner',
+                                    'bg-gray-300 text-gray-900': user.role === 'visitor'
+                                    }">
+                {{ user.role }}
+              </span>
+            </td>
+
+            <td class="px-4 py-3 text-accent">
+              {{ user.createdAt }}
+            </td>
+
+            <td class="px-4 py-3 flex flex-wrap gap-2">
+              <button (click)="openEditModal(user)"
+                class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 flex items-center gap-1">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded flex items-center gap-1"
+                (click)="openRemoveModal(user)">
+                <i class="fas fa-trash-alt"></i> Remove
+              </button>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="mt-6 flex justify-end items-center gap-4 text-white">
+    <button (click)="changePage(page - 1)" [disabled]="page === 1"
+      class="px-4 py-2 bg-accent hover:bg-white hover:text-accent rounded disabled:opacity-50">
+      <i class="fas fa-arrow-left"></i> Prev
+    </button>
+
+    <span>Page {{ page }} of {{ totalPages }}</span>
+
+    <button (click)="changePage(page + 1)" [disabled]="page === totalPages"
+      class="px-4 py-2 bg-accent hover:bg-white hover:text-accent rounded disabled:opacity-50">
+      Next <i class="fas fa-arrow-right"></i>
+    </button>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <app-confirmation-modal [show]="showConfirmModal" [title]="modalTitle" [message]="confirmMessage"
+    (confirm)="confirm()" (cancel)="cancelRemove()" />
+
+  <!-- Edit Modal -->
+  <div *ngIf="showEditModal" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
+    (click)="closeEditModal()">
+    <div class="bg-secondary text-white p-6 rounded-xl w-full max-w-2xl relative shadow-lg"
+      (click)="$event.stopPropagation()">
+      <h2 class="text-2xl font-bold text-white mb-6">Edit User</h2>
+
+      <!-- User Card Section -->
+      <div class="flex gap-6 items-start mb-8">
+        <img [src]="profilePicture(editUser.profilePicture)" alt="User Avatar"
+          class="w-24 h-24 rounded-full border-4 border-accent shadow" />
+
+        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-accent mb-1">Username</label>
+            <input [(ngModel)]="editUser.username"
+              class="w-full px-4 py-2 rounded bg-slate-500 text-black border border-gray-300" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-accent mb-1">Email</label>
+            <input [value]="editUser.email" disabled
+              class="w-full px-4 py-2 rounded bg-primary text-accent border border-gray-300" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-accent mb-1">Phone</label>
+            <input [value]="editUser.phone || 'N/A'" disabled
+              class="w-full px-4 py-2 rounded bg-primary text-accent border border-gray-300" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-accent mb-1">Role</label>
+            <select [(ngModel)]="editUser.role" [disabled]="!currentUserRole"
+              class="w-full px-4 py-2 rounded bg-slate-500 text-black border border-gray-300">
+              <option value="admin">Admin</option>
+              <option value="owner">Owner</option>
+              <option value="visitor">Visitor</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer Buttons -->
+      <div class="flex justify-end gap-3 mt-4">
+        <button class="px-5 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded" (click)="closeEditModal()">
+          Cancel
         </button>
-    </div>
+        <button class="px-5 py-2 bg-accent text-white hover:bg-white hover:text-accent rounded"
+          (click)="openConfirmModal()">
+          Save
+        </button>
+      </div>
 
-    <!-- Users Table -->
-    <div class="bg-white p-5 rounded shadow overflow-x-auto">
-        <table class="w-full border-collapse min-w-[600px]">
-            <thead>
-                <tr class="bg-gray-200">
-                    <th class="p-2 text-left">ID</th>
-                    <th class="p-2 text-left">Name</th>
-                    <th class="p-2 text-left">Email</th>
-                    <th class="p-2 text-left">Role</th>
-                    <th class="p-2 text-left">Status</th>
-                    <th class="p-2 text-left">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="border-t hover:bg-gray-100 transition">
-                    <td class="p-2">1</td>
-                    <td class="p-2">John Doe</td>
-                    <td class="p-2">john&#64;example.com</td>
-                    <td class="p-2">Owner</td>
-                    <td class="p-2 text-green-600 font-semibold">Active</td>
-                    <td class="p-2 space-x-2">
-                        <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                            Edit
-                        </button>
-                        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                            Remove
-                        </button>
-                    </td>
-                </tr>
-                <tr class="border-t hover:bg-gray-100 transition">
-                    <td class="p-2">2</td>
-                    <td class="p-2">Jane Smith</td>
-                    <td class="p-2">jane&#64;example.com</td>
-                    <td class="p-2">Visitor</td>
-                    <td class="p-2 text-yellow-500 font-semibold">Pending</td>
-                    <td class="p-2 space-x-2">
-                        <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                            Edit
-                        </button>
-                        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                            Remove
-                        </button>
-                    </td>
-                </tr>
-                <!-- More rows -->
-            </tbody>
-        </table>
     </div>
+  </div>
+
 </div>

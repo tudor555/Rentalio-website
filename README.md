@@ -37,7 +37,7 @@ Here are a few screenshots of the UI:
 ## Project Structure
 
 ```
-Rentalio/
+Rentalio-website/
 ├── backend/          # Express API server with Mongoose schemas
 ├── db/               # MongoDB migrations & seeders
 ├── docs/             # UI screenshots
@@ -67,8 +67,8 @@ Rentalio/
 ### 1. Clone the repository:
 
 ```bash
-git clone https://github.com/tudor555/Rental-website-license-project.git
-cd Rental-website-license-project
+git clone https://github.com/tudor555/Rentalio-website.git
+cd Rental-website
 ```
 
 ### 2. Environment Setup

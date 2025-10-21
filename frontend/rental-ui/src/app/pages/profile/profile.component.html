@@ -12,7 +12,6 @@
 
     <!-- Profile Sections -->
     <div class="mt-10 space-y-10">
-
       <!-- Account Details Section-->
       <div class="bg-secondary p-6 rounded-lg shadow-lg">
         <h3 class="text-3xl font-extrabold mb-4 border-b border-gray-600 pb-2">
@@ -49,6 +48,94 @@
           class="mt-6 bg-accent text-white py-3 px-6 rounded-lg hover:bg-orange-300 hover:text-white transition duration-300 shadow-md">
           Save Changes
         </button>
+      </div>
+
+      <!-- Your Rentals Section -->
+      <div *ngIf="isOwnerOrAdmin" class="bg-secondary p-6 rounded-lg shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-3xl font-extrabold border-b border-gray-600 pb-2">
+            <i class="fa-solid fa-building mr-2 text-accent"></i> Your Rentals
+          </h3>
+          <a routerLink="/rental/list-property"
+            class="px-4 py-2 rounded bg-accent text-white font-semibold hover:bg-white hover:text-accent transition">
+            <i class="fa-solid fa-circle-plus mr-2"></i> List New Property
+          </a>
+        </div>
+
+        <!-- Loader -->
+        <div *ngIf="rentalsLoading" class="flex items-center justify-center h-48 text-accent gap-4">
+          <i class="fa-solid fa-spinner fa-2x animate-spin"></i>
+          <span class="text-xl font-semibold">Loading your rentals…</span>
+        </div>
+
+        <!-- Error load user rentals -->
+        <div *ngIf="!rentalsLoading && rentalsError"
+          class="bg-red-900/40 border border-red-500 text-red-200 rounded-xl p-4">
+          {{ rentalsError }}
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!rentalsLoading && !rentalsError && userRentals.length === 0"
+          class="text-center text-gray-300 py-10">
+          You haven’t listed any properties yet.
+          <a routerLink="/rental/list-property"
+            class="px-4 py-2 rounded bg-accent text-white font-semibold hover:bg-white hover:text-accent transition">
+            <i class="fa-solid fa-circle-plus mr-2"></i> List Now
+          </a>
+        </div>
+
+        <!-- Grid -->
+        <div *ngIf="!rentalsLoading && userRentals.length > 0"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div *ngFor="let userRental of userRentals"
+            class="bg-slate-500 p-4 rounded-lg shadow-lg block hover:shadow-xl transition">
+
+            <div class="aspect-video rounded-xl overflow-hidden mb-3 bg-black/20">
+              <img [src]="firstImage(userRental)" alt="Listing image"
+                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+            </div>
+
+            <h3 class="text-xl font-bold text-accent">{{ userRental.title }}</h3>
+
+            <p class="text-black">
+              <i class="fas fa-map-marker-alt text-accent"></i>
+              {{ userRental.location.city }}, {{ userRental.location.country }}
+            </p>
+
+            <div class="flex items-center justify-between mt-4">
+              <span class="text-black font-semibold">
+                $ {{ (userRental.pricing?.basePrice ?? userRental.basePrice) || "-" }}
+                <span class="text-black text-sm">
+                  / {{ (userRental.pricing?.pricingUnit ?? userRental.priceType) || "" }}
+                </span>
+              </span>
+
+              <button (click)="editRental(userRental._id || userRental.id)" class="px-3 py-1.5 rounded bg-accent text-white font-medium transition
+                     hover:bg-white hover:text-accent
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70">
+                <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Pagination -->
+        <div *ngIf="
+            !rentalsLoading && userRentals.length > 0 && rentalsTotalPages > 1
+          " class="flex justify-center items-center mt-6 space-x-4">
+          <button (click)="loadYourRentals(rentalsPage - 1)" [disabled]="rentalsPage === 1"
+            class="px-4 py-2 bg-accent text-white hover:bg-white hover:text-accent rounded-lg shadow disabled:opacity-50">
+            <i class="fa-solid fa-arrow-left"></i> Previous
+          </button>
+          <span class="text-white font-semibold">
+            Page {{ rentalsPage }} of {{ rentalsTotalPages }}
+          </span>
+          <button (click)="loadYourRentals(rentalsPage + 1)" [disabled]="rentalsPage === rentalsTotalPages"
+            class="px-4 py-2 bg-accent text-white hover:bg-white hover:text-accent rounded-lg shadow disabled:opacity-50">
+            Next <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
       </div>
 
       <!-- Recent Bookings Section -->
@@ -115,7 +202,6 @@
             Next <i class="fa-solid fa-arrow-right"></i>
           </button>
         </div>
-        
       </div>
 
       <!-- Settings Section -->

@@ -1,0 +1,262 @@
+<div class="min-h-screen bg-primary mx-auto px-6 lg:px-20 py-10 text-white">
+
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="flex items-center justify-center h-64 text-accent gap-4">
+        <i class="fa-solid fa-spinner fa-3x animate-spin"></i>
+        <span class="text-2xl font-semibold">Loading…</span>
+    </div>
+
+    <ng-container *ngIf="canViewPage">
+        <h1 class="text-3xl font-bold text-accent mb-8 text-center">
+            Edit Your Property
+        </h1>
+
+        <form class="space-y-8" #editForm="ngForm" (ngSubmit)="saveChanges(editForm)">
+            <!-- Title -->
+            <div>
+                <label for="title" class="block mb-2 text-accent">
+                    <i class="fas fa-heading"></i> Title
+                </label>
+                <input type="text" id="title" name="title" [(ngModel)]="property.title" #titleInput="ngModel"
+                    [disabled]="isAdmin && !isOwner" placeholder="Enter a catchy title for your property"
+                    class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+                    [class.opacity-60]="isAdmin && !isOwner" [class.cursor-not-allowed]="isAdmin && !isOwner"
+                    required />
+                <p *ngIf="titleInput.invalid && titleInput.touched" class="text-red-500 text-sm mt-1">
+                    *Title is required.
+                </p>
+                <p *ngIf="isAdmin && !isOwner" class="text-gray-400 text-sm mt-1 italic">
+                    Read-only for admins.
+                </p>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="description" class="block mb-2 text-accent">
+                    <i class="fa-solid fa-file-pen"></i> Description
+                </label>
+                <textarea id="description" name="description" [disabled]="isAdmin && !isOwner"
+                    [(ngModel)]="property.description" #descriptionInput="ngModel" rows="4"
+                    placeholder="Describe your property in detail"
+                    class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+                    [class.opacity-60]="isAdmin && !isOwner" [class.cursor-not-allowed]="isAdmin && !isOwner"
+                    required></textarea>
+                <p *ngIf="descriptionInput.invalid && descriptionInput.touched" class="text-red-500 text-sm mt-1">
+                    *Description is required.
+                </p>
+                <p *ngIf="isAdmin && !isOwner" class="text-gray-400 text-sm mt-1 italic">
+                    Read-only for admins.
+                </p>
+            </div>
+
+            <!-- Category -->
+            <div>
+                <label for="category" class="block mb-2 text-accent">
+                    <i class="fa-solid fa-list"></i> Category
+                </label>
+                <select id="category" name="category" [(ngModel)]="property.category" #categoryInput="ngModel"
+                    class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+                    required>
+                    <option *ngFor="let type of propertyTypes" [value]="type.value" [disabled]="type.value === ''">
+                        {{ type.label }}
+                    </option>
+                </select>
+                <p *ngIf="categoryInput.invalid && categoryInput.touched" class="text-red-500 text-sm mt-1">
+                    *Category is required.
+                </p>
+            </div>
+
+            <!-- Price + Price Type -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="price" class="block mb-2 text-accent">
+                        <i class="fa-solid fa-money-bill-wave"></i> Base Price ($)
+                    </label>
+                    <input type="number" id="price" name="price" [disabled]="isAdmin && !isOwner"
+                        [(ngModel)]="property.basePrice" #priceInput="ngModel" min="0" placeholder="Enter base price"
+                        class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+                        [class.opacity-60]="isAdmin && !isOwner" [class.cursor-not-allowed]="isAdmin && !isOwner"
+                        required />
+                    <p *ngIf="priceInput.invalid && priceInput.touched" class="text-red-500 text-sm mt-1">
+                        *Price is required and must be a positive number.
+                    </p>
+                    <p *ngIf="isAdmin && !isOwner" class="text-gray-400 text-sm mt-1 italic">
+                        Read-only for admins.
+                    </p>
+                </div>
+
+                <div>
+                    <label for="priceType" class="block mb-2 text-accent">
+                        <i class="fa-solid fa-clock"></i> Price Type
+                    </label>
+                    <select id="priceType" name="priceType" [(ngModel)]="property.priceType" #priceTypeInput="ngModel"
+                        class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+                        required>
+                        <option *ngFor="let type of priceTypes" [value]="type.value" [disabled]="type.value === ''">
+                            {{ type.label }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Images Upload -->
+            <div [class.opacity-60]="isAdmin && !isOwner" [class.pointer-events-none]="isAdmin && !isOwner">
+                <input id="fileInput" type="file" class="hidden" (change)="onImageUpload($event)" multiple
+                    accept=".jpg,.jpeg,.png,.svg,.webp" />
+
+                <div (click)="triggerFileInput()" id="image-upload"
+                    class="flex flex-col items-center justify-center border-2 border-dashed border-accent rounded-xl p-6 cursor-pointer bg-secondary hover:bg-secondary-dark transition"
+                    [class.opacity-50]="previewImages.length >= 16">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-accent mb-4"></i>
+                    <p class="text-white mb-2">Click to upload or drag & drop</p>
+                    <p class="text-gray-400 text-sm">PNG, JPG, SVG, WEBP up to 5MB</p>
+                </div>
+
+                <div class="grid grid-cols-4 gap-4 mt-6" *ngIf="previewImages.length > 0">
+                    <div class="relative group" *ngFor="let imageUrl of previewImages; let i = index">
+                        <img [src]="imageUrl" alt="Preview" class="rounded-lg object-cover w-full h-32" />
+                        <button *ngIf="!isAdmin || isOwner" type="button" (click)="removeImage(i)"
+                            class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-gray-400 text-sm mt-2" *ngIf="previewImages.length > 0">
+                    {{ previewImages.length }}/16 images selected
+                </div>
+                <div class="text-l text-gray-500 italic mt-1" *ngIf="previewImages.length > 0">
+                    * Existing images are preloaded; new uploads will replace or add on
+                    save.
+                </div>
+                <p *ngIf="isAdmin && !isOwner" class="text-gray-400 text-sm mt-1 italic">
+                    Read-only for admins.
+                </p>
+            </div>
+
+            <!-- Location -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label for="country" class="block mb-2 text-accent">
+                        <i class="fa-solid fa-earth-europe"></i> Country
+                    </label>
+                    <input type="text" id="country" name="country" [disabled]="isAdmin && !isOwner"
+                        [(ngModel)]="property.location.country" #countryInput="ngModel" placeholder="Enter country"
+                        class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+                        [class.opacity-60]="isAdmin && !isOwner" [class.cursor-not-allowed]="isAdmin && !isOwner"
+                        required />
+                    <p *ngIf="isAdmin && !isOwner" class="text-gray-400 text-sm mt-1 italic">
+                        Read-only for admins.
+                    </p>
+                </div>
+                <div>
+                    <label for="city" class="block mb-2 text-accent">
+                        <i class="fa-solid fa-city"></i> City
+                    </label>
+                    <input type="text" id="city" name="city" [disabled]="isAdmin && !isOwner"
+                        [(ngModel)]="property.location.city" #cityInput="ngModel" placeholder="Enter city"
+                        class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+                        [class.opacity-60]="isAdmin && !isOwner" [class.cursor-not-allowed]="isAdmin && !isOwner"
+                        required />
+                    <p *ngIf="isAdmin && !isOwner" class="text-gray-400 text-sm mt-1 italic">
+                        Read-only for admins.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div class="mt-6">
+                <label for="address" class="block mb-2 text-accent">
+                    <i class="fa-solid fa-location-dot"></i> Address
+                </label>
+                <input type="text" id="address" name="address" [disabled]="isAdmin && !isOwner"
+                    [(ngModel)]="property.location.address" #addressInput="ngModel" placeholder="Enter full address"
+                    class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+                    [class.opacity-60]="isAdmin && !isOwner" [class.cursor-not-allowed]="isAdmin && !isOwner"
+                    required />
+                <p *ngIf="isAdmin && !isOwner" class="text-gray-400 text-sm mt-1 italic">
+                    Read-only for admins.
+                </p>
+            </div>
+
+            <!-- Amenities -->
+            <div class="mt-6">
+                <label for="amenities" class="block mb-2 text-accent">
+                    <i class="fas fa-concierge-bell"></i> Amenities (comma separated)
+                </label>
+                <input type="text" id="amenities" name="amenities" [(ngModel)]="amenitiesString"
+                    #amenitiesInput="ngModel" placeholder="e.g. WiFi, Parking, Pool, Air Conditioning"
+                    class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent" />
+            </div>
+
+            <!-- Availability -->
+            <div class="grid md:grid-cols-2 gap-6 mt-6">
+                <div>
+                    <label for="availableFrom" class="block mb-2 text-accent">
+                        <i class="fa-solid fa-calendar-days"></i> Available From (optional)
+                    </label>
+                    <input type="date" id="availableFrom" name="availableFrom" [disabled]="isAdmin && !isOwner"
+                        [(ngModel)]="property.availability.from" #availableFromInput="ngModel"
+                        class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+                        [class.opacity-60]="isAdmin && !isOwner" [class.cursor-not-allowed]="isAdmin && !isOwner"
+                        (keydown)="preventTyping($event)" />
+                    <p *ngIf="isAdmin && !isOwner" class="text-gray-400 text-sm mt-1 italic">
+                        Read-only for admins.
+                    </p>
+                </div>
+
+                <div>
+                    <label for="availableTo" class="block mb-2 text-accent">
+                        <i class="fa-solid fa-calendar-days"></i> Available To (optional)
+                    </label>
+                    <input type="date" id="availableTo" name="availableTo" [(ngModel)]="property.availability.to"
+                        #availableToInput="ngModel" [min]="today"
+                        class="w-full bg-secondary p-3 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent"
+                        (keydown)="preventTyping($event)" />
+                    <p class="text-red-500 text-sm mt-1" *ngIf="availableToInput.touched && availableToInvalid()">
+                        *Available To must be today or later.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-10">
+                <button type="button" (click)="cancel()"
+                    class="px-6 py-3 rounded border border-accent text-accent font-semibold transition duration-300 hover:bg-white hover:text-accent">
+                    Cancel
+                </button>
+
+                <button type="submit" [disabled]="editForm.invalid"
+                    class="px-6 py-3 rounded bg-accent text-white font-semibold transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white hover:text-accent">
+                    <i class="fa-solid fa-floppy-disk mr-1"></i> Save Changes
+                </button>
+            </div>
+
+            <!-- Error -->
+            <div *ngIf="errorMessage" class="text-red-500 mt-4 text-center font-medium">
+                {{ errorMessage }}
+            </div>
+
+            <!-- Success message -->
+            <div *ngIf="successMessage"
+                class="mt-6 flex flex-col items-center justify-center bg-green-900/30 border border-green-500 text-green-300 rounded-xl p-6 shadow-md">
+                <p class="text-lg font-semibold mb-3 flex items-center">
+                    <i class="fa-solid fa-circle-check text-green-400 mr-2"></i>
+                    {{ successMessage }}
+                </p>
+
+                <div class="flex gap-4 mt-2">
+                    <button type="button" (click)="successMessage = ''"
+                        class="px-5 py-2 bg-secondary text-white font-medium rounded-lg hover:bg-white hover:text-accent transition duration-300">
+                        Continue Editing
+                    </button>
+
+                    <button type="button" (click)="goToListing()"
+                        class="px-5 py-2 bg-accent text-white font-semibold rounded-lg shadow hover:bg-white hover:text-accent transition duration-300">
+                        <i class="fa-solid fa-eye mr-2"></i> View Rental
+                    </button>
+                </div>
+            </div>
+        </form>
+    </ng-container>
+</div>

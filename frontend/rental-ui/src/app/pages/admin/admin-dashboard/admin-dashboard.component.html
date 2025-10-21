@@ -4,17 +4,24 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-      <div class="bg-accent p-5 rounded shadow">
-        <h2 class="text-lg font-semibold text-primary">Total Properties</h2>
-        <p class="text-3xl font-bold mt-2 text-white">{{ totalListings }}</p>
+      <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+        <i class="fas fa-home text-4xl text-primary"></i>
+        <div>
+          <h2 class="text-lg font-semibold text-primary">Total Properties</h2>
+          <p class="text-3xl font-bold text-white mt-1">{{ totalListings }}</p>
+        </div>
       </div>
-      <div class="bg-accent p-5 rounded shadow">
+
+      <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+        <i class="fas fa-users text-4xl text-primary"></i>
         <h2 class="text-lg font-semibold text-primary">Total Users</h2>
-        <p class="text-3xl font-bold mt-2 text-white">{{ totalUsers }}</p>
+        <p class="text-3xl font-bold text-white mt-1">{{ totalUsers }}</p>
       </div>
-      <div class="bg-accent p-5 rounded shadow">
+
+      <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+        <i class="fas fa-calendar-check text-4xl text-primary"></i>
         <h2 class="text-lg font-semibold text-primary">Total Reservations</h2>
-        <p class="text-3xl font-bold mt-2 text-white">
+        <p class="text-3xl font-bold text-white mt-1">
           {{ totalReservations }}
         </p>
       </div>
@@ -22,11 +29,19 @@
 
     <!-- Users Table -->
     <div class="mt-10">
-      <h2 class="text-xl font-bold text-white mb-3">Users Management</h2>
-      <div class="bg-white p-5 rounded shadow overflow-x-auto">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xl font-bold text-white">Users Management</h2>
+        <a routerLink="/admin/users"
+          class="inline-flex items-center gap-2 bg-accent text-white px-4 py-2 rounded hover:bg-white hover:text-accent transition text-sm">
+          <i class="fas fa-users"></i>
+          View All Users
+        </a>
+      </div>
+
+      <div class="bg-secondaryLighter p-5 rounded shadow overflow-x-auto">
         <table class="w-full border-collapse min-w-[600px]">
           <thead>
-            <tr class="bg-gray-200">
+            <tr class="bg-gray-500">
               <th class="p-2 text-left">ID</th>
               <th class="p-2 text-left">Name</th>
               <th class="p-2 text-left">Role</th>
@@ -34,29 +49,26 @@
             </tr>
           </thead>
           <tbody>
-            <tr class="border-t">
-              <td class="p-2">1</td>
-              <td class="p-2">John Doe</td>
-              <td class="p-2">Owner</td>
+            <tr class="border-t border-gray-500 hover:bg-gray-300 transition" *ngFor="let user of users.slice(0, 5)">
+              <td class="p-2">{{ user._id }}</td>
+              <td class="p-2 text-accent">{{ user.username || "N/A" }}</td>
               <td class="p-2">
-                <button
-                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                >
-                  Remove
+                <span class="px-2 py-1 rounded-full text-sm mt-1" [ngClass]="{
+                    'bg-red-200 text-red-700': user.role === 'admin',
+                    'bg-green-200 text-green-800': user.role === 'owner',
+                    'bg-gray-200 text-gray-800': user.role === 'visitor'
+                  }">
+                  {{ user.role }}
+                </span>
+              </td>
+
+              <td class="p-2">
+                <button (click)="openUserRemoveModal(user._id)"
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 flex items-center gap-1">
+                  <i class="fas fa-trash-alt"></i> <span>Remove</span>
                 </button>
               </td>
-            </tr>
-            <tr class="border-t">
-              <td class="p-2">2</td>
-              <td class="p-2">Jane Smith</td>
-              <td class="p-2">Visitor</td>
-              <td class="p-2">
-                <button
-                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                >
-                  Remove
-                </button>
-              </td>
+
             </tr>
           </tbody>
         </table>
@@ -65,11 +77,21 @@
 
     <!-- Rentals Table -->
     <div class="mt-10">
-      <h2 class="text-xl font-bold text-white mb-3">Rentals Management</h2>
-      <div class="bg-white p-5 rounded shadow overflow-x-auto">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xl font-bold text-white mb-3">Rentals Management</h2>
+        <div class="text-right mt-2">
+          <a routerLink="/admin/rentals"
+            class="inline-flex items-center gap-2 bg-accent text-white px-4 py-2 rounded hover:bg-white hover:text-accent transition text-sm">
+            <i class="fas fa-home"></i>
+            View All Listings
+          </a>
+        </div>
+      </div>
+
+      <div class="bg-secondaryLighter p-5 rounded shadow overflow-x-auto">
         <table class="w-full border-collapse min-w-[600px]">
           <thead>
-            <tr class="bg-gray-200">
+            <tr class="bg-gray-500">
               <th class="p-2 text-left">ID</th>
               <th class="p-2 text-left">Title</th>
               <th class="p-2 text-left">Owner</th>
@@ -77,29 +99,19 @@
             </tr>
           </thead>
           <tbody>
-            <tr class="border-t">
-              <td class="p-2">1</td>
-              <td class="p-2">Cozy Apartment</td>
-              <td class="p-2">John Doe</td>
+            <tr class="border-t border-gray-500 hover:bg-gray-300 transition"
+              *ngFor="let listing of listings.slice(0, 5)">
+              <td class="p-2">{{ listing._id }}</td>
+              <td class="p-2 text-accent">{{ listing.title }}</td>
+              <td class="p-2">{{ listing.ownerName }}</td>
+
               <td class="p-2">
-                <button
-                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                >
-                  Remove
+                <button (click)="openListingRemoveModal(listing._id)"
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 flex items-center gap-1">
+                  <i class="fas fa-trash-alt"></i> <span>Remove</span>
                 </button>
               </td>
-            </tr>
-            <tr class="border-t">
-              <td class="p-2">2</td>
-              <td class="p-2">Beach House</td>
-              <td class="p-2">Jane Smith</td>
-              <td class="p-2">
-                <button
-                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                >
-                  Remove
-                </button>
-              </td>
+
             </tr>
           </tbody>
         </table>
@@ -108,11 +120,21 @@
 
     <!-- Reservations Table -->
     <div class="mt-10">
-      <h2 class="text-xl font-bold text-white mb-3">Reservations Management</h2>
-      <div class="bg-white p-5 rounded shadow overflow-x-auto">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xl font-bold text-white mb-3">Reservations Management</h2>
+        <div class="text-right mt-4">
+          <a routerLink="/admin/reservations"
+            class="inline-flex items-center gap-2 bg-accent text-white px-4 py-2 rounded hover:bg-white hover:text-accent transition text-sm">
+            <i class="fas fa-calendar-check"></i>
+            View All Reservations
+          </a>
+        </div>
+      </div>
+
+      <div class="bg-secondaryLighter p-5 rounded shadow overflow-x-auto">
         <table class="w-full border-collapse min-w-[600px]">
           <thead>
-            <tr class="bg-gray-200">
+            <tr class="bg-gray-500">
               <th class="p-2 text-left">ID</th>
               <th class="p-2 text-left">Guest</th>
               <th class="p-2 text-left">Rental</th>
@@ -121,35 +143,32 @@
             </tr>
           </thead>
           <tbody>
-            <tr class="border-t">
-              <td class="p-2">1</td>
-              <td class="p-2">Alice</td>
-              <td class="p-2">Cozy Apartment</td>
-              <td class="p-2">2024-06-12</td>
+            <tr class="border-t border-gray-500 hover:bg-gray-300 transition"
+              *ngFor="let reservation of reservations.slice(0, 5)">
+              <td class="p-2">{{ reservation._id }}</td>
+              <td class="p-2">{{ reservation.fullName || "Guest" }}</td>
+              <td class="p-2 text-accent">{{ reservation.listingTitle }}</td>
               <td class="p-2">
-                <button
-                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                >
-                  Cancel
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                  {{ reservation.startDate }}
+                </span>
+
+              </td>
+              <td class="p-2">
+                <button (click)="openReservationCancelModal(reservation._id)"
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 flex items-center gap-1">
+                  <i class="fas fa-xmark"></i> <span>Cancel</span>
                 </button>
               </td>
-            </tr>
-            <tr class="border-t">
-              <td class="p-2">2</td>
-              <td class="p-2">Bob</td>
-              <td class="p-2">Beach House</td>
-              <td class="p-2">2024-07-03</td>
-              <td class="p-2">
-                <button
-                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                >
-                  Cancel
-                </button>
-              </td>
+
             </tr>
           </tbody>
         </table>
       </div>
     </div>
+
+    <app-confirmation-modal [show]="showConfirmModal" [title]="modalTitle" [message]="modalMessage"
+      (confirm)="confirmModalAction()" (cancel)="cancelModal()" />
+
   </main>
 </div>

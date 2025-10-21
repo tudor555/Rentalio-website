@@ -5,6 +5,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { RentalsComponent } from './pages/rentals/rentals-base/rentals-base.component';
 import { RentalComponent } from './pages/rentals/rental/rental.component';
 import { RentalListPropertyComponent } from './pages/rentals/rental-list-property/rental-list-property.component';
+import { RentalEditPropertyComponent } from './pages/rentals/rental-edit-property/rental-edit-property.component';
 import { ReserveRentalComponent } from './pages/rentals/reserve-rental/reserve-rental.component';
 import { FlightsComponent } from './pages/flights/flights-base/flights-base.component';
 import { FlightsListComponent } from './pages/flights/flights-list/flight-list.component';
@@ -29,6 +30,7 @@ export const routes: Routes = [
   { path: 'rentals', component: RentalsComponent },
   // Static before dynamic, don't move this above :id
   { path: 'rental/list-property', component: RentalListPropertyComponent },
+  { path: 'rental/edit/:id', component: RentalEditPropertyComponent },
   { path: 'rental/:id', component: RentalComponent },
   { path: 'rental/:id/reserve', component: ReserveRentalComponent },
   { path: 'flights', component: FlightsComponent },

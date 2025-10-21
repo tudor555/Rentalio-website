@@ -3,67 +3,315 @@
 
     <!-- Search + Filter -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-        <input type="text" placeholder="Search reservations..."
-            class="w-full sm:w-64 px-4 py-2 rounded bg-white text-black focus:outline-none" />
-        <!-- TODO: made fine adjustments for design of select -->
-        <select
-            class="w-full sm:w-48 px-4 py-2 rounded bg-primary text-accent focus:outline-none focus:ring-2 focus:ring-accent">
-            <option value="">All Statuses</option>
+        <div class="flex-1 w-full md:w-auto flex items-center gap-2">
+            <!-- Search input -->
+            <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="searchReservation()"
+                placeholder="Search reservations..."
+                class="w-full md:w-96 px-6 py-3 rounded-full bg-slate-500 text-black placeholder-white focus:outline-none focus:ring-2 focus:ring-accent transition" />
+            <button (click)="searchReservation()"
+                class="bg-accent text-white px-6 py-3 rounded-full hover:bg-white hover:text-accent transition flex items-center gap-2">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </div>
+
+        <!-- Status filter -->
+        <select [(ngModel)]="statusFilter" (change)="applyFilters()"
+            class="w-full sm:w-48 px-4 py-2 rounded bg-secondaryLighter text-accent focus:outline-none focus:ring-2 focus:ring-accent">
+            <option value="">All Status</option>
             <option value="confirmed">Confirmed</option>
             <option value="pending">Pending</option>
             <option value="canceled">Canceled</option>
         </select>
     </div>
 
+    <!-- Reservation Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-6">
+        <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+            <i class="fas fa-list-check text-4xl text-primary"></i>
+            <div>
+                <h2 class="text-lg font-semibold text-primary">Total Reservations</h2>
+                <p class="text-3xl font-bold text-white mt-1">
+                    <ng-container *ngIf="!statsLoading; else loadingDots">{{ stats.total }}</ng-container>
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+            <i class="fas fa-check-circle text-4xl text-primary"></i>
+            <div>
+                <h2 class="text-lg font-semibold text-primary">Confirmed</h2>
+                <p class="text-3xl font-bold text-white mt-1">
+                    <ng-container *ngIf="!statsLoading; else loadingDots">{{ stats.confirmed }}</ng-container>
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+            <i class="fas fa-hourglass-half text-4xl text-primary"></i>
+            <div>
+                <h2 class="text-lg font-semibold text-primary">Pending</h2>
+                <p class="text-3xl font-bold text-white mt-1">
+                    <ng-container *ngIf="!statsLoading; else loadingDots">{{ stats.pending }}</ng-container>
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-accent p-5 rounded shadow flex items-center gap-4">
+            <i class="fas fa-ban text-4xl text-primary"></i>
+            <div>
+                <h2 class="text-lg font-semibold text-primary">Canceled</h2>
+                <p class="text-3xl font-bold text-white mt-1">
+                    <ng-container *ngIf="!statsLoading; else loadingDots">{{ stats.canceled }}</ng-container>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #loadingDots>
+        <span class="opacity-70">...</span>
+    </ng-template>
+
     <!-- Reservations Table -->
-    <div class="bg-white p-5 rounded shadow overflow-x-auto">
-        <table class="w-full border-collapse min-w-[700px]">
+    <div class="bg-secondaryLighter p-6 rounded shadow overflow-x-auto mt-6">
+
+        <!-- Empty state -->
+        <div *ngIf="!loading && reservations?.length === 0" class="flex justify-center items-center h-48">
+            <p class="text-white text-lg">No reservations found.</p>
+        </div>
+
+        <table *ngIf="!loading && reservations?.length > 0" class="w-full border-collapse min-w-[900px]">
             <thead>
-                <tr class="bg-gray-200">
-                    <th class="p-2 text-left">ID</th>
-                    <th class="p-2 text-left">Guest</th>
-                    <th class="p-2 text-left">Rental</th>
-                    <th class="p-2 text-left">Check-in</th>
-                    <th class="p-2 text-left">Check-out</th>
-                    <th class="p-2 text-left">Status</th>
-                    <th class="p-2 text-left">Actions</th>
+                <tr class="bg-gray-500 text-m font-semibold text-white uppercase">
+                    <th class="p-3 text-left">ID</th>
+                    <th class="p-3 text-left">Guest</th>
+                    <th class="p-3 text-left">Rental</th>
+                    <th class="p-3 text-left">Dates</th>
+                    <th class="p-3 text-left">Earnings</th>
+                    <th class="p-3 text-left">Status</th>
+                    <th class="p-3 text-left">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <tr class="border-t hover:bg-gray-100 transition">
-                    <td class="p-2">1</td>
-                    <td class="p-2">Alice</td>
-                    <td class="p-2">Cozy Apartment</td>
-                    <td class="p-2">2024-06-12</td>
-                    <td class="p-2">2024-06-15</td>
-                    <td class="p-2 text-green-600 font-semibold">Confirmed</td>
-                    <td class="p-2 space-x-2">
-                        <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                            Edit
-                        </button>
-                        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                            Cancel
-                        </button>
+                <tr *ngFor="let reservation of reservations"
+                    class="border-t border-gray-500 hover:bg-gray-300/50 transition">
+
+                    <!-- ID -->
+                    <td class="p-3 text-white truncate max-w-[200px]">
+                        {{ reservation._id }}
                     </td>
-                </tr>
-                <tr class="border-t hover:bg-gray-100 transition">
-                    <td class="p-2">2</td>
-                    <td class="p-2">Bob</td>
-                    <td class="p-2">Beach House</td>
-                    <td class="p-2">2024-07-03</td>
-                    <td class="p-2">2024-07-10</td>
-                    <td class="p-2 text-yellow-500 font-semibold">Pending</td>
-                    <td class="p-2 space-x-2">
-                        <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                            Edit
-                        </button>
-                        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                            Cancel
-                        </button>
+
+                    <!-- Guest Info -->
+                    <td class="p-3">
+                        <div class="font-semibold text-black">
+                            {{ reservation.fullName }}
+                        </div>
+                        <div class="text-black text-m">
+                            {{ reservation.email }}
+                        </div>
                     </td>
+
+                    <!-- Rental Info -->
+                    <td class="p-3">
+                        <a [routerLink]="['/rental', reservation.listingId]"
+                            class="text-accent font-semibold hover:underline">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> {{ reservation.listingTitle }}
+                        </a>
+                        <div class="text-m text-black capitalize">
+                            {{ reservation.paymentMethod }} • {{ reservation.priceType }}
+                        </div>
+                    </td>
+
+                    <!-- Dates -->
+                    <td class="p-3">
+                        <div>
+                            <span class="text-white font-medium">
+                                <i class="fas fa-sign-in-alt mr-1"></i>Check-in:
+                            </span>
+                            <span class="text-accent">{{ reservation.startDate | date: 'yyyy-MM-dd' }}</span>
+                        </div>
+
+                        <!-- For daily/weekly/monthly -->
+                        <div *ngIf="reservation.priceType !== 'hour'; else hourlyInfo">
+                            <span class="text-white font-medium">
+                                <i class="fas fa-sign-out-alt mr-1"></i>Check-out:
+                            </span>
+                            <span class="text-accent">
+                                {{ reservation.endDate ? (reservation.endDate | date: 'yyyy-MM-dd') : 'N/A' }}
+                            </span>
+                        </div>
+
+                        <!-- For hourly -->
+                        <ng-template #hourlyInfo>
+                            <span class="text-white font-medium">
+                                <i class="fas fa-clock mr-1"></i>Hours:
+                            </span>
+                            <span class="text-accent">{{ reservation.numberOfHours }}</span>
+                        </ng-template>
+                    </td>
+
+                    <!-- Earnings -->
+                    <td class="p-3">
+                        <div class="text-green-700 font-semibold">
+                            <i class="fas fa-hand-holding-usd mr-1"></i> Owner: ${{ reservation.ownerAmount }}
+                        </div>
+                        <div class="text-red-500 text-m">
+                            <i class="fas fa-money-bill-wave mr-1"></i> Fee: ${{ reservation.siteFee }}
+                        </div>
+                        <div class="text-black font-medium text-m">
+                            <i class="fas fa-wallet mr-1"></i> Total: ${{ reservation.totalAmount }}
+                        </div>
+                    </td>
+
+                    <!-- Status -->
+                    <td class="p-3">
+                        <span [ngClass]="{
+                                'bg-green-100 text-green-800': reservation.status === 'confirmed',
+                                'bg-yellow-100 text-yellow-800': reservation.status === 'pending',
+                                'bg-red-100 text-red-800': reservation.status === 'cancelled'
+                            }" class="px-3 py-1 rounded-full text-m font-semibold capitalize"> {{ reservation.status }}
+                        </span>
+                    </td>
+
+                    <!-- Actions -->
+                    <td class="p-3 align-middle">
+                        <div class="flex flex-col sm:flex-row justify-center gap-2">
+                            <button
+                                class="bg-blue-500 hover:bg-blue-600 text-white text-m px-3 py-1 rounded flex items-center gap-1"
+                                (click)="openEditModal(reservation)">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button
+                                class="bg-red-500 hover:bg-red-600 text-white text-m px-3 py-1 rounded flex items-center gap-1"
+                                (click)="openCancelModal(reservation)">
+                                <i class="fas fa-trash-alt"></i> Remove
+                            </button>
+                        </div>
+                    </td>
+
                 </tr>
-                <!-- More rows -->
+
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination Controls -->
+    <div *ngIf="reservations?.length > 0" class="mt-6 flex justify-end items-center gap-4 text-white">
+        <button (click)="changePage(page - 1)" [disabled]="page === 1"
+            class="px-4 py-2 bg-accent hover:bg-white hover:text-accent rounded disabled:opacity-50">
+            <i class="fas fa-arrow-left"></i> Prev
+        </button>
+
+        <span>Page {{ page }} of {{ totalPages }}</span>
+
+        <button (click)="changePage(page + 1)" [disabled]="page === totalPages"
+            class="px-4 py-2 bg-accent hover:bg-white hover:text-accent rounded disabled:opacity-50">
+            Next <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+
+
+    <app-confirmation-modal [show]="showCancelModal" title="Remove Reservation" [message]="modalMessage"
+        (confirm)="confirmRemove()" (cancel)="cancelCancelModal()">
+    </app-confirmation-modal>
+
+    <!-- Edit reservation modal -->
+    <div *ngIf="showEditModal" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
+        (click)="closeEditModal()">
+        <div class="bg-secondary text-white p-6 rounded-xl w-full max-w-lg relative shadow-lg"
+            (click)="$event.stopPropagation()">
+            <h2 class="text-2xl font-bold text-white mb-6">Edit Reservation</h2>
+
+            <!-- Guest & Rental Info (Read-only) -->
+            <div class="mb-6">
+                <div class="text-lg font-semibold text-accent">{{ editReservation.fullName }}</div>
+                <div class="text-lg text-gray-300">{{ editReservation.email }}</div>
+                <div class="text-lg text-gray-300 italic mt-1">
+                    Rental: {{ editReservation.listingTitle }}
+                </div>
+            </div>
+
+            <!-- Dates -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+                <!-- If rental is per day/week/month/year -->
+                <ng-container *ngIf="editReservation.priceType !== 'hour'; else hourlyRental">
+                    <!-- Check-in -->
+                    <div>
+                        <label class="block text-sm font-semibold text-accent mb-1">Check-in</label>
+                        <input type="date" (keydown)="preventTyping($event)" [(ngModel)]="editReservation.startDate"
+                            [min]="today" (change)="recalculatePrice()"
+                            class="w-full px-4 py-2 rounded bg-slate-500 text-black border border-gray-300" />
+                    </div>
+
+                    <!-- Check-out -->
+                    <div>
+                        <label class="block text-sm font-semibold text-accent mb-1">Check-out</label>
+                        <input type="date" (keydown)="preventTyping($event)" [(ngModel)]="editReservation.endDate"
+                            [min]="editReservation.startDate || today" (change)="recalculatePrice()"
+                            class="w-full px-4 py-2 rounded bg-slate-500 text-black border border-gray-300" />
+                    </div>
+                </ng-container>
+
+                <!-- Hourly rental -->
+                <ng-template #hourlyRental>
+                    <!-- Start Date -->
+                    <div>
+                        <label class="block text-sm font-semibold text-accent mb-1">Date</label>
+                        <input type="date" (keydown)="preventTyping($event)" [(ngModel)]="editReservation.startDate"
+                            [min]="today" (change)="recalculatePrice()"
+                            class="w-full px-4 py-2 rounded bg-slate-500 text-black border border-gray-300" />
+                    </div>
+
+                    <!-- Number of hours -->
+                    <div>
+                        <label class="block text-sm font-semibold text-accent mb-1">Number of Hours</label>
+                        <input type="number" [(ngModel)]="editReservation.numberOfHours" min="1"
+                            (input)="recalculatePrice()"
+                            class="w-full px-4 py-2 rounded bg-slate-500 text-black border border-gray-300" />
+                    </div>
+                </ng-template>
+            </div>
+
+            <!-- Status -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold text-accent mb-1">Status</label>
+                <select [(ngModel)]="editReservation.status"
+                    class="w-full px-4 py-2 rounded bg-slate-500 text-black border border-gray-300">
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="cancelled">Canceled</option>
+                </select>
+            </div>
+
+            <!-- Updated price -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-accent mb-2">Updated Pricing</h3>
+                <div class="space-y-1 text-sm">
+                    <div class="text-green-400">
+                        <i class="fas fa-hand-holding-usd"></i> Owner: ${{ editReservation.ownerAmount }}
+                    </div>
+                    <div class="text-red-400">
+                        <i class="fas fa-money-bill-wave"></i> Fee: ${{ editReservation.siteFee }}
+                    </div>
+                    <div class="text-white font-bold">
+                        <i class="fas fa-wallet"></i> Total: ${{ editReservation.totalAmount }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="errorMessage" class="text-red-500 text-m mb-3">
+                <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end gap-3">
+                <button class="px-5 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded"
+                    (click)="closeEditModal()">Cancel</button>
+                <button class="px-5 py-2 bg-accent text-white hover:bg-white hover:text-accent rounded"
+                    (click)="saveReservation()">Save</button>
+            </div>
+        </div>
+    </div>
+
 </div>
