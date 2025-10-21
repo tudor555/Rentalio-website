@@ -50,9 +50,22 @@ export const ReservationModel = mongoose.model(
 
 // CRUD Operations
 
-export const getReservations = () => ReservationModel.find();
+export const getReservations = ({
+  filter = {},
+  sort = {},
+  skip = 0,
+  limit = 0,
+}: {
+  filter?: any;
+  sort?: any;
+  skip?: number;
+  limit?: number;
+}) => ReservationModel.find(filter).sort(sort).skip(skip).limit(limit).lean();
 
 export const getReservationById = (id: string) => ReservationModel.findById(id);
+
+export const getReservationsCount = (filter = {}) =>
+  ReservationModel.countDocuments(filter);
 
 export const createReservation = (values: Record<string, any>) =>
   new ReservationModel(values)

@@ -13,12 +13,21 @@ import { UserSessionService } from '../../services/user-session.service';
   styleUrl: './profile.component.scss',
 })
 export class ProfileComponent {
+  isOwnerOrAdmin: boolean = UserSessionService.isOwnerOrAdmin();
+
   user: any = null;
   fullName: string = '';
   email: string = '';
   phone: string = '';
   message: string = '';
   isError: boolean = false;
+
+  userRentals: any[] = [];
+  rentalsLoading = true;
+  rentalsError = '';
+  rentalsPage = 1;
+  rentalsLimit = 6;
+  rentalsTotalPages = 1;
 
   reservations: any[] = [];
   page: number = 1;
@@ -41,6 +50,7 @@ export class ProfileComponent {
       next: (data) => {
         this.user = data;
         this.loadReservations();
+        this.loadYourRentals(1);
       },
       error: (err) => {
         console.error('Error fetching user details:', err);
@@ -51,50 +61,33 @@ export class ProfileComponent {
     });
   }
 
-  updateProfile() {
-    const payload: any = {};
+  loadYourRentals(page: number = 1): void {
+    if (!this.user?._id) return;
 
-    if (this.fullName.trim()) {
-      payload.username = this.fullName.trim();
-    }
-    if (this.email.trim()) {
-      payload.email = this.email.trim();
-    }
-    if (this.phone.trim()) {
-      payload.phone = this.phone.trim();
-    }
+    this.rentalsLoading = true;
+    this.rentalsError = '';
 
-    if (Object.keys(payload).length === 0) {
-      this.message = 'Please fill at least one field to update.';
-      this.isError = true;
-      setTimeout(() => {
-        this.message = '';
-      }, 3000);
-      return;
-    }
-
-    this.api.patch(`users/${this.user._id}`, payload, true).subscribe({
-      next: () => {
-        this.message = 'Profile updated successfully!';
-        this.isError = false;
-        this.fullName = '';
-        this.email = '';
-        this.phone = '';
-
-        setTimeout(() => {
-          this.message = '';
-          window.location.reload();
-        }, 2000);
-      },
-      error: (err) => {
-        this.message = err?.error?.message || 'Failed to update profile.';
-        this.isError = true;
-
-        setTimeout(() => {
-          this.message = '';
-        }, 3000);
-      },
-    });
+    this.api
+      .get<any>(
+        `listings/search?ownerId=${this.user._id}&page=${page}&limit=${this.rentalsLimit}`,
+        true
+      )
+      .subscribe({
+        next: (res) => {
+          const { data, totalPages, page: serverPage } = res || {};
+          this.userRentals = Array.isArray(data) ? data : [];
+          this.rentalsTotalPages = totalPages || 1;
+          this.rentalsPage = serverPage || page;
+          this.rentalsLoading = false;
+        },
+        error: (err) => {
+          console.error('Failed to load user rentals:', err);
+          this.userRentals = [];
+          this.rentalsError =
+            err?.error?.message || 'Could not load your rentals.';
+          this.rentalsLoading = false;
+        },
+      });
   }
 
   loadReservations(page: number = 1) {
@@ -155,9 +148,68 @@ export class ProfileComponent {
     this.router.navigate(['/rental', listingId]);
   }
 
+  updateProfile() {
+    const payload: any = {};
+
+    if (this.fullName.trim()) {
+      payload.username = this.fullName.trim();
+    }
+    if (this.email.trim()) {
+      payload.email = this.email.trim();
+    }
+    if (this.phone.trim()) {
+      payload.phone = this.phone.trim();
+    }
+
+    if (Object.keys(payload).length === 0) {
+      this.message = 'Please fill at least one field to update.';
+      this.isError = true;
+      setTimeout(() => {
+        this.message = '';
+      }, 3000);
+      return;
+    }
+
+    this.api.patch(`users/${this.user._id}`, payload, true).subscribe({
+      next: () => {
+        this.message = 'Profile updated successfully!';
+        this.isError = false;
+        this.fullName = '';
+        this.email = '';
+        this.phone = '';
+
+        setTimeout(() => {
+          this.message = '';
+          window.location.reload();
+        }, 2000);
+      },
+      error: (err) => {
+        this.message = err?.error?.message || 'Failed to update profile.';
+        this.isError = true;
+
+        setTimeout(() => {
+          this.message = '';
+        }, 3000);
+      },
+    });
+  }
+
   get profilePicture(): string {
     return this.user?.profilePicture && this.user.profilePicture !== 'null'
       ? this.user.profilePicture
       : 'assets/images/profile/avatar-icon.jpg';
+  }
+
+  editRental(id: string): void {
+    if (!id) return;
+    this.router.navigate(['/rental/edit', id]);
+  }
+
+  firstImage(listing: any): string {
+    const img = listing?.images?.[0];
+    return typeof img === 'string'
+      ? img
+      : img?.url ||
+          '/assets/images/rentals-defaults/livingroom-overview-default.jpeg';
   }
 }
